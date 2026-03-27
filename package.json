@@ -1,6 +1,7 @@
 {
   "name": "coursehub",
   "version": "1.0.0",
+  "type": "module",
   "description": "Course presentation website with Markdown and HTML PPT support",
   "scripts": {
     "build": "node build.js"
