@@ -89,7 +89,7 @@
             `;
             document.getElementById('lesson-list').innerHTML = course.lessons.map(lesson => `
                 <div class="lesson-card">
-                    <a href="lesson.html?course=${escapeHTML(course.slug)}&lesson=${escapeHTML(lesson.slug)}">
+                    <a href="lesson.html?course=${encodeURIComponent(course.slug)}&lesson=${encodeURIComponent(lesson.slug)}">
                         <span>${escapeHTML(lesson.title)}</span>
                     </a>
                 </div>
