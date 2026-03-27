@@ -226,7 +226,10 @@
                     return r.text();
                 })
                 .then(content => {
-                    document.getElementById('lesson-markdown').innerHTML = marked.parse(content);
+                    // 移除 YAML front matter
+                    const frontMatterRegex = /^---\n[\s\S]*?\n---\n/;
+                    const cleanContent = content.replace(frontMatterRegex, '');
+                    document.getElementById('lesson-markdown').innerHTML = marked.parse(cleanContent);
                 })
                 .catch(() => {
                     document.getElementById('lesson-markdown').innerHTML = '<div class="error">教案加载失败</div>';
