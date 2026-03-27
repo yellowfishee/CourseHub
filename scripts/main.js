@@ -1,6 +1,17 @@
 import COURSES_DATA from './courses-data.js';
 import { renderMarkdown } from './markdown-renderer.js';
 
+function escapeHTML(str) {
+    if (!str) return '';
+    return str.replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    }[char]));
+}
+
 function renderCourseList() {
     const container = document.getElementById('course-list');
     if (!container) return;
@@ -11,9 +22,9 @@ function renderCourseList() {
     }
 
     container.innerHTML = COURSES_DATA.map(course => `
-        <a href="course.html?slug=${course.slug}" class="course-card">
-            <h2>${course.title}</h2>
-            <p>${course.description || '暂无描述'}</p>
+        <a href="course.html?slug=${escapeHTML(course.slug)}" class="course-card">
+            <h2>${escapeHTML(course.title)}</h2>
+            <p>${escapeHTML(course.description) || '暂无描述'}</p>
             <span>${course.lessons.length} 课时</span>
         </a>
     `).join('');
