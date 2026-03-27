@@ -20,7 +20,7 @@
             position: fixed;
             top: 1rem;
             left: 1rem;
-            z-index: 1000;
+            z-index: 100;
             background: var(--primary-color);
             color: white;
             border: none;
@@ -49,8 +49,10 @@
             display: flex;
             background: var(--card-bg);
             border-bottom: 1px solid #e5e7eb;
-            padding: 0 1rem 0 4rem;
+            padding: 0 1rem;
             flex-shrink: 0;
+            position: relative;
+            z-index: 999;
         }
 
         .tab-btn {
