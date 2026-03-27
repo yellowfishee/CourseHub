@@ -156,14 +156,6 @@
             font-weight: 700;
             flex-shrink: 0;
         }
-        .essence-box {
-            background: rgba(139, 92, 246, 0.15);
-            border: 2px solid rgba(139, 92, 246, 0.4);
-            border-radius: 16px;
-            padding: 30px;
-            max-width: 700px;
-            text-align: center;
-        }
         .split-step {
             display: flex;
             align-items: center;
@@ -189,6 +181,15 @@
             font-size: 20px;
             margin: 0 8px;
         }
+        .analogy-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 600px;
+            text-align: center;
+        }
+        .analogy-icon { font-size: 48px; margin-bottom: 12px; }
     </style>
 </head>
 <body>
@@ -206,41 +207,41 @@
             </div>
         </div>
 
-        <!-- Slide 2: Today's Problem - Programming Thinking -->
+        <!-- Slide 2: Today's Problem -->
         <div class="slide" data-slide="2">
             <div class="glow-bg glow-1"></div>
             <div class="glow-bg glow-3"></div>
             <div class="label">编程思维</div>
-            <h2 class="text-3xl font-bold mb-8">今天的问题</h2>
-            <div class="essence-box mb-6">
+            <h2 class="text-3xl font-bold mb-8">先想一个问题</h2>
+            <div class="quote-box-yellow mb-6">
                 <p class="text-2xl font-light">如何让计算机显示 "Hello"？</p>
             </div>
-            <p class="text-gray-400 text-lg mt-4">先别急着写代码，我们先学会<span class="text-yellow-400 font-semibold">拆分问题</span></p>
+            <p class="text-gray-400 text-lg mt-4">先别急着写代码，我们先学会<span class="text-yellow-400 font-semibold">拆解问题</span></p>
         </div>
 
         <!-- Slide 3: Problem Decomposition -->
         <div class="slide" data-slide="3">
             <div class="glow-bg glow-2"></div>
             <div class="glow-bg glow-3"></div>
-            <div class="label">编程思维 · 问题拆分</div>
+            <div class="label">编程思维 · 拆解问题</div>
             <h2 class="text-3xl font-bold mb-6">如何让计算机显示 "Hello"？</h2>
             <div class="max-w-xl text-left">
                 <div class="split-step">
                     <div class="split-num">1</div>
-                    <span class="text-lg">大问题：显示 "Hello"</span>
+                    <span class="text-lg">大问题：让屏幕显示 "Hello"</span>
                 </div>
                 <div class="split-arrow ml-4">↓</div>
                 <div class="split-step ml-8" style="background: rgba(59, 130, 246, 0.08);">
                     <div class="split-num">1.1</div>
-                    <span class="text-lg">谁来显示？→ <span class="text-blue-400">计算机</span>（输出设备）</span>
+                    <span class="text-lg">用什么显示？→ <span class="text-blue-400">屏幕</span></span>
                 </div>
                 <div class="split-step ml-8" style="background: rgba(16, 185, 129, 0.08);">
                     <div class="split-num">1.2</div>
-                    <span class="text-lg">用什么显示？→ <span class="text-green-400">屏幕</span>（输出模块）</span>
+                    <span class="text-lg">怎么告诉屏幕？→ 用一个<span class="text-green-400">命令</span></span>
                 </div>
                 <div class="split-step ml-8" style="background: rgba(139, 92, 246, 0.08);">
                     <div class="split-num">1.3</div>
-                    <span class="text-lg">怎么控制？→ <span class="text-purple-400">print()</span> 函数</span>
+                    <span class="text-lg">什么命令？→ <span class="text-purple-400">print()</span> = "显示出来"</span>
                 </div>
                 <div class="split-arrow ml-4">↓</div>
                 <div class="code-block mt-4 text-center">
@@ -254,135 +255,111 @@
             <div class="glow-bg glow-1"></div>
             <div class="glow-bg glow-2"></div>
             <div class="label">编程思维 · 核心公式</div>
-            <h2 class="text-3xl font-bold mb-8">编程思维公式</h2>
-            <div class="essence-box mb-8">
-                <p class="text-3xl font-bold text-purple-400">遇到问题 → 拆分问题 → 拆分到能用代码解决</p>
+            <h2 class="text-3xl font-bold mb-8">编程小公式</h2>
+            <div class="quote-box-yellow mb-6">
+                <p class="text-2xl font-bold text-yellow-300">遇到问题 → 拆解成小问题 → 每个小问题用代码解决</p>
             </div>
-            <div class="quote-box-yellow">
-                <p class="text-xl">拆分原则：拆到"一句话能说清楚"为止</p>
-            </div>
+            <p class="text-gray-400 text-lg mt-4">拆到"一句话能说清楚"为止</p>
         </div>
 
-        <!-- Slide 5: Computer Essence -->
+        <!-- Slide 5: How Computer Works -->
         <div class="slide" data-slide="5">
             <div class="glow-bg glow-2"></div>
             <div class="glow-bg glow-3"></div>
-            <div class="label">计算机本质</div>
-            <h2 class="text-3xl font-bold mb-8">计算机是什么？</h2>
+            <div class="label">计算机基础</div>
+            <h2 class="text-3xl font-bold mb-8">计算机是怎么工作的？</h2>
             <div class="quote-box mb-8">
-                <p class="text-2xl font-light">
-                    计算机 = 会<span class="highlight-blue">计算</span>的机器
-                </p>
-                <p class="text-lg text-gray-400 mt-2">本质：输入 → 处理 → 输出</p>
+                <p class="text-xl">计算机做的三件"事"</p>
             </div>
             <div class="flow-diagram">
                 <div class="flow-box">
-                    <div class="text-2xl mb-2">⌨️</div>
-                    <div class="font-semibold">输入模块</div>
-                    <div class="text-sm text-gray-400">键盘、鼠标</div>
+                    <div class="text-2xl mb-2">👂</div>
+                    <div class="font-semibold">接收</div>
+                    <div class="text-sm text-gray-400">键盘、鼠标输入</div>
                 </div>
                 <div class="flow-arrow">→</div>
                 <div class="flow-box green">
                     <div class="text-2xl mb-2">🧠</div>
-                    <div class="font-semibold">处理模块</div>
-                    <div class="text-sm text-gray-400">CPU 计算</div>
+                    <div class="font-semibold">处理</div>
+                    <div class="text-sm text-gray-400">计算、判断</div>
                 </div>
                 <div class="flow-arrow">→</div>
                 <div class="flow-box purple">
                     <div class="text-2xl mb-2">🖥️</div>
-                    <div class="font-semibold">输出模块</div>
-                    <div class="text-sm text-gray-400">屏幕、音响</div>
+                    <div class="font-semibold">展示</div>
+                    <div class="text-sm text-gray-400">屏幕显示</div>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 6: print() Analysis - What -->
+        <!-- Slide 6: Restaurant Analogy -->
         <div class="slide" data-slide="6">
             <div class="glow-bg glow-1"></div>
             <div class="glow-bg glow-3"></div>
-            <div class="label">模块化解析 · print()</div>
-            <h2 class="text-3xl font-bold mb-8">print() 是什么？</h2>
+            <div class="label">通俗理解</div>
+            <h2 class="text-3xl font-bold mb-8">就像去餐厅吃饭</h2>
+            <div class="analogy-box mb-6">
+                <div class="analogy-icon">🍽️</div>
+                <div class="text-xl font-semibold mb-2">餐厅服务员的工作</div>
+                <div class="text-gray-300">你 → 点菜（接收）→ 服务员记下</div>
+                <div class="text-gray-300 mt-1">→ 厨房做好（处理）→ 端菜给你（展示）</div>
+            </div>
+            <p class="text-gray-400 text-lg mt-4">计算机也一样：接收命令 → 处理 → 把结果展示给你</p>
+        </div>
+
+        <!-- Slide 7: What is print() -->
+        <div class="slide" data-slide="7">
+            <div class="glow-bg glow-2"></div>
+            <div class="glow-bg glow-1"></div>
+            <div class="label">print() 是什么</div>
+            <h2 class="text-3xl font-bold mb-8">print() 的通俗解释</h2>
             <div class="grid-3 max-w-3xl">
                 <div class="card border-blue-500/30">
                     <div class="text-4xl mb-4">📝</div>
-                    <div class="card-title text-blue-400">表层：是什么？</div>
-                    <div class="card-desc mt-2">一个函数</div>
-                    <div class="text-sm text-gray-400 mt-2">用于在屏幕上显示内容</div>
+                    <div class="card-title text-blue-400">print() 是什么？</div>
+                    <div class="card-desc mt-2">一个"命令"</div>
+                    <div class="text-sm text-gray-400 mt-2">意思是"显示出来"</div>
                 </div>
                 <div class="card border-purple-500/30">
                     <div class="text-4xl mb-4">⚙️</div>
-                    <div class="card-title text-purple-400">底层：本质？</div>
-                    <div class="card-desc mt-2">控制终端打印内容</div>
-                    <div class="text-sm text-gray-400 mt-2">封装了复杂的屏幕控制操作</div>
+                    <div class="card-title text-purple-400">它实际上做什么？</div>
+                    <div class="card-desc mt-2">控制屏幕显示</div>
+                    <div class="text-sm text-gray-400 mt-2">把文字显示在屏幕上</div>
                 </div>
                 <div class="card border-green-500/30">
-                    <div class="text-4xl mb-4">📦</div>
-                    <div class="card-title text-green-400">系统层：模块？</div>
-                    <div class="card-desc mt-2">输出模块</div>
-                    <div class="text-sm text-gray-400 mt-2">人机交互的一部分</div>
+                    <div class="text-4xl mb-4">🖨️</div>
+                    <div class="card-title text-green-400">类比</div>
+                    <div class="card-desc mt-2">就像打印机打印</div>
+                    <div class="text-sm text-gray-400 mt-2">print = "打印到屏幕"</div>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 7: print() Module Flow -->
-        <div class="slide" data-slide="7">
-            <div class="glow-bg glow-2"></div>
+        <!-- Slide 8: print() Flow -->
+        <div class="slide" data-slide="8">
+            <div class="glow-bg glow-3"></div>
             <div class="glow-bg glow-1"></div>
-            <div class="label">模块化解析 · print() 流程</div>
-            <h2 class="text-3xl font-bold mb-8">print() 的工作过程</h2>
+            <div class="label">print() 工作流程</div>
+            <h2 class="text-3xl font-bold mb-8">print("Hello") 发生了什么？</h2>
             <div class="flow-diagram">
                 <div class="text-2xl font-semibold text-yellow-300">"Hello"</div>
                 <div class="flow-arrow">→</div>
                 <div class="flow-box purple">
                     <div class="text-2xl mb-2">print()</div>
-                    <div class="text-sm text-purple-200">输出模块</div>
+                    <div class="text-sm text-purple-200">命令：显示出来</div>
                 </div>
                 <div class="flow-arrow">→</div>
                 <div class="flow-box">
                     <div class="text-2xl mb-2">🖥️</div>
-                    <div class="font-semibold">终端显示</div>
+                    <div class="font-semibold">屏幕显示</div>
                 </div>
             </div>
             <div class="code-block mt-4">
                 <span class="highlight-green">print</span>(<span class="highlight-yellow">"Hello"</span>)
             </div>
-            <p class="text-gray-400 mt-4 text-lg">本质：控制终端打印内容</p>
         </div>
 
-        <!-- Slide 8: Module Perspective -->
-        <div class="slide" data-slide="8">
-            <div class="glow-bg glow-3"></div>
-            <div class="glow-bg glow-1"></div>
-            <div class="label">模块化思维</div>
-            <h2 class="text-3xl font-bold mb-8">程序 = 模块的组合</h2>
-            <div class="quote-box mb-6">
-                <p class="text-xl">每个模块：输入 → 处理 → 输出</p>
-            </div>
-            <div class="flow-diagram">
-                <div class="flow-box">
-                    <div class="text-2xl mb-2">⌨️</div>
-                    <div class="font-semibold">输入模块</div>
-                </div>
-                <div class="flow-arrow">+</div>
-                <div class="flow-box green">
-                    <div class="text-2xl mb-2">⚙️</div>
-                    <div class="font-semibold">处理模块</div>
-                </div>
-                <div class="flow-arrow">+</div>
-                <div class="flow-box purple">
-                    <div class="text-2xl mb-2">🖥️</div>
-                    <div class="font-semibold">输出模块</div>
-                </div>
-                <div class="flow-arrow">=</div>
-                <div class="flow-box yellow">
-                    <div class="text-2xl mb-2">📱</div>
-                    <div class="font-semibold">程序/App</div>
-                </div>
-            </div>
-            <p class="text-gray-400 mt-4 text-lg">print() 是输出模块的一个"控制接口"</p>
-        </div>
-
-        <!-- Slide 9: print() Application -->
+        <!-- Slide 9: Practice -->
         <div class="slide" data-slide="9">
             <div class="glow-bg glow-2"></div>
             <div class="glow-bg glow-3"></div>
@@ -391,15 +368,15 @@
             <div class="max-w-xl text-left">
                 <div class="split-step">
                     <div class="split-num">1</div>
-                    <span class="text-lg">大问题：说"你好"</span>
+                    <span class="text-lg">大问题：显示"你好"</span>
                 </div>
                 <div class="split-step ml-8" style="background: rgba(234, 179, 8, 0.08);">
                     <div class="split-num">1.1</div>
-                    <span>说什么？→ 字符串 <span class="text-yellow-400">"你好"</span></span>
+                    <span>用什么命令？→ <span class="text-purple-400">print()</span></span>
                 </div>
                 <div class="split-step ml-8" style="background: rgba(139, 92, 246, 0.08);">
                     <div class="split-num">1.2</div>
-                    <span>怎么说？→ <span class="text-purple-400">print()</span> 输出</span>
+                    <span>显示什么？→ <span class="text-yellow-400">"你好"</span></span>
                 </div>
                 <div class="split-arrow ml-4">↓</div>
                 <div class="code-block mt-4 text-center">
@@ -408,7 +385,7 @@
             </div>
         </div>
 
-        <!-- Slide 10: Why Learn Programming -->
+        <!-- Slide 10: What Can Programming Do -->
         <div class="slide" data-slide="10">
             <div class="glow-bg glow-1"></div>
             <div class="glow-bg glow-2"></div>
@@ -417,27 +394,23 @@
             <div class="grid-2 max-w-3xl">
                 <div class="card">
                     <div class="card-emoji">📱</div>
-                    <div class="card-title">移动应用</div>
+                    <div class="card-title">手机 App</div>
                     <div class="card-desc">微信、抖音、美团</div>
-                    <div class="text-xs text-gray-500 mt-2">输入→处理→输出</div>
                 </div>
                 <div class="card">
                     <div class="card-emoji">🎮</div>
-                    <div class="card-title">游戏开发</div>
+                    <div class="card-title">游戏</div>
                     <div class="card-desc">王者荣耀、原神</div>
-                    <div class="text-xs text-gray-500 mt-2">图形渲染+物理计算</div>
                 </div>
                 <div class="card">
                     <div class="card-emoji">🤖</div>
                     <div class="card-title">人工智能</div>
                     <div class="card-desc">ChatGPT、人脸识别</div>
-                    <div class="text-xs text-gray-500 mt-2">数据输入→模型处理→输出</div>
                 </div>
                 <div class="card">
                     <div class="card-emoji">🔬</div>
                     <div class="card-title">科学研究</div>
                     <div class="card-desc">火星探测器、基因测序</div>
-                    <div class="text-xs text-gray-500 mt-2">计算模块驱动</div>
                 </div>
             </div>
         </div>
@@ -452,20 +425,17 @@
                 <div class="card border-blue-500/30">
                     <div class="card-emoji">📖</div>
                     <div class="card-title text-blue-400">简单易学</div>
-                    <div class="card-desc">英语一样的语法</div>
-                    <div class="text-xs text-gray-500 mt-2">封装得好，不需要理解底层</div>
+                    <div class="card-desc">就像说话一样写代码</div>
                 </div>
                 <div class="card border-green-500/30">
                     <div class="card-emoji">💪</div>
                     <div class="card-title text-green-400">功能强大</div>
-                    <div class="card-desc">Web、AI、数据分析</div>
-                    <div class="text-xs text-gray-500 mt-2">模块丰富，生态完善</div>
+                    <div class="card-desc">网站、游戏、AI都能做</div>
                 </div>
                 <div class="card border-purple-500/30">
                     <div class="card-emoji">🔥</div>
-                    <div class="card-title text-purple-400">应用广泛</div>
+                    <div class="card-title text-purple-400">到处在用</div>
                     <div class="card-desc">Google、Netflix都在用</div>
-                    <div class="text-xs text-gray-500 mt-2">久经考验的输出模块库</div>
                 </div>
             </div>
         </div>
@@ -481,28 +451,28 @@
                     <div class="path-num">1</div>
                     <div>
                         <div class="font-semibold">Python基础</div>
-                        <div class="text-gray-500 text-sm">输出模块(print) → 输入模块(input) → 处理模块(计算)</div>
+                        <div class="text-gray-500 text-sm">先学输出(print) → 再学输入 → 然后学计算</div>
                     </div>
                 </div>
                 <div class="path-line">
                     <div class="path-num">2</div>
                     <div>
-                        <div class="font-semibold">数据结构与算法</div>
-                        <div class="text-gray-500 text-sm">存储模块(列表/字典) → 算法模块(排序/查找)</div>
+                        <div class="font-semibold">数据结构</div>
+                        <div class="text-gray-500 text-sm">学会存储很多数据</div>
                     </div>
                 </div>
                 <div class="path-line">
                     <div class="path-num">3</div>
                     <div>
                         <div class="font-semibold">Web开发</div>
-                        <div class="text-gray-500 text-sm">网络模块 → 框架模块</div>
+                        <div class="text-gray-500 text-sm">学会做网站</div>
                     </div>
                 </div>
                 <div class="path-line">
                     <div class="path-num">4</div>
                     <div>
                         <div class="font-semibold">数据分析/AI</div>
-                        <div class="text-gray-500 text-sm">数据处理模块 → AI模型模块</div>
+                        <div class="text-gray-500 text-sm">学会处理数据、训练AI</div>
                     </div>
                 </div>
             </div>
@@ -514,23 +484,23 @@
             <div class="glow-bg glow-2"></div>
             <div class="glow-bg glow-3"></div>
             <div class="label">总结</div>
-            <h2 class="text-3xl font-bold mb-8">今天我们学到了</h2>
+            <h2 class="text-3xl font-bold mb-8">今天学到了</h2>
             <div class="max-w-2xl text-left">
                 <div class="list-item">
+                    <div class="list-dot bg-yellow-400"></div>
+                    <span><span class="text-yellow-400 font-semibold">编程</span> = 告诉计算机做什么</span>
+                </div>
+                <div class="list-item">
                     <div class="list-dot bg-blue-400"></div>
-                    <span><span class="text-blue-400 font-semibold">编程思维</span>：遇到问题 → 拆分问题 → 拆分到能用代码解决</span>
+                    <span><span class="text-blue-400 font-semibold">计算机工作</span> = 接收 → 处理 → 展示</span>
                 </div>
                 <div class="list-item">
                     <div class="list-dot bg-purple-400"></div>
-                    <span><span class="text-purple-400 font-semibold">计算机本质</span>：输入 → 处理 → 输出（三大模块）</span>
+                    <span><span class="text-purple-400 font-semibold">print()</span> = 让屏幕显示文字（显示出来）</span>
                 </div>
                 <div class="list-item">
                     <div class="list-dot bg-green-400"></div>
-                    <span><span class="text-green-400 font-semibold">模块化思维</span>：程序 = 模块的组合</span>
-                </div>
-                <div class="list-item">
-                    <div class="list-dot bg-yellow-400"></div>
-                    <span><span class="text-yellow-400 font-semibold">print()</span>：控制终端打印内容（输出模块）</span>
+                    <span><span class="text-green-400 font-semibold">编程思维</span> = 遇到问题 → 拆解 → 用代码解决</span>
                 </div>
             </div>
         </div>
@@ -544,8 +514,7 @@
             <div class="text-center">
                 <div class="text-6xl mb-6">📦</div>
                 <h3 class="text-2xl font-bold text-blue-400 mb-4">变量与类型</h3>
-                <p class="text-gray-400 text-lg">数据存储模块</p>
-                <p class="text-gray-500 text-sm mt-2">学习如何用变量"记住"数据</p>
+                <p class="text-gray-400 text-lg">让计算机"记住"数据</p>
             </div>
         </div>
 
@@ -558,7 +527,7 @@
                 <div class="big-emoji">🚀</div>
                 <h2 class="text-3xl font-bold mb-4">让我们开始吧！</h2>
                 <p class="text-gray-400 text-lg">用代码改变世界</p>
-                <p class="text-gray-500 text-sm mt-4">记住：遇到问题 → 拆分问题 → 拆分到能用代码解决</p>
+                <p class="text-gray-500 text-sm mt-4">记住：遇到问题 → 拆解成小问题 → 用代码解决</p>
             </div>
         </div>
     </div>
