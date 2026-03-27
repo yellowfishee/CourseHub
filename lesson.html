@@ -15,44 +15,32 @@
             flex-direction: column;
         }
 
-        /* 返回按钮 */
-        .back-btn {
-            position: fixed;
-            top: 1rem;
-            left: 1rem;
-            z-index: 100;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            transition: all 0.2s;
-        }
-
-        .back-btn:hover {
-            background: #2563eb;
-            transform: translateX(-2px);
-        }
-
-        .back-btn.hidden {
-            display: none;
-        }
-
         /* Tab 导航 */
         .tab-nav {
             display: flex;
+            align-items: center;
             background: var(--card-bg);
             border-bottom: 1px solid #e5e7eb;
             padding: 0 1rem;
             flex-shrink: 0;
-            position: relative;
-            z-index: 999;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            border-right: 1px solid #e5e7eb;
+            margin-right: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: #f3f4f6;
         }
 
         .tab-btn {
@@ -263,11 +251,10 @@
 </head>
 <body>
     <div id="lesson-container">
-        <button id="back-btn" class="back-btn">
-            <span>←</span> 返回课程
-        </button>
-
         <nav class="tab-nav">
+            <button id="back-btn" class="back-btn">
+                ← 返回
+            </button>
             <button class="tab-btn active" data-tab="lesson">教案</button>
             <button class="tab-btn" data-tab="ppt">PPT</button>
             <button class="tab-btn" data-tab="homework">作业</button>
