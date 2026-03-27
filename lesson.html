@@ -69,6 +69,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script type="module">
+        import COURSES_DATA from './scripts/courses-data.js';
         import { LaserPointer } from './scripts/laser-pointer.js';
 
         function escapeHTML(str) {
@@ -89,6 +90,10 @@
         const courseSlug = params.get('course');
         const lessonSlug = params.get('lesson');
 
+        if (courseSlug) {
+            document.querySelector('.back-link').href = `course.html?slug=${encodeURIComponent(courseSlug)}`;
+        }
+
         const course = COURSES_DATA.find(c => c.slug === courseSlug);
         const lesson = course?.lessons.find(l => l.slug === lessonSlug);
 
@@ -98,7 +103,10 @@
             // Load lesson markdown
             const lessonPath = `courses/${encodeURIComponent(courseSlug)}/${encodeURIComponent(lessonSlug)}/教案.md`;
             fetch(lessonPath)
-                .then(r => r.text())
+                .then(r => {
+                    if (!r.ok) throw new Error('Failed to load');
+                    return r.text();
+                })
                 .then(content => {
                     document.getElementById('lesson-content').innerHTML = marked.parse(content);
                 })
