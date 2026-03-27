@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程概览 - CourseHub</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        #course-outline {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        #course-outline h1 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        #course-outline .description {
+            color: var(--secondary-color);
+            margin-bottom: 2rem;
+        }
+        #lesson-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .lesson-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1rem 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .lesson-card a {
+            text-decoration: none;
+            color: var(--text-color);
+            flex: 1;
+        }
+        .lesson-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header id="site-header">
+        <h1>CourseHub</h1>
+    </header>
+
+    <main id="course-outline">
+        <a href="index.html" class="back-link">← 返回课程列表</a>
+        <div id="course-content"></div>
+        <div id="lesson-list"></div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="module" src="scripts/main.js"></script>
+    <script>
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return str;
+            return str.replace(/[&<>"']/g, function(match) {
+                const escapeMap = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                };
+                return escapeMap[match];
+            });
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const courseSlug = params.get('slug');
+        const course = COURSES_DATA.find(c => c.slug === courseSlug);
+
+        if (course) {
+            document.title = `${escapeHTML(course.title)} - CourseHub`;
+            document.getElementById('course-content').innerHTML = `
+                <h1>${escapeHTML(course.title)}</h1>
+                <p class="description">${escapeHTML(course.description)}</p>
+            `;
+            document.getElementById('lesson-list').innerHTML = course.lessons.map(lesson => `
+                <div class="lesson-card">
+                    <a href="lesson.html?course=${escapeHTML(course.slug)}&lesson=${escapeHTML(lesson.slug)}">
+                        <span>${escapeHTML(lesson.title)}</span>
+                    </a>
+                </div>
+            `).join('');
+        } else {
+            document.getElementById('course-content').innerHTML = '<p>课程未找到</p>';
+        }
+    </script>
+</body>
+</html>
