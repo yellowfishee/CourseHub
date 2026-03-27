@@ -2,54 +2,64 @@
 
 ## 核心原则
 
-### 1. 模块化思维（工程化意识）
+### 1. 语言通俗易懂（最重要！）
 
-**每页 PPT 必须包含的三个层次：**
+**面向零基础初学者，每页都要问：**
 
-| 层次 | 问题 | 示例 |
-|------|------|------|
-| 表层 | "是什么"？ | print() 是一个函数 |
-| 底层 | "本质是什么"？ | print() 控制终端打印内容 |
-| 系统层 | "属于哪个模块"？ | 属于输出模块，是人机交互的一部分 |
+- 零基础的人能看懂这页吗？
+- 有没有用生活例子解释？
+- 有没有专业词汇没解释？
 
-**本质展示技巧：**
+**常用词汇对照：**
 
-- 用"输入 → 模块 → 输出"的结构图说明
-- 用箭头标注"控制了什么"
-- 对比"不用这个模块时会发生什么"
+| PPT上应该用的词 | 避免用的词 |
+|-----------------|-----------|
+| 命令 | 函数（除非解释清楚） |
+| 显示出来 / 打印 | 输出、打印 |
+| 让计算机记住 | 赋值、存储 |
+| 拆解问题 | 拆分问题 |
+| 实际上在做什么 | 本质是什么 |
+| 就像...一样 | （多用类比） |
 
-### 2. 编程思维流程（问题拆分）
+**每页都要有的元素：**
+
+```
+大问题/标题
+    ↓
+生活例子/类比（用表情或图片）
+    ↓
+代码示例
+    ↓
+一句话总结
+```
+
+### 2. 问题拆解流程
 
 **贯穿整个 PPT 的流程：**
 
 ```
 遇到问题
-  → 拆分问题
-    → 拆分问题
-      → 直到能用代码解决
+  → 拆解问题
+    → 再拆解
+      → 直到能用一个命令解决
 ```
 
 **PPT 结构设计：**
 
 ```
 课程开始：
-  [展示本课要解决的核心问题]
+  [用一个生活问题引入]
 
 每个知识点：
-  [先展示拆分过程]
-  [再展示代码实现]
-  [最后展示本质/模块]
+  [先展示拆解过程（怎么把问题变小）]
+  [再展示代码（怎么用命令解决）]
+  [最后一句话总结（记住什么）]
 
 课程结束：
-  [总结：今天学的模块在系统中的位置]
+  [用通俗的话总结今天学了什么]
 ```
 
 ---
-
-## 触发方式
-
-- 命令: `/生成PPT 课时名`
-- 对话: "帮我生成关于 XX 的 PPT"
 
 ## 视觉规范
 
@@ -80,7 +90,7 @@
 
 - 堆字 / 密集排版
 - 花哨配色
-- 复杂图表（用 HTML/CSS/JS 代替）
+- 专业词汇不解释
 - 横屏比例偏离
 - 偏离极简科技风
 
@@ -94,74 +104,72 @@
 ```html
 <!-- 第1页：封面 -->
 <div class="slide">
-    <h1>课时名称</h1>
-    <p class="text-gray-400">所属课程：xxx</p>
+    <h1>标题</h1>
+    <p class="subtitle">副标题（通俗易懂）</p>
 </div>
 
-<!-- 第2页：本课要解决的核心问题 -->
+<!-- 第2页：今天的问题 -->
 <div class="slide">
-    <h2>今天的问题</h2>
-    <p class="text-2xl">[用具体例子引出核心问题]</p>
+    <h2>先想一个问题</h2>
+    <p class="text-2xl">如何让计算机做 xxx？</p>
+    <p class="hint">先别写代码，先想清楚怎么做</p>
 </div>
 
-<!-- 第3页：编程思维 - 拆分问题 -->
+<!-- 第3页：拆解问题 -->
 <div class="slide">
-    <h2>编程思维：拆分问题</h2>
-    <!-- 用图示展示拆分过程 -->
+    <h2>拆解这个问题</h2>
+    <!-- 用步骤展示拆解过程 -->
+    <!-- 1 → 1.1 → 1.2 → ... -->
 </div>
 
 <!-- 第4-N页：知识点讲解 -->
-<!-- 每个知识点包含： -->
-<!-- 1. 是什么 + 本质 -->
-<!-- 2. 模块视角 -->
-<!-- 3. 代码实现 -->
-<!-- 4. 交互演示 -->
+<!-- 每页包含： -->
+<!-- 1. 生活类比（用表情图标） -->
+<!-- 2. 代码展示 -->
+<!-- 3. 一句话总结 -->
 
 <!-- 最后一页：总结 -->
-<!-- 1. 今天学了什么模块 -->
-<!-- 2. 在系统中的位置 -->
+<!-- 用通俗的话总结今天学了什么 -->
 ```
 
-## 模块化视角示例
+## 生活类比示例页
 
 ```html
-<!-- print() 的模块化视角 -->
+<!-- 用餐厅服务员类比计算机工作 -->
 <div class="slide">
-    <h2>print() 的本质</h2>
-    <div class="flex items-center justify-center gap-8 text-2xl">
-        <span class="text-blue-400">"Hello"</span>
-        <span>→</span>
-        <div class="bg-gray-800 px-6 py-4 rounded">
-            <div class="text-yellow-400">print()</div>
-            <div class="text-sm text-gray-400">输出模块</div>
-        </div>
-        <span>→</span>
-        <span class="text-green-400">终端显示</span>
+    <h2>就像去餐厅吃饭</h2>
+    <div class="analogy-box">
+        <div class="emoji">🍽️</div>
+        <p>你点菜（接收）→ 厨房做（处理）→ 端菜给你（展示）</p>
     </div>
-    <p class="text-gray-400 mt-8">本质：控制终端打印内容</p>
+    <p class="text-gray-400 mt-4">计算机也一样：接收命令 → 处理 → 展示结果</p>
 </div>
 ```
 
-## 编程思维页示例
+## print() 示例页（通俗版）
 
 ```html
-<!-- 拆分问题的可视化 -->
+<!-- print() 是什么 -->
 <div class="slide">
-    <h2>如何输出 100 次 "Hello"？</h2>
-    <div class="text-left text-xl space-y-4">
-        <div class="flex items-center gap-4">
-            <span class="bg-blue-600 px-3 py-1 rounded">1</span>
-            <span>大问题：输出 100 次</span>
+    <h2>print() 是什么？</h2>
+    <div class="grid-3">
+        <div class="card">
+            <div class="emoji">📝</div>
+            <div class="title">print() 是什么？</div>
+            <div class="desc">一个"命令"</div>
+            <div class="sub">意思是"显示出来"</div>
         </div>
-        <div class="ml-8 border-l-2 border-gray-600 pl-4">
-            <div class="flex items-center gap-4">
-                <span class="bg-blue-600 px-3 py-1 rounded">1.1</span>
-                <span>拆解：重复 100 次 = 循环</span>
-            </div>
-            <div class="flex items-center gap-4 mt-2">
-                <span class="bg-blue-600 px-3 py-1 rounded">1.2</span>
-                <span>拆解：每次输出 = print()</span>
-            </div>
+        <div class="card">
+            <div class="emoji">⚙️</div>
+            <div class="title">它做什么？</div>
+            <div class="desc">控制屏幕显示</div>
+            <div class="sub">把文字显示在屏幕上</div>
+        </div>
+        <div class="card">
+            <div class="emoji">🖨️</div>
+            <div class="title">类比</div>
+            <div class="desc">就像打印机</div>
+            <div class="sub">print = "打印到屏幕"</div>
         </div>
     </div>
 </div>
