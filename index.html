@@ -3,20 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CourseHub</title>
+    <title>CourseHub - 教学课程展示</title>
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
 </head>
 <body>
     <header id="site-header">
-        <h1>CourseHub</h1>
-        <p>教学课程展示平台</p>
+        <div class="header-content">
+            <h1>
+                <span class="icon">📚</span>
+                CourseHub
+            </h1>
+            <p class="subtitle">轻松有趣学编程</p>
+            <div class="course-count" id="course-count"></div>
+        </div>
     </header>
 
     <main id="course-list">
-        <!-- Courses rendered here by build script -->
+        <h2 class="section-title">全部课程</h2>
+        <div id="courses-container">
+            <!-- Courses rendered here by build script -->
+        </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script type="module" src="scripts/main.js"></script>
+    <script>
+        // Update course count after DOM loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new MutationObserver(() => {
+                const cards = document.querySelectorAll('.course-card');
+                if (cards.length > 0) {
+                    document.getElementById('course-count').textContent = `共 ${cards.length} 个课程`;
+                    observer.disconnect();
+                }
+            });
+            observer.observe(document.getElementById('courses-container'), { childList: true });
+        });
+    </script>
 </body>
 </html>

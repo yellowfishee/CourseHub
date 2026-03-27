@@ -13,18 +13,27 @@ function escapeHTML(str) {
 }
 
 function renderCourseList() {
-    const container = document.getElementById('course-list');
+    const container = document.getElementById('courses-container');
     if (!container) return;
 
     if (COURSES_DATA.length === 0) {
-        container.innerHTML = '<p>暂无课程</p>';
+        container.innerHTML = '<p style="text-align:center;color:#64748b;padding:2rem;">暂无课程</p>';
         return;
     }
 
     container.innerHTML = COURSES_DATA.map(course => `
-        <a href="course.html?slug=${escapeHTML(course.slug)}" class="course-card">
-            <h2>${escapeHTML(course.title)}</h2>
-            <p>${escapeHTML(course.description) || '暂无描述'}</p>
+        <a href="course.html?slug=${encodeURIComponent(course.slug)}" class="course-card">
+            <div class="card-header">
+                <span class="card-icon">${course.icon || '📖'}</span>
+                <div>
+                    <h2>${escapeHTML(course.title)}</h2>
+                </div>
+            </div>
+            <p class="card-description">${escapeHTML(course.description) || '暂无描述'}</p>
+            <div class="card-meta">
+                <span>📝 ${course.lessons?.length || 0} 课时</span>
+            </div>
+            <span class="card-arrow">→</span>
         </a>
     `).join('');
 }

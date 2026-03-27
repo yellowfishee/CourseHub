@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>课时 - CourseHub</title>
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
     <style>
         #lesson-container {
             max-width: 100%;
@@ -13,6 +14,7 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
+            background: var(--bg-color);
         }
 
         /* Tab 导航 */
@@ -20,7 +22,7 @@
             display: flex;
             align-items: center;
             background: var(--card-bg);
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid var(--border-color);
             padding: 0 1rem;
             flex-shrink: 0;
         }
@@ -35,8 +37,9 @@
             display: flex;
             align-items: center;
             gap: 0.25rem;
-            border-right: 1px solid #e5e7eb;
+            border-right: 1px solid var(--border-color);
             margin-right: 0.5rem;
+            transition: background 0.2s;
         }
 
         .back-btn:hover {
@@ -74,326 +77,26 @@
             display: block;
         }
 
-        /* 教案内容 */
-        #lesson-markdown {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2.5rem 3rem;
-            overflow-y: auto;
-            height: 100%;
-            background: var(--card-bg);
-            font-size: 1.05rem;
-            line-height: 1.8;
-        }
-
-        #lesson-markdown h1 {
-            color: var(--primary-color);
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 3px solid var(--primary-color);
-            font-weight: 700;
-        }
-
-        #lesson-markdown h2 {
-            color: #1e293b;
-            font-size: 1.5rem;
-            margin-top: 2.5rem;
-            margin-bottom: 1rem;
-            font-weight: 600;
-            padding-left: 0.75rem;
-            border-left: 4px solid var(--primary-color);
-        }
-
-        #lesson-markdown h3 {
-            color: #334155;
-            font-size: 1.2rem;
-            margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
-            font-weight: 600;
-        }
-
-        #lesson-markdown p {
-            margin-bottom: 1.25rem;
-            color: #374151;
-        }
-
-        #lesson-markdown ul, #lesson-markdown ol {
-            margin-bottom: 1.25rem;
-            padding-left: 1.5rem;
-        }
-
-        #lesson-markdown li {
-            margin-bottom: 0.5rem;
-            color: #374151;
-        }
-
-        #lesson-markdown li::marker {
-            color: var(--primary-color);
-        }
-
-        #lesson-markdown pre {
-            background: #1e293b;
-            color: #e2e8f0;
-            padding: 1.25rem 1.5rem;
-            border-radius: 12px;
-            overflow-x: auto;
-            margin: 1.5rem 0;
-            border: 1px solid #334155;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        #lesson-markdown code {
-            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-            font-size: 0.9em;
-        }
-
-        #lesson-markdown p code {
-            background: #f1f5f9;
-            color: #7c3aed;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.9em;
-            border: 1px solid #e2e8f0;
-        }
-
-        #lesson-markdown table {
-            border-collapse: collapse;
-            width: 100%;
-            margin: 1.5rem 0;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #e5e7eb;
-        }
-
-        #lesson-markdown th, #lesson-markdown td {
-            border: none;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 0.875rem 1rem;
-            text-align: left;
-        }
-
-        #lesson-markdown tr:last-child td {
-            border-bottom: none;
-        }
-
-        #lesson-markdown th {
-            background: var(--primary-color);
-            color: white;
-            font-weight: 600;
-        }
-
-        #lesson-markdown tr:nth-child(even) {
-            background: #f8fafc;
-        }
-
-        #lesson-markdown blockquote {
-            border-left: 4px solid #10b981;
-            padding: 1rem 1.5rem;
-            margin: 1.5rem 0;
-            background: #f0fdf4;
-            color: #065f46;
-            border-radius: 0 8px 8px 0;
-        }
-
-        #lesson-markdown blockquote p {
-            margin-bottom: 0;
-        }
-
-        #lesson-markdown a {
-            color: var(--primary-color);
-            text-decoration: none;
-            border-bottom: 1px solid transparent;
-            transition: border-color 0.2s;
-        }
-
-        #lesson-markdown a:hover {
-            border-bottom-color: var(--primary-color);
-        }
-
-        #lesson-markdown hr {
-            border: none;
-            height: 2px;
-            background: linear-gradient(to right, var(--primary-color), #8b5cf6);
-            margin: 2rem 0;
-            border-radius: 2px;
-        }
-
-        #lesson-markdown img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin: 1rem 0;
-        }
-
-        /* PPT 全屏 */
-        #ppt-container {
-            width: 100%;
-            height: 100%;
-            background: #000;
-        }
-
-        #ppt-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        /* 作业内容 */
-        #homework-content {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2.5rem 3rem;
-            overflow-y: auto;
-            height: 100%;
-            background: var(--card-bg);
-            font-size: 1.05rem;
-            line-height: 1.8;
-        }
-
-        #homework-content h1 {
-            color: #dc2626;
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 3px solid #dc2626;
-            font-weight: 700;
-        }
-
-        #homework-content h2 {
-            color: #1e293b;
-            font-size: 1.4rem;
-            margin-top: 2rem;
-            margin-bottom: 0.75rem;
-            font-weight: 600;
-            padding-left: 0.75rem;
-            border-left: 4px solid #dc2626;
-        }
-
-        #homework-content h3 {
-            color: #334155;
-            font-size: 1.15rem;
-            margin-top: 1.25rem;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        #homework-content p {
-            margin-bottom: 1rem;
-            color: #374151;
-        }
-
-        #homework-content ul, #homework-content ol {
-            margin-bottom: 1rem;
-            padding-left: 1.5rem;
-        }
-
-        #homework-content li {
-            margin-bottom: 0.4rem;
-            color: #374151;
-        }
-
-        #homework-content pre {
-            background: #1e293b;
-            color: #e2e8f0;
-            padding: 1.25rem 1.5rem;
-            border-radius: 12px;
-            overflow-x: auto;
-            margin: 1.25rem 0;
-            border: 1px solid #334155;
-        }
-
-        #homework-content code {
-            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-            font-size: 0.9em;
-        }
-
-        #homework-content p code {
-            background: #fef2f2;
-            color: #dc2626;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.9em;
-            border: 1px solid #fecaca;
-        }
-
-        #homework-content table {
-            border-collapse: collapse;
-            width: 100%;
-            margin: 1.25rem 0;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #e5e7eb;
-        }
-
-        #homework-content th, #homework-content td {
-            border: none;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 0.75rem 1rem;
-        }
-
-        #homework-content th {
-            background: #dc2626;
-            color: white;
-            font-weight: 600;
-        }
-
-        #homework-content blockquote {
-            border-left: 4px solid #f59e0b;
-            padding: 1rem 1.5rem;
-            margin: 1.25rem 0;
-            background: #fffbeb;
-            color: #92400e;
-            border-radius: 0 8px 8px 0;
-        }
-
-        #homework-content table {
-            border-collapse: collapse;
-            width: 100%;
-            margin: 1rem 0;
-        }
-
-        #homework-content th, #homework-content td {
-            border: 1px solid #e5e7eb;
-            padding: 0.75rem;
-            text-align: left;
-        }
-
-        #homework-content th {
-            background: var(--secondary-color);
-            color: white;
-        }
-
-        .sample-box {
-            background: #f3f4f6;
-            border-radius: 8px;
-            padding: 1rem;
-            margin: 1rem 0;
-        }
-
-        .sample-box pre {
-            margin: 0.5rem 0;
-            background: #fff;
-            border: 1px solid #e5e7eb;
-        }
-
+        /* 加载状态 */
         .loading, .error, .not-found {
-            padding: 2rem;
+            padding: 3rem;
             text-align: center;
             color: var(--secondary-color);
         }
 
         .error {
-            color: #ef4444;
+            color: #dc2626;
         }
 
+        /* 响应式 */
         @media (max-width: 768px) {
             .tab-btn {
                 padding: 0.75rem 1rem;
                 font-size: 0.9rem;
             }
-            #lesson-markdown, #homework-content {
-                padding: 1rem;
+
+            .back-btn {
+                padding: 0.75rem;
             }
         }
     </style>
@@ -410,7 +113,9 @@
         </nav>
 
         <div id="lesson-content" class="tab-content active">
-            <div id="lesson-markdown"></div>
+            <div id="lesson-markdown">
+                <div class="loading">加载教案中...</div>
+            </div>
         </div>
 
         <div id="ppt-content" class="tab-content">
