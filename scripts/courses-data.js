@@ -6,6 +6,13 @@ const COURSES_DATA = [
     "description": "从零开始学习Python基础语法",
     "lessons": [
       {
+        "slug": "00-Python导学",
+        "title": "00-Python导学",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
         "slug": "01-变量与类型",
         "title": "01-变量与类型",
         "description": "",
