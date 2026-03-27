@@ -30,9 +30,6 @@ function renderCourseList() {
                 </div>
             </div>
             <p class="card-description">${escapeHTML(course.description) || '暂无描述'}</p>
-            <div class="card-meta">
-                <span>📝 ${course.lessons?.length || 0} 课时</span>
-            </div>
             <span class="card-arrow">→</span>
         </a>
     `).join('');
