@@ -7,65 +7,251 @@
     <link rel="stylesheet" href="styles/main.css">
     <style>
         #lesson-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 1rem;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        .back-link {
-            display: inline-block;
-            margin-bottom: 1rem;
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-        #lesson-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            height: calc(100vh - 150px);
-        }
-        #lesson-content {
+
+        /* Tab 导航 */
+        .tab-nav {
+            display: flex;
             background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            overflow-y: auto;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0 1rem;
+            flex-shrink: 0;
         }
-        #ppt-container {
-            background: #000;
-            border-radius: var(--border-radius);
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--secondary-color);
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        /* Tab 内容区 */
+        .tab-content {
+            flex: 1;
+            display: none;
             overflow: hidden;
-            position: relative;
         }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 教案内容 */
+        #lesson-markdown {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            overflow-y: auto;
+            height: 100%;
+            background: var(--card-bg);
+        }
+
+        #lesson-markdown h1 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        #lesson-markdown h2 {
+            color: var(--text-color);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        #lesson-markdown pre {
+            background: #2d2d2d;
+            color: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        #lesson-markdown code {
+            font-family: 'Fira Code', 'Consolas', monospace;
+        }
+
+        #lesson-markdown p code {
+            background: #f3f4f6;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        #lesson-markdown table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        #lesson-markdown th, #lesson-markdown td {
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        #lesson-markdown th {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        #lesson-markdown blockquote {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: var(--secondary-color);
+        }
+
+        /* PPT 全屏 */
+        #ppt-container {
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+
         #ppt-iframe {
             width: 100%;
             height: 100%;
             border: none;
         }
-        @media (max-width: 900px) {
-            #lesson-layout {
-                grid-template-columns: 1fr;
-                height: auto;
+
+        /* 作业内容 */
+        #homework-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            overflow-y: auto;
+            height: 100%;
+            background: var(--card-bg);
+        }
+
+        #homework-content h1 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        #homework-content h2 {
+            color: var(--text-color);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        #homework-content pre {
+            background: #2d2d2d;
+            color: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        #homework-content p code {
+            background: #f3f4f6;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+
+        #homework-content blockquote {
+            border-left: 4px solid var(--secondary-color);
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: var(--secondary-color);
+            background: #f9fafb;
+        }
+
+        #homework-content table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        #homework-content th, #homework-content td {
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        #homework-content th {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .sample-box {
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .sample-box pre {
+            margin: 0.5rem 0;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+        }
+
+        .loading, .error, .not-found {
+            padding: 2rem;
+            text-align: center;
+            color: var(--secondary-color);
+        }
+
+        .error {
+            color: #ef4444;
+        }
+
+        @media (max-width: 768px) {
+            .tab-btn {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
             }
-            #ppt-container {
-                height: 50vh;
+            #lesson-markdown, #homework-content {
+                padding: 1rem;
             }
         }
     </style>
 </head>
 <body>
-    <header id="site-header">
-        <h1>CourseHub</h1>
-    </header>
+    <div id="lesson-container">
+        <nav class="tab-nav">
+            <button class="tab-btn active" data-tab="lesson">教案</button>
+            <button class="tab-btn" data-tab="ppt">PPT</button>
+            <button class="tab-btn" data-tab="homework">作业</button>
+        </nav>
 
-    <main id="lesson-container">
-        <a href="course.html" class="back-link">← 返回课程</a>
-        <div id="lesson-layout">
-            <div id="lesson-content"></div>
+        <div id="lesson-content" class="tab-content active">
+            <div id="lesson-markdown"></div>
+        </div>
+
+        <div id="ppt-content" class="tab-content">
             <div id="ppt-container">
                 <iframe id="ppt-iframe" allow="fullscreen"></iframe>
             </div>
         </div>
-    </main>
+
+        <div id="homework-content" class="tab-content">
+            <div class="loading">加载作业中...</div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script type="module">
@@ -86,43 +272,72 @@
             });
         }
 
+        // Tab 切换
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+
+                btn.classList.add('active');
+                document.getElementById(`${tab}-content`).classList.add('active');
+            });
+        });
+
+        // 获取 URL 参数
         const params = new URLSearchParams(window.location.search);
         const courseSlug = params.get('course');
         const lessonSlug = params.get('lesson');
 
-        if (courseSlug) {
-            document.querySelector('.back-link').href = `course.html?slug=${encodeURIComponent(courseSlug)}`;
-        }
-
         const course = COURSES_DATA.find(c => c.slug === courseSlug);
         const lesson = course?.lessons.find(l => l.slug === lessonSlug);
 
-        if (lesson) {
+        if (!lesson) {
+            document.getElementById('lesson-markdown').innerHTML = '<div class="error">课时未找到</div>';
+        } else {
             document.title = `${escapeHTML(lesson.title)} - ${escapeHTML(course.title)} - CourseHub`;
 
-            // Load lesson markdown
-            const lessonPath = `courses/${encodeURIComponent(courseSlug)}/${encodeURIComponent(lessonSlug)}/教案.md`;
-            fetch(lessonPath)
+            // 加载教案
+            const lessonPath = `courses/${encodeURIComponent(courseSlug)}/${encodeURIComponent(lessonSlug)}`;
+            const markdownPath = `${lessonPath}/教案.md`;
+
+            fetch(markdownPath)
                 .then(r => {
                     if (!r.ok) throw new Error('Failed to load');
                     return r.text();
                 })
                 .then(content => {
-                    document.getElementById('lesson-content').innerHTML = marked.parse(content);
+                    document.getElementById('lesson-markdown').innerHTML = marked.parse(content);
                 })
                 .catch(() => {
-                    document.getElementById('lesson-content').innerHTML = '<p>教案加载失败</p>';
+                    document.getElementById('lesson-markdown').innerHTML = '<div class="error">教案加载失败</div>';
                 });
 
-            // Load PPT iframe
-            document.getElementById('ppt-iframe').src = `${lessonPath.replace('教案.md', '')}index.html`;
-        } else {
-            document.getElementById('lesson-content').innerHTML = '<p>课时未找到</p>';
-        }
+            // 加载 PPT
+            document.getElementById('ppt-iframe').src = `${lessonPath}/index.html`;
 
-        // Initialize laser pointer on PPT container
-        const pptContainer = document.getElementById('ppt-container');
-        new LaserPointer(pptContainer);
+            // 加载作业
+            const homeworkPath = `${lessonPath}/作业.md`;
+            fetch(homeworkPath)
+                .then(r => {
+                    if (!r.ok) throw new Error('Homework not found');
+                    return r.text();
+                })
+                .then(content => {
+                    document.getElementById('homework-content').innerHTML = marked.parse(content);
+                })
+                .catch(() => {
+                    document.getElementById('homework-content').innerHTML = '<div class="not-found">暂无作业</div>';
+                });
+
+            // 初始化激光笔（仅 PPT 区域）
+            const pptContainer = document.getElementById('ppt-container');
+            new LaserPointer(pptContainer);
+        }
     </script>
 </body>
 </html>
