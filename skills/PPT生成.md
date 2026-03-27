@@ -1,5 +1,51 @@
 # PPT 生成规范
 
+## 核心原则
+
+### 1. 模块化思维（工程化意识）
+
+**每页 PPT 必须包含的三个层次：**
+
+| 层次 | 问题 | 示例 |
+|------|------|------|
+| 表层 | "是什么"？ | print() 是一个函数 |
+| 底层 | "本质是什么"？ | print() 控制终端打印内容 |
+| 系统层 | "属于哪个模块"？ | 属于输出模块，是人机交互的一部分 |
+
+**本质展示技巧：**
+
+- 用"输入 → 模块 → 输出"的结构图说明
+- 用箭头标注"控制了什么"
+- 对比"不用这个模块时会发生什么"
+
+### 2. 编程思维流程（问题拆分）
+
+**贯穿整个 PPT 的流程：**
+
+```
+遇到问题
+  → 拆分问题
+    → 拆分问题
+      → 直到能用代码解决
+```
+
+**PPT 结构设计：**
+
+```
+课程开始：
+  [展示本课要解决的核心问题]
+
+每个知识点：
+  [先展示拆分过程]
+  [再展示代码实现]
+  [最后展示本质/模块]
+
+课程结束：
+  [总结：今天学的模块在系统中的位置]
+```
+
+---
+
 ## 触发方式
 
 - 命令: `/生成PPT 课时名`
@@ -42,6 +88,84 @@
 
 - 未指定页数：自动生成 8~20 页
 - 未指定风格：默认乔布斯风
+
+## PPT 结构模板
+
+```html
+<!-- 第1页：封面 -->
+<div class="slide">
+    <h1>课时名称</h1>
+    <p class="text-gray-400">所属课程：xxx</p>
+</div>
+
+<!-- 第2页：本课要解决的核心问题 -->
+<div class="slide">
+    <h2>今天的问题</h2>
+    <p class="text-2xl">[用具体例子引出核心问题]</p>
+</div>
+
+<!-- 第3页：编程思维 - 拆分问题 -->
+<div class="slide">
+    <h2>编程思维：拆分问题</h2>
+    <!-- 用图示展示拆分过程 -->
+</div>
+
+<!-- 第4-N页：知识点讲解 -->
+<!-- 每个知识点包含： -->
+<!-- 1. 是什么 + 本质 -->
+<!-- 2. 模块视角 -->
+<!-- 3. 代码实现 -->
+<!-- 4. 交互演示 -->
+
+<!-- 最后一页：总结 -->
+<!-- 1. 今天学了什么模块 -->
+<!-- 2. 在系统中的位置 -->
+```
+
+## 模块化视角示例
+
+```html
+<!-- print() 的模块化视角 -->
+<div class="slide">
+    <h2>print() 的本质</h2>
+    <div class="flex items-center justify-center gap-8 text-2xl">
+        <span class="text-blue-400">"Hello"</span>
+        <span>→</span>
+        <div class="bg-gray-800 px-6 py-4 rounded">
+            <div class="text-yellow-400">print()</div>
+            <div class="text-sm text-gray-400">输出模块</div>
+        </div>
+        <span>→</span>
+        <span class="text-green-400">终端显示</span>
+    </div>
+    <p class="text-gray-400 mt-8">本质：控制终端打印内容</p>
+</div>
+```
+
+## 编程思维页示例
+
+```html
+<!-- 拆分问题的可视化 -->
+<div class="slide">
+    <h2>如何输出 100 次 "Hello"？</h2>
+    <div class="text-left text-xl space-y-4">
+        <div class="flex items-center gap-4">
+            <span class="bg-blue-600 px-3 py-1 rounded">1</span>
+            <span>大问题：输出 100 次</span>
+        </div>
+        <div class="ml-8 border-l-2 border-gray-600 pl-4">
+            <div class="flex items-center gap-4">
+                <span class="bg-blue-600 px-3 py-1 rounded">1.1</span>
+                <span>拆解：重复 100 次 = 循环</span>
+            </div>
+            <div class="flex items-center gap-4 mt-2">
+                <span class="bg-blue-600 px-3 py-1 rounded">1.2</span>
+                <span>拆解：每次输出 = print()</span>
+            </div>
+        </div>
+    </div>
+</div>
+```
 
 ## HTML PPT 模板
 
