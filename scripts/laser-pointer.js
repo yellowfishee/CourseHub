@@ -4,6 +4,9 @@ export class LaserPointer {
         this.element = null;
         this.isActive = false;
         this.fadeTimeout = null;
+        this._boundShow = null;
+        this._boundHide = null;
+        this._boundMove = null;
         this.init();
     }
 
@@ -24,10 +27,14 @@ export class LaserPointer {
         `;
         document.body.appendChild(this.element);
 
-        this.container.addEventListener('mousedown', this.show.bind(this));
-        this.container.addEventListener('mouseup', this.hide.bind(this));
-        this.container.addEventListener('mouseleave', this.hide.bind(this));
-        this.container.addEventListener('mousemove', this.move.bind(this));
+        this._boundShow = this.show.bind(this);
+        this._boundHide = this.hide.bind(this);
+        this._boundMove = this.move.bind(this);
+
+        this.container.addEventListener('mousedown', this._boundShow);
+        this.container.addEventListener('mouseup', this._boundHide);
+        this.container.addEventListener('mouseleave', this._boundHide);
+        this.container.addEventListener('mousemove', this._boundMove);
     }
 
     show(e) {
@@ -57,10 +64,10 @@ export class LaserPointer {
     }
 
     destroy() {
-        this.container.removeEventListener('mousedown', this.show);
-        this.container.removeEventListener('mouseup', this.hide);
-        this.container.removeEventListener('mouseleave', this.hide);
-        this.container.removeEventListener('mousemove', this.move);
+        this.container.removeEventListener('mousedown', this._boundShow);
+        this.container.removeEventListener('mouseup', this._boundHide);
+        this.container.removeEventListener('mouseleave', this._boundHide);
+        this.container.removeEventListener('mousemove', this._boundMove);
         this.element.remove();
     }
 }
