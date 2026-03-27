@@ -1,0 +1,17 @@
+{
+    // Paste Image 插件配置
+    "pasteImage.path": "${currentFileDir}/assets/images",
+    "pasteImage.prefix": "./",
+    "pasteImage.insertPattern": "![${imageFileName}](${markdownPath})",
+    "pasteImage.basePath": "${currentFileDir}",
+    "pasteImage.forceFilePath": true,
+    "pasteImage.showFilePathConfirmInputBox": false,
+
+    // 课程图片存放位置
+    "pasteImage.namePrefix": "${currentFileNameWithoutExt}_",
+
+    // 支持 markdown 文件粘贴
+    "[markdown]": {
+        "editor.formatOnSave": false
+    }
+}

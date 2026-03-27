@@ -20,6 +20,27 @@ const COURSES_DATA = [
         "hasMeta": false
       }
     ]
+  },
+  {
+    "slug": "02-Scratch初阶",
+    "title": "02-Scratch初阶",
+    "description": "",
+    "lessons": [
+      {
+        "slug": "00-海底世界",
+        "title": "00-海底世界",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "04-猜数字",
+        "title": "04-猜数字",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      }
+    ]
   }
 ];
 export default COURSES_DATA;

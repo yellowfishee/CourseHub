@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>猜数字 - Scratch 入门</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+        .slide-container { position: relative; width: 100%; height: 100%; }
+        .slide {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        .slide.active { display: flex; opacity: 1; }
+        .glow-bg {
+            position: absolute;
+            width: 600px; height: 600px;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+        .glow-1 { background: #3b82f6; top: -200px; right: -200px; animation: float1 8s ease-in-out infinite; }
+        .glow-2 { background: #8b5cf6; bottom: -200px; left: -200px; animation: float2 10s ease-in-out infinite; }
+        .glow-3 { background: #ec4899; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: float3 12s ease-in-out infinite; }
+        @keyframes float1 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-50px, 50px); } }
+        @keyframes float2 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(50px, -50px); } }
+        @keyframes float3 { 0%, 100% { opacity: 0.1; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 0.25; transform: translate(-50%, -50%) scale(1.2); } }
+        .progress-bar {
+            position: fixed;
+            bottom: 0; left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            transition: width 0.3s ease;
+        }
+        .slide-number { position: fixed; bottom: 20px; right: 30px; font-size: 14px; color: #6b7280; font-weight: 500; }
+        .nav-hint { position: fixed; bottom: 20px; left: 30px; font-size: 12px; color: #4b5563; }
+
+        /* 元素顺序出现动画 */
+        .animate-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .animate-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .delay-1 { transition-delay: 0.05s; }
+        .delay-2 { transition-delay: 0.1s; }
+        .delay-3 { transition-delay: 0.15s; }
+        .delay-4 { transition-delay: 0.2s; }
+        .delay-5 { transition-delay: 0.25s; }
+        .delay-6 { transition-delay: 0.3s; }
+        .delay-7 { transition-delay: 0.35s; }
+        .delay-8 { transition-delay: 0.4s; }
+
+        /* 按空格/右箭头时触发下一步动画 */
+        .animate-item.next {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+
+        .label {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+        }
+        .title-main {
+            font-size: 3.5rem;
+            font-weight: 800;
+            text-align: center;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+        .title-sub {
+            font-size: 1.5rem;
+            color: #9ca3af;
+            font-weight: 400;
+        }
+        .big-emoji { font-size: 80px; margin-bottom: 30px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; width: 100%; max-width: 900px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; width: 100%; max-width: 1000px; }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+        }
+        .card-emoji { font-size: 40px; margin-bottom: 12px; }
+        .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; }
+        .card-desc { font-size: 0.85rem; color: #9ca3af; }
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .flow-box {
+            background: rgba(59, 130, 246, 0.2);
+            border: 2px solid rgba(59, 130, 246, 0.5);
+            border-radius: 12px;
+            padding: 16px 24px;
+            text-align: center;
+            font-size: 1rem;
+        }
+        .flow-box.green { background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.5); }
+        .flow-box.purple { background: rgba(139, 92, 246, 0.2); border-color: rgba(139, 92, 246, 0.5); }
+        .flow-box.yellow { background: rgba(234, 179, 8, 0.2); border-color: rgba(234, 179, 8, 0.5); }
+        .flow-box.red { background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.5); }
+        .flow-box.orange { background: rgba(249, 115, 22, 0.2); border-color: rgba(249, 115, 22, 0.5); }
+        .flow-arrow { font-size: 24px; color: #6b7280; }
+        .analogy-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 600px;
+            text-align: center;
+        }
+        .analogy-icon { font-size: 48px; margin-bottom: 12px; }
+        .split-step {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            margin: 8px 0;
+            width: 100%;
+            max-width: 500px;
+        }
+        .split-num {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: #93c5fd;
+            flex-shrink: 0;
+        }
+        .quote-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid #3b82f6;
+            padding: 20px 30px;
+            border-radius: 0 12px 12px 0;
+            max-width: 700px;
+        }
+        .quote-box-yellow {
+            background: rgba(234, 179, 8, 0.1);
+            border-left: 4px solid #fbbf24;
+            padding: 20px 30px;
+            border-radius: 0 12px 12px 0;
+            max-width: 700px;
+        }
+        .quote-box-green {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid #10b981;
+            padding: 20px 30px;
+            border-radius: 0 12px 12px 0;
+            max-width: 700px;
+        }
+        .quote-box-red {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid #ef4444;
+            padding: 20px 30px;
+            border-radius: 0 12px 12px 0;
+            max-width: 700px;
+        }
+        .block-img {
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            padding: 12px;
+            max-width: 100%;
+        }
+        .block-img img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        .three-cases {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+        .case-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+        .case-icon { font-size: 36px; margin-bottom: 12px; }
+        .task-box {
+            background: rgba(139, 92, 246, 0.2);
+            border: 2px solid rgba(139, 92, 246, 0.5);
+            border-radius: 12px;
+            padding: 20px 30px;
+            max-width: 600px;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            width: 100%;
+            max-width: 800px;
+        }
+        .summary-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <!-- Slide 1: Cover -->
+        <div class="slide active" data-slide="1">
+            <div class="glow-bg glow-1"></div>
+            <div class="glow-bg glow-2"></div>
+            <div class="glow-bg glow-3"></div>
+            <div class="relative z-10 text-center">
+                <div class="label">Scratch 入门</div>
+                <h1 class="title-main">猜数字</h1>
+                <p class="title-sub">认识变量、询问和判断</p>
+                <div class="big-emoji mt-8">🔢</div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Game Introduction -->
+        <div class="slide" data-slide="2">
+            <div class="glow-bg glow-1"></div>
+            <div class="glow-bg glow-3"></div>
+            <div class="label">引入</div>
+            <h2 class="text-3xl font-bold mb-8">玩一个游戏：猜数字</h2>
+            <div class="quote-box-yellow mb-6">
+                <p class="text-2xl font-light mb-2">老师想一个数字（1~100）</p>
+                <p class="text-xl text-yellow-200">你来猜，老师告诉你：大了 / 小了 / 对了</p>
+            </div>
+            <div class="flow-diagram mt-6">
+                <div class="flow-box yellow">老师想数字</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box">你来猜</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box green">太大了</div>
+                <div class="flow-arrow">或</div>
+                <div class="flow-box red">太小了</div>
+                <div class="flow-arrow">或</div>
+                <div class="flow-box purple">恭喜！</div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Game Strategy -->
+        <div class="slide" data-slide="3">
+            <div class="glow-bg glow-2"></div>
+            <div class="glow-bg glow-3"></div>
+            <div class="label">思考</div>
+            <h2 class="text-3xl font-bold mb-8">怎么猜最快？</h2>
+            <div class="analogy-box mb-6">
+                <div class="analogy-icon">🎯</div>
+                <div class="text-xl font-semibold mb-2">每次猜中间的数</div>
+                <div class="text-gray-300">100 个数字：先猜 50</div>
+                <div class="text-gray-400 text-sm mt-2">大了 → 猜 25 | 小了 → 猜 75</div>
+                <div class="text-gray-400 text-sm">这样能排除一半！</div>
+            </div>
+            <p class="text-gray-400 text-lg">最多 7 次就能猜到！</p>
+        </div>
+
+        <!-- Slide 4: Game Steps -->
+        <div class="slide" data-slide="4">
+            <div class="glow-bg glow-1"></div>
+            <div class="glow-bg glow-3"></div>
+            <div class="label">拆解</div>
+            <h2 class="text-3xl font-bold mb-8">游戏需要哪几步？</h2>
+            <div class="flow-diagram" style="flex-direction: column; gap: 12px;">
+                <div class="split-step">
+                    <div class="split-num">1</div>
+                    <div>计算机想一个数字（1~100）</div>
+                </div>
+                <div class="split-step">
+                    <div class="split-num">2</div>
+                    <div>计算机提问："你要猜多少？"</div>
+                </div>
+                <div class="split-step">
+                    <div class="split-num">3</div>
+                    <div>你输入数字</div>
+                </div>
+                <div class="split-step">
+                    <div class="split-num">4</div>
+                    <div>计算机比较，告诉你大/小/对</div>
+                </div>
+                <div class="split-step">
+                    <div class="split-num">5</div>
+                    <div>继续猜（重复第 2-4 步）</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Random Number -->
+        <div class="slide" data-slide="5">
+            <div class="glow-bg glow-2"></div>
+            <div class="glow-bg glow-3"></div>
+            <div class="label">第一步</div>
+            <h2 class="text-3xl font-bold mb-6">怎么让计算机想数字？</h2>
+            <div class="quote-box-green mb-6">
+                <p class="text-xl">运算类 → 取随机数 1 到 100</p>
+            </div>
+            <div class="block-img mb-6">
+                <img src="./assets/image.png" alt="取随机数积木">
+            </div>
+            <p class="text-gray-400 text-lg">这个积木会产出一个随机数字！</p>
+        </div>
+
+        <!-- Slide 6: Ask and Wait -->
+        <div class="slide" data-slide="6">
+            <div class="glow-bg glow-1"></div>
+            <div class="glow-bg glow-3"></div>
+            <div class="label">第二步</div>
+            <h2 class="text-3xl font-bold mb-6">怎么让计算机提问？</h2>
+            <div class="quote-box-blue mb-6">
+                <p class="text-xl">侦测类 → 询问...并等待</p>
+            </div>
+            <div class="block-img mb-6">
+                <img src="./assets/image-1.png" alt="询问并等待积木">
+            </div>
+            <div class="analogy-box">
+                <div class="analogy-icon">🍽️</div>
+                <div class="text-lg">就像服务员等你点完菜才走</div>
+                <div class="text-gray-400 text-sm mt-2">"回答" = 你点的菜（存在这个盒子里）</div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Three Cases -->
+        <div class="slide" data-slide="7">
+            <div class="glow-bg glow-2"></div>
+            <div class="glow-bg glow-3"></div>
+            <div class="label">判断</div>
+            <h2 class="text-3xl font-bold mb-8">三种情况</h2>
+            <div class="three-cases">
+                <div class="case-card" style="border: 2px solid rgba(16, 185, 129, 0.5);">
+                    <div class="case-icon">✅</div>
+                    <div class="card-title text-green-400">猜对了</div>
+                    <div class="card-desc">说"恭喜你！"</div>
+                </div>
+                <div class="case-card" style="border: 2px solid rgba(239, 68, 68, 0.5);">
+                    <div class="case-icon">⬆️</div>
+                    <div class="card-title text-red-400">猜大了</div>
+                    <div class="card-desc">说"太大了！"</div>
+                </div>
+                <div class="case-card" style="border: 2px solid rgba(59, 130, 246, 0.5);">
+                    <div class="case-icon">⬇️</div>
+                    <div class="card-title text-blue-400">猜小了</div>
+                    <div class="card-desc">说"太小了！"</div>
+                </div>
+            </div>
+            <p class="text-gray-400 mt-6">需要用三个「如果」来判断！</p>
+        </div>
+
+        <!-- Slide 8: Bug Example -->
+        <div class="slide" data-slide="8">
+            <div class="glow-bg glow-1"></div>
+            <div class="glow-bg glow-3"></div>
+            <div class="label">常见错误</div>
+            <h2 class="text-3xl font-bold mb-6">❌ 错误代码</h2>
+            <div class="block-img mb-6">
+                <img src="./assets/image-2.png" alt="错误代码">
+            </div>
+            <div class="quote-box-red">
+                <p class="text-lg">问题：每次比较时，都会重新产生一个随机数！</p>
+            </div>
+            <p class="text-gray-400 mt-4">就像每次问问题都重新想数字，而不是用之前想的那个</p>
+        </div>
+
+        <!-- Slide 9: Variable Solution -->
+        <div class="slide" data-slide="9">
+            <div class="glow-bg glow-2"></div>
+            <div class="glow-bg glow-3"></div>
+            <div class="label">解决方法</div>
+            <h2 class="text-3xl font-bold mb-6">用变量记住数字！</h2>
+            <div class="analogy-box mb-6">
+                <div class="analogy-icon">📝</div>
+                <div class="text-xl font-semibold mb-2">变量 = 便利贴</div>
+                <div class="text-gray-300">先把随机数存在便利贴上</div>
+                <div class="text-gray-400 text-sm mt-2">比较时看便利贴上的数字</div>
+            </div>
+            <div class="flow-diagram">
+                <div class="flow-box yellow">取随机数</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box purple">存到"答案"变量</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box green">每次比较用变量</div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Loop -->
+        <div class="slide" data-slide="10">
+            <div class="glow-bg glow-1"></div>
+            <div class="glow-bg glow-3"></div>
+            <div class="label">循环</div>
+            <h2 class="text-3xl font-bold mb-6">怎么一直猜下去？</h2>
+            <div class="quote-box-yellow mb-6">
+                <p class="text-xl">控制类 → 重复执行</p>
+            </div>
+            <div class="block-img mb-6">
+                <img src="./assets/image-3.png" alt="重复执行积木">
+            </div>
+            <p class="text-gray-400 text-lg">重复执行里的积木会一直循环运行！</p>
+        </div>
+
+        <!-- Slide 11: Final Structure -->
+        <div class="slide" data-slide="11">
+            <div class="glow-bg glow-2"></div>
+            <div class="glow-bg glow-3"></div>
+            <div class="label">总结</div>
+            <h2 class="text-3xl font-bold mb-8">完整结构</h2>
+            <div class="flow-diagram" style="flex-direction: column; gap: 16px;">
+                <div class="flow-box yellow">1. 新建变量"答案"，存入随机数</div>
+                <div class="flow-box purple">2. 重复执行</div>
+                <div style="padding-left: 40px; display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 600px;">
+                    <div class="flow-box">3. 询问并等待</div>
+                    <div class="flow-box red">4. 如果 回答 > 答案 → 说"太大了"</div>
+                    <div class="flow-box blue">5. 如果 回答 < 答案 → 说"太小了"</div>
+                    <div class="flow-box green">6. 否则 → 说"恭喜！"</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Homework -->
+        <div class="slide" data-slide="12">
+            <div class="glow-bg glow-1"></div>
+            <div class="glow-bg glow-2"></div>
+            <div class="glow-bg glow-3"></div>
+            <div class="label">挑战</div>
+            <h2 class="text-3xl font-bold mb-8">你能做得更好吗？</h2>
+            <div class="grid-2 max-w-2xl">
+                <div class="task-box">
+                    <div class="card-title text-purple-400 mb-2">🌟 挑战 1</div>
+                    <div class="card-desc">记录猜了多少次</div>
+                </div>
+                <div class="task-box">
+                    <div class="card-title text-purple-400 mb-2">🌟 挑战 2</div>
+                    <div class="card-desc">限制猜测次数（比如只能猜 7 次）</div>
+                </div>
+                <div class="task-box">
+                    <div class="card-title text-purple-400 mb-2">🌟 挑战 3</div>
+                    <div class="card-desc">记录历史猜测</div>
+                </div>
+                <div class="task-box">
+                    <div class="card-title text-purple-400 mb-2">🌟 挑战 4</div>
+                    <div class="card-desc">猜对后显示一共猜了几次</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Summary -->
+        <div class="slide" data-slide="13">
+            <div class="glow-bg glow-1"></div>
+            <div class="glow-bg glow-2"></div>
+            <div class="glow-bg glow-3"></div>
+            <div class="label">总结</div>
+            <h2 class="text-3xl font-bold mb-8">今天学了什么？</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="text-2xl mb-2">🎲</div>
+                    <div class="card-title">随机数</div>
+                    <div class="card-desc">取随机数 1 到 100</div>
+                </div>
+                <div class="summary-item">
+                    <div class="text-2xl mb-2">📝</div>
+                    <div class="card-title">变量</div>
+                    <div class="card-desc">记住数据（便利贴）</div>
+                </div>
+                <div class="summary-item">
+                    <div class="text-2xl mb-2">❓</div>
+                    <div class="card-title">询问回答</div>
+                    <div class="card-desc">询问并等待 + 回答</div>
+                </div>
+                <div class="summary-item">
+                    <div class="text-2xl mb-2">🔄</div>
+                    <div class="card-title">循环</div>
+                    <div class="card-desc">重复执行</div>
+                </div>
+            </div>
+            <div class="mt-8 text-gray-400">做完了？去玩一玩你的猜数字游戏吧！🎮</div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="progress-bar" id="progress"></div>
+    <div class="slide-number" id="slideNumber">1 / 13</div>
+    <div class="nav-hint">← → 键翻页</div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 13;
+        let currentAnimStep = 0;
+        let animSteps = [];
+
+        function showSlide(n) {
+            if (n < 1) n = 1;
+            if (n > totalSlides) n = totalSlides;
+
+            // 重置动画状态
+            currentAnimStep = 0;
+
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active');
+                // 移除旧的动画类
+                slide.querySelectorAll('.animate-item').forEach(item => {
+                    item.classList.remove('visible');
+                    item.style.opacity = '';
+                    item.style.transform = '';
+                });
+            });
+
+            const slideEl = document.querySelector(`[data-slide="${n}"]`);
+            slideEl.classList.add('active');
+
+            // 自动给主要元素添加动画类和延迟
+            const selectors = '.label, h1, h2, .title-main, .title-sub, .big-emoji, .quote-box, .quote-box-yellow, .quote-box-green, .quote-box-red, .quote-box-blue, .analogy-box, .flow-diagram, .flow-box, .flow-arrow, .card, .task-box, .grid-2, .grid-3, .three-cases, .case-card, .summary-grid, .summary-item, .split-step, .block-img, .vs-box, .comparison-table';
+            animSteps = [];
+
+            let delayIndex = 0;
+            slideEl.querySelectorAll(selectors).forEach((el, i) => {
+                // 跳过 glow-bg 和 progress-bar 等背景元素
+                if (el.classList.contains('glow-bg') || el.classList.contains('progress-bar')) return;
+                // 跳过已处理的元素
+                if (el.classList.contains('animate-item')) return;
+
+                el.classList.add('animate-item');
+                el.classList.add(`delay-${Math.min(delayIndex + 1, 8)}`);
+                animSteps.push(el);
+                delayIndex++;
+            });
+
+            // 触发第一步动画
+            if (animSteps.length > 0) {
+                animSteps[0].classList.add('visible');
+                currentAnimStep = 1;
+            }
+
+            document.getElementById('slideNumber').textContent = `${n} / ${totalSlides}`;
+            document.getElementById('progress').style.width = `${(n / totalSlides) * 100}%`;
+
+            currentSlide = n;
+        }
+
+        // 触发下一步动画
+        function triggerNextAnimStep() {
+            if (currentAnimStep < animSteps.length) {
+                animSteps[currentAnimStep].classList.add('visible');
+                currentAnimStep++;
+                return true; // 还有更多动画
+            }
+            return false; // 动画已全部触发
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                // 先触发动画
+                if (!triggerNextAnimStep()) {
+                    // 动画都触发完了，再翻页
+                    showSlide(currentSlide + 1);
+                }
+            } else if (e.key === 'ArrowLeft') {
+                showSlide(currentSlide - 1);
+            }
+        });
+
+        // Touch support
+        let touchStartX = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    if (!triggerNextAnimStep()) {
+                        showSlide(currentSlide + 1);
+                    }
+                } else {
+                    showSlide(currentSlide - 1);
+                }
+            }
+        });
+
+        // 点击也触发下一步
+        document.addEventListener('click', () => {
+            if (!triggerNextAnimStep()) {
+                // 动画都触发完了，再翻页
+                showSlide(currentSlide + 1);
+            }
+        });
+
+        showSlide(1);
+    </script>
+</body>
+</html>

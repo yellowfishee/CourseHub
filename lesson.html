@@ -136,20 +136,20 @@
             <button id="back-btn" class="back-btn">
                 ← 返回
             </button>
-            <button class="tab-btn active" data-tab="lesson">教案</button>
-            <button class="tab-btn" data-tab="ppt">PPT</button>
+            <button class="tab-btn active" data-tab="ppt">PPT</button>
+            <button class="tab-btn" data-tab="lesson">教案</button>
             <button class="tab-btn" data-tab="homework">作业</button>
         </nav>
 
-        <div id="lesson-content" class="tab-content active">
-            <div id="lesson-markdown">
-                <div class="loading">加载教案中...</div>
+        <div id="ppt-content" class="tab-content active">
+            <div id="ppt-container">
+                <iframe id="ppt-iframe" allow="fullscreen"></iframe>
             </div>
         </div>
 
-        <div id="ppt-content" class="tab-content">
-            <div id="ppt-container">
-                <iframe id="ppt-iframe" allow="fullscreen"></iframe>
+        <div id="lesson-content" class="tab-content">
+            <div id="lesson-markdown">
+                <div class="loading">加载教案中...</div>
             </div>
         </div>
 
