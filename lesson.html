@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课时 - CourseHub</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        #lesson-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        #lesson-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            height: calc(100vh - 150px);
+        }
+        #lesson-content {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            overflow-y: auto;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        #ppt-container {
+            background: #000;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            position: relative;
+        }
+        #ppt-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        @media (max-width: 900px) {
+            #lesson-layout {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            #ppt-container {
+                height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header id="site-header">
+        <h1>CourseHub</h1>
+    </header>
+
+    <main id="lesson-container">
+        <a href="course.html" class="back-link">← 返回课程</a>
+        <div id="lesson-layout">
+            <div id="lesson-content"></div>
+            <div id="ppt-container">
+                <iframe id="ppt-iframe" allow="fullscreen"></iframe>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="module">
+        import { LaserPointer } from './scripts/laser-pointer.js';
+
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return str;
+            return str.replace(/[&<>"']/g, function(match) {
+                const escapeMap = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                };
+                return escapeMap[match];
+            });
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const courseSlug = params.get('course');
+        const lessonSlug = params.get('lesson');
+
+        const course = COURSES_DATA.find(c => c.slug === courseSlug);
+        const lesson = course?.lessons.find(l => l.slug === lessonSlug);
+
+        if (lesson) {
+            document.title = `${escapeHTML(lesson.title)} - ${escapeHTML(course.title)} - CourseHub`;
+
+            // Load lesson markdown
+            const lessonPath = `courses/${encodeURIComponent(courseSlug)}/${encodeURIComponent(lessonSlug)}/教案.md`;
+            fetch(lessonPath)
+                .then(r => r.text())
+                .then(content => {
+                    document.getElementById('lesson-content').innerHTML = marked.parse(content);
+                })
+                .catch(() => {
+                    document.getElementById('lesson-content').innerHTML = '<p>教案加载失败</p>';
+                });
+
+            // Load PPT iframe
+            document.getElementById('ppt-iframe').src = `${lessonPath.replace('教案.md', '')}index.html`;
+        } else {
+            document.getElementById('lesson-content').innerHTML = '<p>课时未找到</p>';
+        }
+
+        // Initialize laser pointer on PPT container
+        const pptContainer = document.getElementById('ppt-container');
+        new LaserPointer(pptContainer);
+    </script>
+</body>
+</html>
