@@ -13,6 +13,34 @@ const COURSES_DATA = [
         "hasMeta": false
       }
     ]
+  },
+  {
+    "slug": "02-HTML与CSS入门",
+    "title": "HTML与CSS入门",
+    "description": "学习网页结构与样式设计",
+    "lessons": [
+      {
+        "slug": "01-认识HTML",
+        "title": "01-认识HTML",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "02-常用标签",
+        "title": "02-常用标签",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "03-CSS基础",
+        "title": "03-CSS基础",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      }
+    ]
   }
 ];
 export default COURSES_DATA;
