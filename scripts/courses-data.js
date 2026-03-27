@@ -18,6 +18,13 @@ const COURSES_DATA = [
         "description": "",
         "hasOutline": false,
         "hasMeta": false
+      },
+      {
+        "slug": "01-输入输出与整数",
+        "title": "01-输入输出与整数",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
       }
     ]
   }
