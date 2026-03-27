@@ -15,12 +15,41 @@
             flex-direction: column;
         }
 
+        /* 返回按钮 */
+        .back-btn {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1000;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #2563eb;
+            transform: translateX(-2px);
+        }
+
+        .back-btn.hidden {
+            display: none;
+        }
+
         /* Tab 导航 */
         .tab-nav {
             display: flex;
             background: var(--card-bg);
             border-bottom: 1px solid #e5e7eb;
-            padding: 0 1rem;
+            padding: 0 1rem 0 4rem;
             flex-shrink: 0;
         }
 
@@ -232,6 +261,10 @@
 </head>
 <body>
     <div id="lesson-container">
+        <button id="back-btn" class="back-btn">
+            <span>←</span> 返回课程
+        </button>
+
         <nav class="tab-nav">
             <button class="tab-btn active" data-tab="lesson">教案</button>
             <button class="tab-btn" data-tab="ppt">PPT</button>
@@ -286,6 +319,16 @@
                 btn.classList.add('active');
                 document.getElementById(`${tab}-content`).classList.add('active');
             });
+        });
+
+        // 返回按钮
+        const backBtn = document.getElementById('back-btn');
+        backBtn.addEventListener('click', () => {
+            if (courseSlug) {
+                window.location.href = `course.html?slug=${encodeURIComponent(courseSlug)}`;
+            } else {
+                window.location.href = 'index.html';
+            }
         });
 
         // 获取 URL 参数
