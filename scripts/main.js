@@ -25,9 +25,7 @@ function renderCourseList() {
         <a href="course.html?slug=${escapeHTML(course.slug)}" class="course-card">
             <h2>${escapeHTML(course.title)}</h2>
             <p>${escapeHTML(course.description) || '暂无描述'}</p>
-            <div class="meta">
-                <span>📚 ${course.lessons.length} 课时</span>
-            </div>
+            <span>${course.lessons.length} 课时</span>
         </a>
     `).join('');
 }
