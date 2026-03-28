@@ -6,315 +6,209 @@
     <title>交互课件 Demo - 变量赋值与交换</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=HarmonyOS+Sans+SC:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif; background: #0a0a0a; overflow-x: hidden; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=HarmonyOS+Sans+SC:wght@400;600;700&display=swap');
 
-        .bg-gradient { position: fixed; inset-0; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); min-height: 100vh; margin: 0; color: white; }
 
-        .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-
-        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 1.25rem; transition: all 0.3s ease; }
+        .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; padding: 1.25rem; transition: all 0.3s ease; }
         .card:hover { border-color: rgba(59,130,246,0.3); }
 
-        .step { padding-bottom: 6rem; }
-        .step section { padding-bottom: 1rem; }
-
-        /* 变量盒子 */
         .var-box {
-            width: 90px; height: 90px;
-            border-radius: 16px;
+            width: 80px; height: 80px; border-radius: 0.75rem;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-weight: bold; color: white;
-            cursor: grab; user-select: none;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative;
+            font-weight: bold; color: white; cursor: grab; user-select: none;
+            transition: all 0.2s ease;
         }
         .var-box:active { cursor: grabbing; transform: scale(1.1); }
-        .var-box.dragging { opacity: 0.7; transform: scale(1.15) rotate(5deg); z-index: 100; }
-        .var-box var-name { font-size: 0.75rem; opacity: 0.7; }
-        .var-box var-value { font-size: 2rem; }
+        .var-box.dragging { opacity: 0.7; transform: scale(1.15) rotate(3deg); }
 
         .slot {
-            min-width: 100px; min-height: 100px;
-            border: 3px dashed rgba(255,255,255,0.2);
-            border-radius: 16px;
+            width: 90px; height: 90px;
+            border: 3px dashed rgba(255,255,255,0.25);
+            border-radius: 0.75rem;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
         .slot.highlight { border-color: #3b82f6; background: rgba(59,130,246,0.15); transform: scale(1.05); }
         .slot.filled { border-style: solid; border-color: rgba(59,130,246,0.5); background: rgba(59,130,246,0.1); }
-        .slot .placeholder { font-size: 0.875rem; color: rgba(255,255,255,0.3); }
 
-        /* 代码块 */
-        .code-block {
-            background: #1e1e2e; border: 1px solid #3b82f6; border-radius: 12px;
-            padding: 1.25rem 1.5rem; font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 1rem; color: #f0f0f0; line-height: 1.8;
-        }
-        .code-line {
-            padding: 0.25rem 0.5rem; margin: 0.25rem -0.5rem;
-            border-radius: 6px; cursor: pointer; transition: all 0.2s ease;
-            border-left: 3px solid transparent;
-        }
+        .code-block { background: #1e1e2e; border: 1px solid #3b82f6; border-radius: 0.75rem; padding: 1rem 1.25rem; font-family: 'Monaco', 'Menlo', monospace; font-size: 0.95rem; color: #f0f0f0; line-height: 1.6; }
+        .code-line { padding: 0.25rem 0.5rem; margin: 0.15rem -0.5rem; border-radius: 0.375rem; cursor: pointer; transition: all 0.15s ease; border-left: 3px solid transparent; }
         .code-line:hover { background: rgba(255,255,255,0.05); }
         .code-line.active { background: rgba(59,130,246,0.2); border-left-color: #3b82f6; }
         .code-line.executed { background: rgba(34,197,94,0.15); border-left-color: #22c55e; }
         .code-keyword { color: #f472b6; }
-        .code-function { color: #34d399; }
         .code-number { color: #fbbf24; }
         .code-comment { color: #6b7280; }
 
-        /* 按钮 */
-        .btn { padding: 0.6rem 1.25rem; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; border: none; }
+        .btn { padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.15s ease; border: none; font-size: 0.9rem; }
         .btn-primary { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(59,130,246,0.4); }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(59,130,246,0.4); }
         .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
         .btn-secondary { background: rgba(255,255,255,0.1); color: white; }
         .btn-secondary:hover { background: rgba(255,255,255,0.15); }
-        .btn-success { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; }
 
-        /* 进度 */
-        .progress-step { width: 40px; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.1); transition: all 0.3s ease; }
-        .progress-step.active { background: #3b82f6; }
-        .progress-step.completed { background: #22c55e; }
-
-        /* 问答 */
-        .quiz-option {
-            padding: 0.875rem 1.25rem; border: 2px solid rgba(255,255,255,0.15);
-            border-radius: 12px; cursor: pointer; transition: all 0.2s ease;
-            display: flex; align-items: center; gap: 0.75rem;
-        }
+        .quiz-option { padding: 0.75rem 1rem; border: 2px solid rgba(255,255,255,0.15); border-radius: 0.5rem; cursor: pointer; transition: all 0.15s ease; display: flex; align-items: center; gap: 0.75rem; }
         .quiz-option:hover { border-color: #3b82f6; background: rgba(59,130,246,0.1); }
-        .quiz-option.selected { border-color: #3b82f6; background: rgba(59,130,246,0.2); }
         .quiz-option.correct { border-color: #22c55e; background: rgba(34,197,94,0.2); }
         .quiz-option.wrong { border-color: #ef4444; background: rgba(239,68,68,0.2); }
-        .quiz-option .option-letter { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.875rem; }
-        .quiz-option.correct .option-letter { background: #22c55e; }
-        .quiz-option.wrong .option-letter { background: #ef4444; }
+        .quiz-option .letter { width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.8rem; }
+        .quiz-option.correct .letter { background: #22c55e; }
+        .quiz-option.wrong .letter { background: #ef4444; }
 
-        /* 动画 */
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        @keyframes slideIn { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
-        @keyframes confetti { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-100px) rotate(720deg); opacity: 0; } }
-
-        .animate-float { animation: float 3s ease-in-out infinite; }
-        .animate-pulse { animation: pulse 2s ease-in-out infinite; }
-        .animate-shake { animation: shake 0.5s ease-in-out; }
-        .animate-pop { animation: popIn 0.3s ease; }
-        .animate-slide { animation: slideIn 0.4s ease; }
-
-        /* 成就徽章 */
-        .badge { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-        .badge.locked { filter: grayscale(1); opacity: 0.5; }
-        .badge.unlocked { animation: popIn 0.5s ease; }
-
-        /* 输入框 */
-        .code-input {
-            background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 8px; padding: 0.5rem 1rem; color: white; font-family: 'Monaco', monospace;
-            width: 100%; transition: all 0.2s ease;
-        }
+        .code-input { background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 0.5rem; padding: 0.5rem 0.75rem; color: white; font-family: 'Monaco', monospace; font-size: 0.9rem; width: 100%; transition: all 0.15s ease; }
         .code-input:focus { outline: none; border-color: #3b82f6; background: rgba(59,130,246,0.1); }
         .code-input.correct { border-color: #22c55e; background: rgba(34,197,94,0.1); }
-        .code-input.wrong { border-color: #ef4444; background: rgba(239,68,68,0.1); }
+        .code-input.wrong { border-color: #ef4444; }
 
-        /* 步骤导航条 */
-        .step-nav {
-            display: flex; gap: 0.25rem; padding: 0.375rem;
-            background: rgba(0,0,0,0.4); border-radius: 10px;
-            overflow-x: auto; -webkit-overflow-scrolling: touch;
-        }
-        .step-nav-item {
-            padding: 0.375rem 0.625rem; border-radius: 6px; cursor: pointer; transition: all 0.2s ease;
-            font-size: 0.75rem; display: flex; align-items: center; gap: 0.25rem; white-space: nowrap;
-            min-width: fit-content;
-        }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes slideUp { 0% { transform: translateY(10px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .animate-pop { animation: popIn 0.3s ease; }
+        .animate-slide { animation: slideUp 0.3s ease; }
+
+        .particle { position: fixed; pointer-events: none; font-size: 1.25rem; animation: confetti 0.8s ease forwards; }
+        @keyframes confetti { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(2) translateY(-50px); } }
+
+        .step-nav { display: flex; gap: 0.25rem; padding: 0.375rem; background: rgba(0,0,0,0.4); border-radius: 0.75rem; }
+        .step-nav-item { padding: 0.375rem 0.75rem; border-radius: 0.5rem; cursor: pointer; transition: all 0.15s ease; font-size: 0.8rem; display: flex; align-items: center; gap: 0.375rem; white-space: nowrap; }
         .step-nav-item:hover { background: rgba(255,255,255,0.1); }
-        .step-nav-item.active { background: rgba(59,130,246,0.4); }
+        .step-nav-item.active { background: rgba(59,130,246,0.5); }
         .step-nav-item.completed { background: rgba(34,197,94,0.2); }
-        .step-nav-item .step-icon { font-size: 0.8rem; }
 
-        /* 粒子效果 */
-        .particle { position: fixed; pointer-events: none; font-size: 1.5rem; animation: confetti 1s ease forwards; }
-
-        /* 工具提示 */
-        .tooltip { position: relative; }
-        .tooltip::after { content: attr(data-tip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); color: white; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.75rem; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
-        .tooltip:hover::after { opacity: 1; }
-
-        /* 滑块 */
-        .slider { -webkit-appearance: none; width: 100%; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.1); outline: none; }
-        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #3b82f6; cursor: pointer; }
+        /* 全屏布局 */
+        .app-container { display: flex; flex-direction: column; min-height: 100vh; }
+        .header { padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .content { flex: 1; display: flex; flex-direction: column; }
+        .step-container { flex: 1; padding: 1.5rem; padding-bottom: 5rem; }
+        .nav-bar { padding: 0.75rem 1.5rem; display: flex; justify-content: center; border-top: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
-    <div class="bg-gradient min-h-screen text-white">
+    <div class="app-container">
         <!-- 顶部栏 -->
-        <header class="fixed top-0 left-0 right-0 z-50 glass">
-            <div class="max-w-3xl mx-auto px-4 py-2 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <span class="text-xl">📚</span>
-                    <div>
-                        <h1 class="font-bold text-sm">变量赋值与交换</h1>
-                        <p class="text-xs text-gray-400">交互课件</p>
-                    </div>
+        <header class="header">
+            <div class="flex items-center gap-3">
+                <span class="text-xl">📚</span>
+                <div>
+                    <h1 class="font-bold text-sm">变量赋值与交换</h1>
+                    <p class="text-xs text-gray-400">交互课件</p>
                 </div>
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center gap-1 text-sm">
-                        <span class="text-yellow-400">⭐</span>
-                        <span id="scoreDisplay" class="font-bold">0</span>
-                    </div>
-                    <div class="flex items-center gap-1 text-sm">
-                        <span>🔥</span>
-                        <span id="streakDisplay" class="font-bold">0</span>
-                    </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-1 text-sm">
+                    <span class="text-yellow-400">⭐</span>
+                    <span id="scoreDisplay" class="font-bold">0</span>
+                </div>
+                <div class="flex items-center gap-1 text-sm">
+                    <span>🔥</span>
+                    <span id="streakDisplay" class="font-bold">0</span>
                 </div>
             </div>
         </header>
 
-        <!-- 主内容 -->
-        <main class="pt-20 pb-28 px-4 md:px-6 lg:px-8">
-            <div id="contentArea" class="max-w-3xl mx-auto">
+        <!-- 步骤内容 -->
+        <div class="content">
+            <div id="stepContainer" class="step-container">
 
-                    <!-- 步骤1：封面与概念 -->
-                    <section class="step animate-slide" data-step="1">
+                <!-- 步骤1：封面 -->
+                <div class="step" data-step="1">
+                    <div class="max-w-2xl mx-auto">
                         <div class="text-center mb-8">
-                            <div class="text-6xl mb-4 animate-float">📦</div>
-                            <h2 class="text-4xl font-bold mb-3 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                            <div class="text-5xl mb-4 animate-float">📦</div>
+                            <h2 class="text-3xl font-bold mb-3 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                                 变量赋值与交换
                             </h2>
-                            <p class="text-gray-400 text-lg">通过动手操作，理解计算机如何"记住"数据</p>
+                            <p class="text-gray-400">通过动手操作，理解计算机如何"记住"数据</p>
                         </div>
 
-                        <div class="grid md:grid-cols-3 gap-4 mb-8">
-                            <div class="card text-center hover:border-blue-500/50">
-                                <div class="text-4xl mb-3">🖱️</div>
-                                <h3 class="font-bold mb-2">拖拽操作</h3>
-                                <p class="text-sm text-gray-400">拖动卡片，直观感受赋值过程</p>
+                        <div class="grid grid-cols-3 gap-4 mb-8">
+                            <div class="card text-center">
+                                <div class="text-3xl mb-2">🖱️</div>
+                                <h3 class="font-semibold text-sm">拖拽操作</h3>
+                                <p class="text-xs text-gray-400 mt-1">直观感受赋值</p>
                             </div>
-                            <div class="card text-center hover:border-green-500/50">
-                                <div class="text-4xl mb-3">⚡</div>
-                                <h3 class="font-bold mb-2">即时反馈</h3>
-                                <p class="text-sm text-gray-400">每一步操作都有动画和声音提示</p>
+                            <div class="card text-center">
+                                <div class="text-3xl mb-2">⚡</div>
+                                <h3 class="font-semibold text-sm">即时反馈</h3>
+                                <p class="text-xs text-gray-400 mt-1">每步都有动画</p>
                             </div>
-                            <div class="card text-center hover:border-purple-500/50">
-                                <div class="text-4xl mb-3">📊</div>
-                                <h3 class="font-bold mb-2">学习追踪</h3>
-                                <p class="text-sm text-gray-400">记录你的学习轨迹和数据</p>
+                            <div class="card text-center">
+                                <div class="text-3xl mb-2">📊</div>
+                                <h3 class="font-semibold text-sm">学习追踪</h3>
+                                <p class="text-xs text-gray-400 mt-1">记录学习轨迹</p>
                             </div>
                         </div>
 
                         <div class="card mb-6">
-                            <h3 class="font-bold mb-4 text-lg">💡 什么是变量？</h3>
-                            <div class="space-y-4">
-                                <div class="flex items-start gap-4">
-                                    <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center shrink-0">📦</div>
+                            <h3 class="font-bold mb-4">💡 什么是变量？</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-start gap-3">
+                                    <span class="text-xl">📦</span>
                                     <div>
                                         <p class="font-semibold">变量就像一个有名字的盒子</p>
-                                        <p class="text-sm text-gray-400 mt-1">盒子上贴个名字（变量名），里面可以放东西（数据）</p>
+                                        <p class="text-sm text-gray-400">盒子上贴个名字（变量名），里面可以放东西（数据）</p>
                                     </div>
                                 </div>
-                                <div class="flex items-start gap-4">
-                                    <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center shrink-0">🔢</div>
+                                <div class="flex items-start gap-3">
+                                    <span class="text-xl">🔢</span>
                                     <div>
                                         <p class="font-semibold">变量里面的值可以改变</p>
-                                        <p class="text-sm text-gray-400 mt-1">新的赋值会<strong class="text-yellow-400">覆盖</strong>旧的值</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-start gap-4">
-                                    <div class="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center shrink-0">🧠</div>
-                                    <div>
-                                        <p class="font-semibold">计算机靠变量"记住"数据</p>
-                                        <p class="text-sm text-gray-400 mt-1">变量让程序有了"记忆"，能处理各种数据</p>
+                                        <p class="text-sm text-gray-400">新的赋值会<strong class="text-yellow-400">覆盖</strong>旧的值</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="text-center">
+                            <button onclick="nextStep()" class="btn btn-primary text-base px-8 py-2">开始学习 →</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 步骤2：拖拽赋值 -->
+                <div class="step hidden" data-step="2">
+                    <div class="max-w-2xl mx-auto">
+                        <h2 class="text-2xl font-bold mb-2">🖱️ 动手试试：把值放进变量</h2>
+                        <p class="text-gray-400 mb-6">拖动数字卡片，放到对应的变量"盒子"里</p>
 
                         <div class="card mb-6">
-                            <h3 class="font-bold mb-4 text-lg">👀 生活中的类比</h3>
-                            <div class="bg-white/5 rounded-xl p-4">
-                                <div class="flex items-center justify-center gap-8 flex-wrap">
-                                    <div class="text-center">
-                                        <div class="text-4xl mb-2">🏠</div>
-                                        <p class="text-sm text-gray-400">房间</p>
-                                        <p class="text-xs text-gray-500">变量名</p>
-                                    </div>
-                                    <div class="text-2xl text-gray-500">→</div>
-                                    <div class="text-center">
-                                        <div class="text-4xl mb-2">👤</div>
-                                        <p class="text-sm text-gray-400">住的人</p>
-                                        <p class="text-xs text-gray-500">变量值</p>
-                                    </div>
-                                    <div class="text-2xl text-gray-500">→</div>
-                                    <div class="text-center">
-                                        <div class="text-4xl mb-2">🔄</div>
-                                        <p class="text-sm text-gray-400">换人住</p>
-                                        <p class="text-xs text-gray-500">赋值</p>
-                                    </div>
-                                </div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span>任务：让 <code class="text-blue-400">a = 3</code>, <code class="text-green-400">b = 5</code></span>
+                                <button onclick="resetDragTask()" class="btn btn-secondary text-xs">重置</button>
                             </div>
-                        </div>
 
-                        <div class="flex justify-center">
-                            <button onclick="nextStep()" class="btn btn-primary text-lg px-8">开始学习 →</button>
-                        </div>
-                    </section>
-
-                    <!-- 步骤2：拖拽赋值 -->
-                    <section class="step hidden" data-step="2">
-                        <div class="mb-6">
-                            <h2 class="text-2xl font-bold mb-2">🖱️ 动手试试：把值放进变量</h2>
-                            <p class="text-gray-400">拖动数字卡片，放到对应的变量"盒子"里</p>
-                        </div>
-
-                        <div class="card mb-6">
-                            <div class="mb-6">
-                                <div class="flex items-center justify-between mb-4">
-                                    <span class="text-lg">任务：让 <code class="text-blue-400">a = 3</code>, <code class="text-green-400">b = 5</code></span>
-                                    <button onclick="resetDragTask()" class="btn btn-secondary text-sm">重置</button>
+                            <div class="flex justify-center gap-12 items-end mb-6">
+                                <div class="text-center">
+                                    <div id="slotA" class="slot mb-2" ondrop="handleDrop(event, 'A')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                                        <span class="text-gray-500 text-sm">a</span>
+                                    </div>
+                                    <p class="text-sm text-gray-400">变量 a</p>
                                 </div>
-                                <div class="flex justify-center gap-16 items-end">
-                                    <div class="text-center">
-                                        <div id="slotA" class="slot mb-3"
-                                            ondrop="handleDrop(event, 'A')"
-                                            ondragover="handleDragOver(event)"
-                                            ondragleave="handleDragLeave(event)"
-                                            onclick="clearSlot('A')">
-                                            <span class="placeholder">a</span>
-                                        </div>
-                                        <p class="text-sm text-gray-400">变量 a</p>
+                                <div class="text-center">
+                                    <div id="slotB" class="slot mb-2" ondrop="handleDrop(event, 'B')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                                        <span class="text-gray-500 text-sm">b</span>
                                     </div>
-                                    <div class="text-center">
-                                        <div id="slotB" class="slot mb-3"
-                                            ondrop="handleDrop(event, 'B')"
-                                            ondragover="handleDragOver(event)"
-                                            ondragleave="handleDragLeave(event)"
-                                            onclick="clearSlot('B')">
-                                            <span class="placeholder">b</span>
-                                        </div>
-                                        <p class="text-sm text-gray-400">变量 b</p>
-                                    </div>
+                                    <p class="text-sm text-gray-400">变量 b</p>
                                 </div>
                             </div>
 
-                            <div class="border-t border-white/10 pt-6">
-                                <p class="text-sm text-gray-400 mb-4 text-center">可用数字：</p>
+                            <div class="border-t border-white/10 pt-4">
+                                <p class="text-sm text-gray-400 mb-3 text-center">可用数字：</p>
                                 <div id="numberPool" class="flex justify-center gap-4 flex-wrap">
                                     <div id="num3" class="var-box bg-blue-500" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
-                                        <var-name>a</var-name>
-                                        <var-value>3</var-value>
+                                        <span class="text-xs opacity-70">a</span>
+                                        <span class="text-2xl">3</span>
                                     </div>
                                     <div id="num5" class="var-box bg-green-500" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
-                                        <var-name>b</var-name>
-                                        <var-value>5</var-value>
+                                        <span class="text-xs opacity-70">b</span>
+                                        <span class="text-2xl">5</span>
                                     </div>
                                     <div id="num8" class="var-box bg-purple-500" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
-                                        <var-name>c</var-name>
-                                        <var-value>8</var-value>
+                                        <span class="text-xs opacity-70">c</span>
+                                        <span class="text-2xl">8</span>
                                     </div>
                                 </div>
                             </div>
@@ -322,7 +216,7 @@
 
                         <div id="dragFeedback" class="card bg-green-500/10 border-green-500/30 mb-6 hidden">
                             <div class="flex items-center gap-3">
-                                <span class="text-3xl">🎉</span>
+                                <span class="text-2xl">🎉</span>
                                 <div>
                                     <p class="font-bold text-green-400">正确！</p>
                                     <p class="text-sm text-gray-300">a = 3, b = 5</p>
@@ -334,19 +228,19 @@
                             <button onclick="prevStep()" class="btn btn-secondary">← 上一步</button>
                             <button id="dragNextBtn" onclick="nextStep()" class="btn btn-primary" disabled>继续 →</button>
                         </div>
-                    </section>
+                    </div>
+                </div>
 
-                    <!-- 步骤3：代码执行 -->
-                    <section class="step hidden" data-step="3">
-                        <div class="mb-6">
-                            <h2 class="text-2xl font-bold mb-2">⚡ 代码是如何执行的？</h2>
-                            <p class="text-gray-400">点击代码行，看计算机会如何"逐行执行"</p>
-                        </div>
+                <!-- 步骤3：代码执行 -->
+                <div class="step hidden" data-step="3">
+                    <div class="max-w-2xl mx-auto">
+                        <h2 class="text-2xl font-bold mb-2">⚡ 代码是如何执行的？</h2>
+                        <p class="text-gray-400 mb-6">点击代码行，看计算机会如何"逐行执行"</p>
 
-                        <div class="grid lg:grid-cols-2 gap-6">
+                        <div class="grid md:grid-cols-2 gap-4">
                             <div class="card">
-                                <h3 class="font-bold mb-4">📝 代码</h3>
-                                <div id="codeBlock" class="code-block">
+                                <h3 class="font-bold mb-3">📝 代码</h3>
+                                <div class="code-block">
                                     <div class="code-line" onclick="execLine(1, this)" data-line="1">
                                         <span class="code-keyword">int</span> a, b;
                                         <span class="code-comment">// 声明变量</span>
@@ -360,61 +254,36 @@
                                         <span class="code-comment">// 把5赋给b</span>
                                     </div>
                                     <div class="code-line" onclick="execLine(4, this)" data-line="4">
-                                        <span class="code-function">printf</span>(<span class="code-string">"%d"</span>, a + b);
+                                        <span class="code-keyword">printf</span>(<span class="code-string">"%d"</span>, a + b);
                                         <span class="code-comment">// 输出8</span>
                                     </div>
                                 </div>
-                                <div class="flex gap-2 mt-4">
-                                    <button onclick="runAll()" class="btn btn-primary flex-1">▶️ 全部执行</button>
-                                    <button onclick="resetCode()" class="btn btn-secondary">重置</button>
+                                <div class="flex gap-2 mt-3">
+                                    <button onclick="runAll()" class="btn btn-primary flex-1 text-sm">▶️ 全部执行</button>
+                                    <button onclick="resetCode()" class="btn btn-secondary text-sm">重置</button>
                                 </div>
                             </div>
 
                             <div class="card">
-                                <h3 class="font-bold mb-4">🖥️ 执行结果</h3>
-                                <div id="memoryView" class="space-y-4">
-                                    <div class="bg-white/5 rounded-xl p-4">
-                                        <p class="text-sm text-gray-400 mb-2">内存状态</p>
-                                        <div class="flex gap-6">
+                                <h3 class="font-bold mb-3">🖥️ 执行结果</h3>
+                                <div class="space-y-3">
+                                    <div class="bg-white/5 rounded-lg p-3">
+                                        <p class="text-xs text-gray-400 mb-2">内存状态</p>
+                                        <div class="flex gap-4">
                                             <div class="text-center">
-                                                <div id="memA" class="w-16 h-16 bg-blue-500/20 border-2 border-blue-500/50 rounded-xl flex items-center justify-center text-2xl font-bold mb-1">-</div>
-                                                <p class="text-sm">a</p>
+                                                <div id="memA" class="w-14 h-14 bg-blue-500/20 border-2 border-blue-500/50 rounded-xl flex items-center justify-center text-xl font-bold mb-1">-</div>
+                                                <p class="text-xs">a</p>
                                             </div>
                                             <div class="text-center">
-                                                <div id="memB" class="w-16 h-16 bg-green-500/20 border-2 border-green-500/50 rounded-xl flex items-center justify-center text-2xl font-bold mb-1">-</div>
-                                                <p class="text-sm">b</p>
+                                                <div id="memB" class="w-14 h-14 bg-green-500/20 border-2 border-green-500/50 rounded-xl flex items-center justify-center text-xl font-bold mb-1">-</div>
+                                                <p class="text-xs">b</p>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="bg-white/5 rounded-xl p-4">
-                                        <p class="text-sm text-gray-400 mb-2">输出</p>
-                                        <div id="output" class="font-mono text-green-400 min-h-[2rem]">_</div>
+                                    <div class="bg-white/5 rounded-lg p-3">
+                                        <p class="text-xs text-gray-400 mb-2">输出</p>
+                                        <div id="output" class="font-mono text-green-400">_</div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card mt-6">
-                            <h3 class="font-bold mb-4">💡 执行顺序</h3>
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <div class="px-4 py-2 bg-blue-500/20 rounded-lg text-center">
-                                    <p class="text-sm">第1行</p>
-                                    <p class="text-xs text-gray-400">声明变量</p>
-                                </div>
-                                <span class="text-gray-500">→</span>
-                                <div class="px-4 py-2 bg-green-500/20 rounded-lg text-center">
-                                    <p class="text-sm">第2行</p>
-                                    <p class="text-xs text-gray-400">a = 3</p>
-                                </div>
-                                <span class="text-gray-500">→</span>
-                                <div class="px-4 py-2 bg-green-500/20 rounded-lg text-center">
-                                    <p class="text-sm">第3行</p>
-                                    <p class="text-xs text-gray-400">b = 5</p>
-                                </div>
-                                <span class="text-gray-500">→</span>
-                                <div class="px-4 py-2 bg-purple-500/20 rounded-lg text-center">
-                                    <p class="text-sm">第4行</p>
-                                    <p class="text-xs text-gray-400">输出结果</p>
                                 </div>
                             </div>
                         </div>
@@ -423,60 +292,60 @@
                             <button onclick="prevStep()" class="btn btn-secondary">← 上一步</button>
                             <button onclick="nextStep()" class="btn btn-primary">继续 →</button>
                         </div>
-                    </section>
+                    </div>
+                </div>
 
-                    <!-- 步骤4：变量交换 -->
-                    <section class="step hidden" data-step="4">
-                        <div class="mb-6">
-                            <h2 class="text-2xl font-bold mb-2">🔄 变量交换：如何交换两个变量的值？</h2>
-                            <p class="text-gray-400">现在 a = 3, b = 5，如何变成 a = 5, b = 3？</p>
-                        </div>
+                <!-- 步骤4：变量交换 -->
+                <div class="step hidden" data-step="4">
+                    <div class="max-w-2xl mx-auto">
+                        <h2 class="text-2xl font-bold mb-2">🔄 变量交换</h2>
+                        <p class="text-gray-400 mb-6">现在 a = 3, b = 5，如何变成 a = 5, b = 3？</p>
 
                         <div class="card mb-6">
-                            <div class="flex justify-center items-end gap-8 mb-6">
+                            <div class="flex justify-center items-end gap-6 mb-4">
                                 <div class="text-center">
-                                    <div id="swapBoxA" class="w-24 h-24 bg-blue-500 rounded-2xl flex items-center justify-center text-4xl font-bold border-4 border-blue-400 transition-all duration-500 mb-3">3</div>
-                                    <p class="font-mono">a</p>
+                                    <div id="swapBoxA" class="w-20 h-20 bg-blue-500 rounded-xl flex items-center justify-center text-3xl font-bold border-3 border-blue-400 transition-all duration-300 mb-2">3</div>
+                                    <p class="font-mono text-sm">a</p>
                                 </div>
-                                <div class="text-4xl text-gray-500 mb-6">↔️</div>
+                                <div class="text-2xl text-gray-500 mb-4">↔️</div>
                                 <div class="text-center">
-                                    <div id="swapBoxB" class="w-24 h-24 bg-green-500 rounded-2xl flex items-center justify-center text-4xl font-bold border-4 border-green-400 transition-all duration-500 mb-3">5</div>
-                                    <p class="font-mono">b</p>
+                                    <div id="swapBoxB" class="w-20 h-20 bg-green-500 rounded-xl flex items-center justify-center text-3xl font-bold border-3 border-green-400 transition-all duration-300 mb-2">5</div>
+                                    <p class="font-mono text-sm">b</p>
                                 </div>
                             </div>
 
-                            <div class="bg-white/5 rounded-xl p-4 mb-6">
-                                <div class="flex justify-center gap-8">
+                            <div class="bg-white/5 rounded-lg p-3 mb-4">
+                                <div class="flex justify-center">
                                     <div class="text-center">
-                                        <div id="swapBoxT" class="w-20 h-20 bg-gray-600 rounded-2xl flex items-center justify-center text-2xl font-bold border-4 border-gray-500 transition-all duration-500 mb-2">-</div>
-                                        <p class="text-sm text-gray-400">t（临时）</p>
+                                        <div id="swapBoxT" class="w-16 h-16 bg-gray-600 rounded-xl flex items-center justify-center text-xl font-bold border-3 border-gray-500 transition-all duration-300 mb-1">-</div>
+                                        <p class="text-xs text-gray-400">t（临时）</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div id="swapStepsBlock" class="space-y-2 max-w-md mx-auto">
-                                <div class="code-line bg-white/5" data-step="1" onclick="runSwapStep(1, this)">
+                            <div class="space-y-1 max-w-xs mx-auto">
+                                <div class="code-line bg-white/5" onclick="runSwapStep(1, this)">
                                     <span class="code-keyword">t = a</span>;  <span class="code-comment">// t = 3</span>
                                 </div>
-                                <div class="code-line bg-white/5" data-step="2" onclick="runSwapStep(2, this)">
+                                <div class="code-line bg-white/5" onclick="runSwapStep(2, this)">
                                     <span class="code-keyword">a = b</span>;  <span class="code-comment">// a = 5</span>
                                 </div>
-                                <div class="code-line bg-white/5" data-step="3" onclick="runSwapStep(3, this)">
+                                <div class="code-line bg-white/5" onclick="runSwapStep(3, this)">
                                     <span class="code-keyword">b = t</span>;  <span class="code-comment">// b = 3</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="flex justify-center gap-3 mb-6">
-                            <button onclick="runSwapStep(1)" id="swapBtn1" class="btn btn-primary">第1步</button>
-                            <button onclick="runSwapStep(2)" id="swapBtn2" class="btn btn-primary" disabled>第2步</button>
-                            <button onclick="runSwapStep(3)" id="swapBtn3" class="btn btn-primary" id="swapBtn3" disabled>第3步</button>
-                            <button onclick="resetSwap()" class="btn btn-secondary">重置</button>
+                        <div class="flex justify-center gap-2 mb-4">
+                            <button onclick="runSwapStep(1)" class="btn btn-primary text-sm">第1步</button>
+                            <button onclick="runSwapStep(2)" id="swapBtn2" class="btn btn-primary text-sm" disabled>第2步</button>
+                            <button onclick="runSwapStep(3)" id="swapBtn3" class="btn btn-primary text-sm" disabled>第3步</button>
+                            <button onclick="resetSwap()" class="btn btn-secondary text-sm">重置</button>
                         </div>
 
                         <div id="swapComplete" class="card bg-green-500/10 border-green-500/30 mb-6 hidden">
                             <div class="flex items-center gap-3">
-                                <span class="text-3xl">🎉</span>
+                                <span class="text-2xl">🎉</span>
                                 <div>
                                     <p class="font-bold text-green-400">交换完成！</p>
                                     <p class="text-sm text-gray-300">a = 5, b = 3</p>
@@ -484,189 +353,157 @@
                             </div>
                         </div>
 
-                        <div class="card">
-                            <h3 class="font-bold mb-3">💡 为什么需要临时变量？</h3>
-                            <div class="bg-white/5 rounded-xl p-4">
-                                <div class="flex items-center gap-4 mb-4">
-                                    <div class="text-4xl">🍶</div>
-                                    <div class="text-sm text-gray-300">
-                                        <p>想象你有两个杯子 a（酱油）和 b（醋），想把它们的内容交换。</p>
-                                        <p class="mt-1">你需要一个空杯子 t 先把 a 的东西倒出来。</p>
-                                    </div>
-                                </div>
-                                <div class="text-xs text-gray-500 text-center">
-                                    t = a（备份）→ a = b（覆盖）→ b = t（恢复）
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-between mt-6">
+                        <div class="flex justify-between">
                             <button onclick="prevStep()" class="btn btn-secondary">← 上一步</button>
                             <button onclick="nextStep()" class="btn btn-primary">继续 →</button>
                         </div>
-                    </section>
+                    </div>
+                </div>
 
-                    <!-- 步骤5：随堂测验 -->
-                    <section class="step hidden" data-step="5">
-                        <div class="mb-6">
-                            <h2 class="text-2xl font-bold mb-2">🎯 随堂测验</h2>
-                            <p class="text-gray-400">检验一下你学到了多少！</p>
-                        </div>
+                <!-- 步骤5：随堂测验 -->
+                <div class="step hidden" data-step="5">
+                    <div class="max-w-xl mx-auto">
+                        <h2 class="text-2xl font-bold mb-2">🎯 随堂测验</h2>
+                        <p class="text-gray-400 mb-6">检验一下你学到了多少！</p>
 
-                        <div class="card mb-6">
-                            <div class="flex items-center gap-3 mb-4">
-                                <span class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center font-bold">1</span>
-                                <p class="text-lg">执行以下代码后，a 的值是多少？</p>
+                        <div class="card mb-4">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                                <p class="font-semibold">执行以下代码后，a 的值是多少？</p>
                             </div>
-                            <div class="code-block mb-4">
+                            <div class="code-block mb-3 text-sm">
                                 a = <span class="code-number">3</span><br>
                                 a = <span class="code-number">5</span><br>
                                 a = a + <span class="code-number">1</span>
                             </div>
-                            <div id="quiz1Options" class="space-y-2">
+                            <div id="quiz1Options" class="space-y-1">
                                 <div class="quiz-option" onclick="selectQuiz(this, 1, 'A')">
-                                    <span class="option-letter">A</span>
-                                    <span>3</span>
+                                    <span class="letter">A</span><span>3</span>
                                 </div>
                                 <div class="quiz-option" onclick="selectQuiz(this, 1, 'B')">
-                                    <span class="option-letter">B</span>
-                                    <span>5</span>
+                                    <span class="letter">B</span><span>5</span>
                                 </div>
                                 <div class="quiz-option" onclick="selectQuiz(this, 1, 'C')">
-                                    <span class="option-letter">C</span>
-                                    <span>6</span>
+                                    <span class="letter">C</span><span>6</span>
                                 </div>
                                 <div class="quiz-option" onclick="selectQuiz(this, 1, 'D')">
-                                    <span class="option-letter">D</span>
-                                    <span>9</span>
+                                    <span class="letter">D</span><span>9</span>
                                 </div>
                             </div>
-                            <div id="quiz1Feedback" class="hidden mt-4 p-3 rounded-lg"></div>
+                            <div id="quiz1Feedback" class="hidden mt-3 p-2 rounded-lg text-sm"></div>
                         </div>
 
-                        <div class="card mb-6">
-                            <div class="flex items-center gap-3 mb-4">
-                                <span class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center font-bold">2</span>
-                                <p class="text-lg">交换 a 和 b 的值最少需要几个变量？</p>
+                        <div class="card mb-4">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                                <p class="font-semibold">交换 a 和 b 的值最少需要几个变量？</p>
                             </div>
-                            <div id="quiz2Options" class="space-y-2">
+                            <div id="quiz2Options" class="space-y-1">
                                 <div class="quiz-option" onclick="selectQuiz(this, 2, 'A')">
-                                    <span class="option-letter">A</span>
-                                    <span>0个（直接交换）</span>
+                                    <span class="letter">A</span><span>0个（直接交换）</span>
                                 </div>
                                 <div class="quiz-option" onclick="selectQuiz(this, 2, 'B')">
-                                    <span class="option-letter">B</span>
-                                    <span>1个（临时变量）</span>
+                                    <span class="letter">B</span><span>1个（临时变量）</span>
                                 </div>
                                 <div class="quiz-option" onclick="selectQuiz(this, 2, 'C')">
-                                    <span class="option-letter">C</span>
-                                    <span>2个</span>
+                                    <span class="letter">C</span><span>2个</span>
                                 </div>
                                 <div class="quiz-option" onclick="selectQuiz(this, 2, 'D')">
-                                    <span class="option-letter">D</span>
-                                    <span>3个</span>
+                                    <span class="letter">D</span><span>3个</span>
                                 </div>
                             </div>
-                            <div id="quiz2Feedback" class="hidden mt-4 p-3 rounded-lg"></div>
+                            <div id="quiz2Feedback" class="hidden mt-3 p-2 rounded-lg text-sm"></div>
                         </div>
 
-                        <div class="card">
-                            <div class="flex items-center gap-3 mb-4">
-                                <span class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center font-bold">3</span>
-                                <p class="text-lg">Python 中，a = 3 和 a == 3 的区别是？</p>
+                        <div class="card mb-6">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                                <p class="font-semibold">= 和 == 的区别是？</p>
                             </div>
-                            <div id="quiz3Options" class="space-y-2">
+                            <div id="quiz3Options" class="space-y-1">
                                 <div class="quiz-option" onclick="selectQuiz(this, 3, 'A')">
-                                    <span class="option-letter">A</span>
-                                    <span>没有区别</span>
+                                    <span class="letter">A</span><span>没有区别</span>
                                 </div>
                                 <div class="quiz-option" onclick="selectQuiz(this, 3, 'B')">
-                                    <span class="option-letter">B</span>
-                                    <span>= 是赋值，== 是比较</span>
+                                    <span class="letter">B</span><span>= 是赋值，== 是比较</span>
                                 </div>
                                 <div class="quiz-option" onclick="selectQuiz(this, 3, 'C')">
-                                    <span class="option-letter">C</span>
-                                    <span>= 是比较，== 是赋值</span>
+                                    <span class="letter">C</span><span>= 是比较，== 是赋值</span>
                                 </div>
                                 <div class="quiz-option" onclick="selectQuiz(this, 3, 'D')">
-                                    <span class="option-letter">D</span>
-                                    <span>只用于字符串</span>
+                                    <span class="letter">D</span><span>只用于字符串</span>
                                 </div>
                             </div>
-                            <div id="quiz3Feedback" class="hidden mt-4 p-3 rounded-lg"></div>
-                        </div>
-
-                        <div class="flex justify-between mt-6">
-                            <button onclick="prevStep()" class="btn btn-secondary">← 上一步</button>
-                            <button onclick="nextStep()" id="quizNextBtn" onclick="nextStep()" class="btn btn-primary" disabled>继续 →</button>
-                        </div>
-                    </section>
-
-                    <!-- 步骤6：编程练习 -->
-                    <section class="step hidden" data-step="6">
-                        <div class="mb-6">
-                            <h2 class="text-2xl font-bold mb-2">💻 编程练习</h2>
-                            <p class="text-gray-400">在下面的输入框中写出你的答案</p>
-                        </div>
-
-                        <div class="card mb-6">
-                            <div class="flex items-center gap-2 mb-4">
-                                <span class="text-2xl">📝</span>
-                                <h3 class="font-bold">练习题：交换变量</h3>
-                                <span class="ml-auto text-sm text-gray-400">10分</span>
-                            </div>
-                            <p class="mb-4">已知 <code class="text-blue-400">a = 8</code>, <code class="text-green-400">b = 3</code>，写出交换它们的代码（只写三行）。</p>
-                            <p class="text-sm text-gray-400 mb-4">提示：需要使用临时变量 t</p>
-                            <div class="space-y-2 mb-4">
-                                <input type="text" id="codeInput1" class="code-input" placeholder="第一行代码..." oninput="checkCodeInput()">
-                                <input type="text" id="codeInput2" class="code-input" placeholder="第二行代码..." oninput="checkCodeInput()">
-                                <input type="text" id="codeInput3" class="code-input" placeholder="第三行代码..." oninput="checkCodeInput()">
-                            </div>
-                            <div id="codeFeedback" class="hidden p-3 rounded-lg"></div>
-                        </div>
-
-                        <div class="card mb-6">
-                            <div class="flex items-center gap-2 mb-4">
-                                <span class="text-2xl">🎯</span>
-                                <h3 class="font-bold">挑战题：计算并赋值</h3>
-                                <span class="ml-auto text-sm text-yellow-400">20分</span>
-                            </div>
-                            <p class="mb-4">已知 <code class="text-blue-400">x = 10</code>，写出让 <code class="text-purple-400">y</code> 等于 x 的平方的代码。</p>
-                            <input type="text" id="codeInput4" class="code-input" placeholder="y = ..." oninput="checkCodeInput()">
-                            <div id="codeFeedback2" class="hidden mt-4 p-3 rounded-lg"></div>
+                            <div id="quiz3Feedback" class="hidden mt-3 p-2 rounded-lg text-sm"></div>
                         </div>
 
                         <div class="flex justify-between">
                             <button onclick="prevStep()" class="btn btn-secondary">← 上一步</button>
-                            <button onclick="nextStep()" id="codeNextBtn" onclick="nextStep()" class="btn btn-primary" disabled>继续 →</button>
+                            <button onclick="nextStep()" id="quizNextBtn" class="btn btn-primary" disabled>继续 →</button>
                         </div>
-                    </section>
+                    </div>
+                </div>
 
-                    <!-- 步骤7：总结报告 -->
-                    <section class="step hidden" data-step="7">
+                <!-- 步骤6：编程练习 -->
+                <div class="step hidden" data-step="6">
+                    <div class="max-w-xl mx-auto">
+                        <h2 class="text-2xl font-bold mb-2">💻 编程练习</h2>
+                        <p class="text-gray-400 mb-6">在下面的输入框中写出你的答案</p>
+
+                        <div class="card mb-4">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-xl">📝</span>
+                                <h3 class="font-bold">练习题：交换变量</h3>
+                            </div>
+                            <p class="mb-3 text-sm">已知 <code class="text-blue-400">a = 8</code>, <code class="text-green-400">b = 3</code>，写出交换它们的代码。</p>
+                            <p class="text-xs text-gray-400 mb-3">提示：需要使用临时变量 t</p>
+                            <div class="space-y-2 mb-3">
+                                <input type="text" id="codeInput1" class="code-input" placeholder="第一行：t = ..." oninput="checkCodeInput()">
+                                <input type="text" id="codeInput2" class="code-input" placeholder="第二行：a = ..." oninput="checkCodeInput()">
+                                <input type="text" id="codeInput3" class="code-input" placeholder="第三行：b = ..." oninput="checkCodeInput()">
+                            </div>
+                            <div id="codeFeedback" class="hidden p-2 rounded-lg text-sm"></div>
+                        </div>
+
+                        <div class="card mb-6">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-xl">🎯</span>
+                                <h3 class="font-bold">挑战题</h3>
+                            </div>
+                            <p class="mb-3 text-sm">已知 <code class="text-blue-400">x = 10</code>，写出让 <code class="text-purple-400">y</code> 等于 x 的平方的代码。</p>
+                            <input type="text" id="codeInput4" class="code-input" placeholder="y = ..." oninput="checkCodeInput()">
+                            <div id="codeFeedback2" class="hidden mt-2 p-2 rounded-lg text-sm"></div>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <button onclick="prevStep()" class="btn btn-secondary">← 上一步</button>
+                            <button onclick="nextStep()" id="codeNextBtn" class="btn btn-primary" disabled>继续 →</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 步骤7：总结 -->
+                <div class="step hidden" data-step="7">
+                    <div class="max-w-xl mx-auto">
                         <div class="text-center mb-8">
-                            <div class="text-6xl mb-4">🏆</div>
-                            <h2 class="text-3xl font-bold mb-2">学习完成！</h2>
+                            <div class="text-5xl mb-4">🏆</div>
+                            <h2 class="text-2xl font-bold mb-2">学习完成！</h2>
                             <p class="text-gray-400">恭喜你完成了本节课程</p>
                         </div>
 
-                        <div class="grid md:grid-cols-2 gap-6 mb-8">
+                        <div class="grid grid-cols-2 gap-4 mb-6">
                             <div class="card">
-                                <h3 class="font-bold mb-4 text-lg">📊 学习报告</h3>
-                                <div class="space-y-4">
-                                    <div class="flex justify-between items-center">
+                                <h3 class="font-bold mb-3 text-sm">📊 学习报告</h3>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
                                         <span class="text-gray-400">学习时长</span>
                                         <span id="reportTime" class="font-bold text-blue-400">0秒</span>
                                     </div>
-                                    <div class="flex justify-between items-center">
+                                    <div class="flex justify-between">
                                         <span class="text-gray-400">答题正确率</span>
                                         <span id="reportAccuracy" class="font-bold text-green-400">0%</span>
                                     </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-400">互动次数</span>
-                                        <span id="reportInteractions" class="font-bold text-purple-400">0</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
+                                    <div class="flex justify-between">
                                         <span class="text-gray-400">获得积分</span>
                                         <span id="reportScore" class="font-bold text-yellow-400">0</span>
                                     </div>
@@ -674,86 +511,76 @@
                             </div>
 
                             <div class="card">
-                                <h3 class="font-bold mb-4 text-lg">🎖️ 获得成就</h3>
-                                <div id="reportBadges" class="grid grid-cols-3 gap-4">
-                                    <div class="text-center opacity-50">🌱</div>
-                                    <div class="text-center opacity-50">🖱️</div>
-                                    <div class="text-center opacity-50">🎯</div>
-                                    <div class="text-center opacity-50">🔄</div>
-                                    <div class="text-center opacity-50">💯</div>
-                                    <div class="text-center opacity-50">🏆</div>
+                                <h3 class="font-bold mb-3 text-sm">🎖️ 获得成就</h3>
+                                <div id="reportBadges" class="flex gap-3 justify-center">
+                                    <span class="text-2xl opacity-30">🌱</span>
+                                    <span class="text-2xl opacity-30">🖱️</span>
+                                    <span class="text-2xl opacity-30">🎯</span>
+                                    <span class="text-2xl opacity-30">🔄</span>
+                                    <span class="text-2xl opacity-30">💯</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="card mb-8">
-                            <h3 class="font-bold mb-4 text-lg">📚 本节小结</h3>
-                            <div class="grid md:grid-cols-2 gap-4">
-                                <div class="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
-                                    <p class="text-blue-400 font-bold mb-1">📦 变量是盒子</p>
-                                    <p class="text-sm text-gray-400">变量名是盒子的标签，里面可以存放数据</p>
+                        <div class="card mb-6">
+                            <h3 class="font-bold mb-4 text-sm">📚 本节小结</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+                                    <p class="text-blue-400 font-bold text-sm">📦 变量是盒子</p>
+                                    <p class="text-xs text-gray-400 mt-1">变量名是标签，里面存放数据</p>
                                 </div>
-                                <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
-                                    <p class="text-green-400 font-bold mb-1">⚡ 赋值是覆盖</p>
-                                    <p class="text-sm text-gray-400">新的赋值会覆盖旧的值</p>
+                                <div class="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
+                                    <p class="text-green-400 font-bold text-sm">⚡ 赋值是覆盖</p>
+                                    <p class="text-xs text-gray-400 mt-1">新值会覆盖旧的值</p>
                                 </div>
-                                <div class="bg-purple-500/10 border border-purple-500/30 rounded-xl p-4">
-                                    <p class="text-purple-400 font-bold mb-1">🔄 交换需要中转</p>
-                                    <p class="text-sm text-gray-400">交换两个变量，需要第三个变量作为临时存储</p>
+                                <div class="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3">
+                                    <p class="text-purple-400 font-bold text-sm">🔄 交换需中转</p>
+                                    <p class="text-xs text-gray-400 mt-1">需要临时变量作为中转</p>
                                 </div>
-                                <div class="bg-orange-500/10 border border-orange-500/30 rounded-xl p-4">
-                                    <p class="text-orange-400 font-bold mb-1">🖥️ 代码按序执行</p>
-                                    <p class="text-sm text-gray-400">计算机会按照代码的顺序，一条一条执行</p>
+                                <div class="bg-orange-500/10 border border-orange-500/30 rounded-lg p-3">
+                                    <p class="text-orange-400 font-bold text-sm">🖥️ 代码顺序执行</p>
+                                    <p class="text-xs text-gray-400 mt-1">计算机会按顺序一条一条执行</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="flex justify-center gap-4">
-                            <button onclick="restartLearn()" class="btn btn-primary px-8">再学一遍</button>
-                            <button onclick="shareResult()" class="btn btn-secondary">分享成果</button>
+                        <div class="flex justify-center gap-3">
+                            <button onclick="restartLearn()" class="btn btn-primary">再学一遍</button>
                         </div>
-                    </section>
-                </div>
-            <!-- 步骤导航条 -->
-        <nav id="stepNav" class="fixed bottom-14 left-4 right-4 z-40">
-            <div class="step-nav justify-center max-w-xl mx-auto">
-                <div class="step-nav-item active" data-step="1" onclick="showStep(1)">
-                    <span class="step-icon">📖</span><span class="hidden sm:inline">概念</span>
-                </div>
-                <div class="step-nav-item" data-step="2" onclick="showStep(2)">
-                    <span class="step-icon">🖱️</span><span class="hidden sm:inline">赋值</span>
-                </div>
-                <div class="step-nav-item" data-step="3" onclick="showStep(3)">
-                    <span class="step-icon">⚡</span><span class="hidden sm:inline">执行</span>
-                </div>
-                <div class="step-nav-item" data-step="4" onclick="showStep(4)">
-                    <span class="step-icon">🔄</span><span class="hidden sm:inline">交换</span>
-                </div>
-                <div class="step-nav-item" data-step="5" onclick="showStep(5)">
-                    <span class="step-icon">🎯</span><span class="hidden sm:inline">测验</span>
-                </div>
-                <div class="step-nav-item" data-step="6" onclick="showStep(6)">
-                    <span class="step-icon">💻</span><span class="hidden sm:inline">练习</span>
-                </div>
-                <div class="step-nav-item" data-step="7" onclick="showStep(7)">
-                    <span class="step-icon">🏆</span><span class="hidden sm:inline">总结</span>
+                    </div>
                 </div>
             </div>
-        </nav>
+        </div>
 
         <!-- 底部导航 -->
-        <div class="fixed bottom-4 left-4 right-4 z-50 flex justify-between items-center max-w-2xl mx-auto">
-            <button onclick="prevStep()" id="prevBtn" class="btn btn-secondary hidden">
-                <span>←</span> 上一步
-            </button>
-            <button onclick="nextStep()" id="nextBtn" class="btn btn-primary">
-                继续 <span>→</span>
-            </button>
+        <div class="nav-bar">
+            <nav class="step-nav">
+                <div class="step-nav-item active" data-step="1" onclick="showStep(1)">
+                    <span>📖</span><span>概念</span>
+                </div>
+                <div class="step-nav-item" data-step="2" onclick="showStep(2)">
+                    <span>🖱️</span><span>赋值</span>
+                </div>
+                <div class="step-nav-item" data-step="3" onclick="showStep(3)">
+                    <span>⚡</span><span>执行</span>
+                </div>
+                <div class="step-nav-item" data-step="4" onclick="showStep(4)">
+                    <span>🔄</span><span>交换</span>
+                </div>
+                <div class="step-nav-item" data-step="5" onclick="showStep(5)">
+                    <span>🎯</span><span>测验</span>
+                </div>
+                <div class="step-nav-item" data-step="6" onclick="showStep(6)">
+                    <span>💻</span><span>练习</span>
+                </div>
+                <div class="step-nav-item" data-step="7" onclick="showStep(7)">
+                    <span>🏆</span><span>总结</span>
+                </div>
+            </nav>
         </div>
     </div>
 
     <script>
-        // ==================== 状态管理 ====================
         let currentStep = 1;
         const totalSteps = 7;
         let score = 0;
@@ -762,289 +589,147 @@
         let quizAnswers = {};
         let startTime = Date.now();
         let badges = {};
+        let codeExecuted = [];
+        let swapStep = 0;
+        let draggedEl = null;
 
-        // ==================== 步骤导航 ====================
+        // 步骤导航
         function nextStep() {
-            if (currentStep < totalSteps) {
-                showStep(currentStep + 1);
-            }
+            if (currentStep < totalSteps) showStep(currentStep + 1);
         }
 
         function prevStep() {
-            if (currentStep > 1) {
-                showStep(currentStep - 1);
-            }
+            if (currentStep > 1) showStep(currentStep - 1);
         }
 
         function showStep(step) {
-            // 隐藏所有步骤
             document.querySelectorAll('.step').forEach(el => el.classList.add('hidden'));
-
-            // 显示当前步骤
-            const targetEl = document.querySelector(`.step[data-step="${step}"]`);
-            if (targetEl) {
-                targetEl.classList.remove('hidden');
-                targetEl.classList.add('animate-slide');
-            }
-
+            document.querySelector(`.step[data-step="${step}"]`).classList.remove('hidden');
             currentStep = step;
             updateProgress();
-
-            // 滚动到顶部
             window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            // 完成最后一步显示报告
-            if (step === totalSteps) {
-                showFinalReport();
-            }
+            if (step === totalSteps) showFinalReport();
         }
 
         function updateProgress() {
-            // 更新顶部进度点
-            const dots = document.getElementById('progressDots');
-            if (dots) {
-                dots.innerHTML = '';
-                for (let i = 1; i <= totalSteps; i++) {
-                    const dot = document.createElement('div');
-                    dot.className = 'progress-step';
-                    if (i < currentStep) dot.classList.add('completed');
-                    if (i === currentStep) dot.classList.add('active');
-                    dots.appendChild(dot);
-                }
-            }
-
-            // 更新底部导航
             document.querySelectorAll('.step-nav-item').forEach(item => {
-                const itemStep = parseInt(item.dataset.step);
+                const s = parseInt(item.dataset.step);
                 item.classList.remove('active', 'completed');
-                if (itemStep === currentStep) {
-                    item.classList.add('active');
-                } else if (itemStep < currentStep) {
-                    item.classList.add('completed');
-                }
+                if (s === currentStep) item.classList.add('active');
+                else if (s < currentStep) item.classList.add('completed');
             });
-
-            // 更新导航按钮
-            document.getElementById('prevBtn').classList.toggle('hidden', currentStep === 1);
-            document.getElementById('nextBtn').classList.toggle('hidden', currentStep === totalSteps);
         }
 
-        // ==================== 拖拽交互 ====================
-        let draggedEl = null;
-
+        // 拖拽
         function handleDragStart(e) {
             draggedEl = e.target.closest('.var-box');
-            if (draggedEl) {
-                draggedEl.classList.add('dragging');
-                e.dataTransfer.effectAllowed = 'move';
-                interactionCount++;
-            }
+            if (draggedEl) { draggedEl.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; interactionCount++; }
         }
 
         function handleDragEnd(e) {
-            if (draggedEl) {
-                draggedEl.classList.remove('dragging');
-            }
+            if (draggedEl) draggedEl.classList.remove('dragging');
             draggedEl = null;
         }
 
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.currentTarget.classList.add('highlight');
-        }
-
-        function handleDragLeave(e) {
-            e.currentTarget.classList.remove('highlight');
-        }
+        function handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('highlight'); }
+        function handleDragLeave(e) { e.currentTarget.classList.remove('highlight'); }
 
         function handleDrop(e, slotName) {
             e.preventDefault();
             e.currentTarget.classList.remove('highlight');
-
             if (!draggedEl) return;
 
-            const value = draggedEl.querySelector('var-value').textContent;
+            const value = draggedEl.querySelector('span:last-child').textContent;
             const slot = document.getElementById('slot' + slotName);
-
-            // 如果slot已经有值，不允许放
             if (slot.classList.contains('filled')) return;
 
-            // 创建新的box
             const newBox = document.createElement('div');
             newBox.className = `var-box ${draggedEl.className.split(' ').filter(c => c.startsWith('bg-')).join(' ')}`;
             newBox.innerHTML = draggedEl.innerHTML;
             newBox.draggable = true;
             newBox.ondragstart = (evt) => handleDragStart(evt);
             newBox.ondragend = (evt) => handleDragEnd(evt);
-            newBox.style.cursor = 'grab';
 
-            // 放到slot
             slot.innerHTML = '';
             slot.appendChild(newBox);
             slot.classList.add('filled');
-
-            // 删除原来的
             draggedEl.remove();
 
             interactionCount += 2;
-            createParticles(slot, '✨');
-
-            // 检查是否完成
+            createParticles(slot);
             checkDragTask();
         }
 
-        function clearSlot(slotName) {
-            const slot = document.getElementById('slot' + slotName);
-            if (!slot.classList.contains('filled')) return;
-
-            const box = slot.querySelector('.var-box');
-            if (!box) return;
-
-            const value = box.querySelector('var-value').textContent;
-
-            // 放回池子
-            const pool = document.getElementById('numberPool');
-            const newBox = document.createElement('div');
-            newBox.id = 'num' + value;
-            newBox.className = `var-box ${box.className.split(' ').filter(c => c.startsWith('bg-')).join(' ')}`;
-            newBox.innerHTML = box.innerHTML;
-            newBox.draggable = true;
-            newBox.ondragstart = (evt) => handleDragStart(evt);
-            newBox.ondragend = (evt) => handleDragEnd(evt);
-            newBox.style.cursor = 'grab';
-            pool.appendChild(newBox);
-
-            // 清空slot
-            slot.innerHTML = `<span class="placeholder">${slotName.toLowerCase()}</span>`;
-            slot.classList.remove('filled');
-
-            document.getElementById('dragFeedback').classList.add('hidden');
-            document.getElementById('dragNextBtn').disabled = true;
-        }
-
         function checkDragTask() {
-            const aSlot = document.getElementById('slotA');
-            const bSlot = document.getElementById('slotB');
-            const aVal = aSlot.querySelector('var-value')?.textContent;
-            const bVal = bSlot.querySelector('var-value')?.textContent;
-
+            const aVal = document.getElementById('slotA').querySelector('.var-box span:last-child')?.textContent;
+            const bVal = document.getElementById('slotB').querySelector('.var-box span:last-child')?.textContent;
             if (aVal === '3' && bVal === '5') {
                 document.getElementById('dragFeedback').classList.remove('hidden');
                 document.getElementById('dragNextBtn').disabled = false;
                 addScore(20);
-                unlockBadge(1);
-                unlockBadge(2);
-                createParticles(document.getElementById('slotA'), '🎉');
-                createParticles(document.getElementById('slotB'), '🎉');
             }
         }
 
         function resetDragTask() {
             const pool = document.getElementById('numberPool');
             pool.innerHTML = `
-                <div id="num3" class="var-box bg-blue-500" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
-                    <var-name>a</var-name><var-value>3</var-value>
-                </div>
-                <div id="num5" class="var-box bg-green-500" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
-                    <var-name>b</var-name><var-value>5</var-value>
-                </div>
-                <div id="num8" class="var-box bg-purple-500" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)">
-                    <var-name>c</var-name><var-value>8</var-value>
-                </div>
+                <div id="num3" class="var-box bg-blue-500" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)"><span class="text-xs opacity-70">a</span><span class="text-2xl">3</span></div>
+                <div id="num5" class="var-box bg-green-500" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)"><span class="text-xs opacity-70">b</span><span class="text-2xl">5</span></div>
+                <div id="num8" class="var-box bg-purple-500" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)"><span class="text-xs opacity-70">c</span><span class="text-2xl">8</span></div>
             `;
-
-            ['A', 'B'].forEach(slotName => {
-                const slot = document.getElementById('slot' + slotName);
-                slot.innerHTML = `<span class="placeholder">${slotName.toLowerCase()}</span>`;
+            ['A', 'B'].forEach(s => {
+                const slot = document.getElementById('slot' + s);
+                slot.innerHTML = `<span class="text-gray-500 text-sm">${s.toLowerCase()}</span>`;
                 slot.classList.remove('filled');
             });
-
             document.getElementById('dragFeedback').classList.add('hidden');
             document.getElementById('dragNextBtn').disabled = true;
         }
 
-        // ==================== 代码执行演示 ====================
-        let codeExecuted = [];
-
-        function execLine(lineNum, el) {
-            if (codeExecuted.includes(lineNum)) return;
-
-            codeExecuted.push(lineNum);
+        // 代码执行
+        function execLine(num, el) {
+            if (codeExecuted.includes(num)) return;
+            codeExecuted.push(num);
             el.classList.add('executed');
-            el.classList.remove('active');
             interactionCount++;
-
-            if (lineNum === 2) {
-                document.getElementById('memA').textContent = '3';
-                document.getElementById('memA').classList.add('bg-blue-500');
-            } else if (lineNum === 3) {
-                document.getElementById('memB').textContent = '5';
-                document.getElementById('memB').classList.add('bg-green-500');
-            } else if (lineNum === 4) {
-                document.getElementById('output').textContent = '8';
-                document.getElementById('output').classList.add('animate-pulse');
-                addScore(15);
-                unlockBadge(1);
-            }
+            if (num === 2) { document.getElementById('memA').textContent = '3'; document.getElementById('memA').classList.add('bg-blue-500'); }
+            if (num === 3) { document.getElementById('memB').textContent = '5'; document.getElementById('memB').classList.add('bg-green-500'); }
+            if (num === 4) { document.getElementById('output').textContent = '8'; addScore(15); }
         }
 
         function runAll() {
-            const lines = document.querySelectorAll('#codeBlock .code-line');
-            lines.forEach((line, i) => {
-                setTimeout(() => execLine(i + 1, line), i * 500);
-            });
+            const lines = document.querySelectorAll('.code-line');
+            lines.forEach((line, i) => setTimeout(() => execLine(i + 1, line), i * 400));
         }
 
         function resetCode() {
             codeExecuted = [];
-            document.querySelectorAll('#codeBlock .code-line').forEach(l => {
-                l.classList.remove('executed', 'active');
-            });
-            document.getElementById('memA').textContent = '-';
-            document.getElementById('memA').classList.remove('bg-blue-500');
-            document.getElementById('memB').textContent = '-';
-            document.getElementById('memB').classList.remove('bg-green-500');
+            document.querySelectorAll('.code-line').forEach(l => l.classList.remove('executed'));
+            document.getElementById('memA').textContent = '-'; document.getElementById('memA').classList.remove('bg-blue-500');
+            document.getElementById('memB').textContent = '-'; document.getElementById('memB').classList.remove('bg-green-500');
             document.getElementById('output').textContent = '_';
-            document.getElementById('output').classList.remove('animate-pulse');
         }
 
-        // ==================== 变量交换 ====================
-        let swapStep = 0;
-
-        function runSwapStep(step, el) {
+        // 交换
+        function runSwapStep(step) {
             if (swapStep >= step) return;
-
-            const lines = document.querySelectorAll('#swapStepsBlock .code-line');
-
+            const lines = document.querySelectorAll('.step[data-step="4"] .code-line');
             if (step === 1) {
                 document.getElementById('swapBoxT').textContent = '3';
-                document.getElementById('swapBoxT').classList.remove('bg-gray-600');
-                document.getElementById('swapBoxT').classList.add('bg-yellow-500');
+                document.getElementById('swapBoxT').classList.remove('bg-gray-600'); document.getElementById('swapBoxT').classList.add('bg-yellow-500');
                 document.getElementById('swapBtn2').disabled = false;
-                lines[0].classList.add('executed');
-                swapStep = 1;
-                interactionCount++;
+                lines[0].classList.add('executed'); swapStep = 1; interactionCount++;
             } else if (step === 2) {
                 document.getElementById('swapBoxA').textContent = '5';
                 document.getElementById('swapBtn3').disabled = false;
-                lines[1].classList.add('executed');
-                swapStep = 2;
-                interactionCount++;
+                lines[1].classList.add('executed'); swapStep = 2; interactionCount++;
             } else if (step === 3) {
                 document.getElementById('swapBoxB').textContent = '3';
                 document.getElementById('swapBoxT').textContent = '-';
-                document.getElementById('swapBoxT').classList.add('bg-gray-600');
-                document.getElementById('swapBoxT').classList.remove('bg-yellow-500');
-                lines[2].classList.add('executed');
-                swapStep = 3;
-                interactionCount++;
-
+                document.getElementById('swapBoxT').classList.add('bg-gray-600'); document.getElementById('swapBoxT').classList.remove('bg-yellow-500');
+                lines[2].classList.add('executed'); swapStep = 3; interactionCount++;
                 document.getElementById('swapComplete').classList.remove('hidden');
                 addScore(30);
-                unlockBadge(4);
-
-                createParticles(document.getElementById('swapBoxA'), '🎉');
-                createParticles(document.getElementById('swapBoxB'), '🎉');
             }
         }
 
@@ -1053,249 +738,125 @@
             document.getElementById('swapBoxA').textContent = '3';
             document.getElementById('swapBoxB').textContent = '5';
             document.getElementById('swapBoxT').textContent = '-';
-            document.getElementById('swapBoxT').classList.add('bg-gray-600');
-            document.getElementById('swapBoxT').classList.remove('bg-yellow-500');
-            document.querySelectorAll('#swapStepsBlock .code-line').forEach(l => l.classList.remove('executed'));
-            document.getElementById('swapBtn2').disabled = true;
-            document.getElementById('swapBtn3').disabled = true;
+            document.getElementById('swapBoxT').classList.add('bg-gray-600'); document.getElementById('swapBoxT').classList.remove('bg-yellow-500');
+            document.querySelectorAll('.step[data-step="4"] .code-line').forEach(l => l.classList.remove('executed'));
+            document.getElementById('swapBtn2').disabled = true; document.getElementById('swapBtn3').disabled = true;
             document.getElementById('swapComplete').classList.add('hidden');
         }
 
-        // ==================== 测验 ====================
-        const quizAnswersMap = { 1: 'C', 2: 'B', 3: 'B' };
-        let quizCompleted = 0;
+        // 测验
+        const quizMap = { 1: 'C', 2: 'B', 3: 'B' };
+        let quizDone = 0;
 
-        function selectQuiz(el, quizNum, answer) {
-            if (quizAnswers[quizNum]) return; // 已答过
-
-            quizAnswers[quizNum] = answer;
+        function selectQuiz(el, num, ans) {
+            if (quizAnswers[num]) return;
+            quizAnswers[num] = ans;
             interactionCount++;
-
-            const isCorrect = answer === quizAnswersMap[quizNum];
-            const options = document.querySelectorAll(`#quiz${quizNum}Options .quiz-option`);
-            const feedback = document.getElementById(`quiz${quizNum}Feedback`);
-
-            options.forEach(opt => {
-                opt.classList.add('pointer-events-none');
-                const letter = opt.querySelector('.option-letter').textContent;
-                if (letter === quizAnswersMap[quizNum]) {
-                    opt.classList.add('correct');
-                } else if (letter === answer && !isCorrect) {
-                    opt.classList.add('wrong');
-                }
+            const ok = ans === quizMap[num];
+            const opts = document.querySelectorAll(`#quiz${num}Options .quiz-option`);
+            const fb = document.getElementById(`quiz${num}Feedback`);
+            opts.forEach(o => {
+                o.classList.add('pointer-events-none');
+                if (o.querySelector('.letter').textContent === quizMap[num]) o.classList.add('correct');
+                else if (o.querySelector('.letter').textContent === ans && !ok) o.classList.add('wrong');
             });
-
-            if (isCorrect) {
-                feedback.className = 'mt-4 p-3 rounded-lg bg-green-500/20 text-green-400';
-                feedback.innerHTML = '✓ 正确！答案是 ' + quizAnswersMap[quizNum];
-                addScore(10 + streak * 2);
-                streak++;
-                unlockBadge(3);
-            } else {
-                feedback.className = 'mt-4 p-3 rounded-lg bg-red-500/20 text-red-400';
-                feedback.innerHTML = '✗ 错误！答案是 ' + quizAnswersMap[quizNum];
-                streak = 0;
-            }
-            feedback.classList.remove('hidden');
-
-            quizCompleted++;
+            fb.className = ok ? 'mt-3 p-2 rounded-lg text-sm bg-green-500/20 text-green-400' : 'mt-3 p-2 rounded-lg text-sm bg-red-500/20 text-red-400';
+            fb.innerHTML = ok ? '✓ 正确！' : `✗ 错误！答案是 ${quizMap[num]}`;
+            fb.classList.remove('hidden');
+            if (ok) { addScore(10 + streak * 2); streak++; }
+            else streak = 0;
             document.getElementById('streakDisplay').textContent = streak;
-
-            // 检查是否全部完成
-            if (quizCompleted === 3) {
-                document.getElementById('quizNextBtn').disabled = false;
-                if (Object.values(quizAnswers).filter((a, i) => a === quizAnswersMap[i + 1]).length === 3) {
-                    unlockBadge(5);
-                    addScore(50);
-                }
-            }
+            quizDone++;
+            if (quizDone === 3) document.getElementById('quizNextBtn').disabled = false;
         }
 
-        // ==================== 编程练习 ====================
+        // 编程
         function checkCodeInput() {
-            const input1 = document.getElementById('codeInput1').value.trim().replace(/\s/g, '');
-            const input2 = document.getElementById('codeInput2').value.trim().replace(/\s/g, '');
-            const input3 = document.getElementById('codeInput3').value.trim().replace(/\s/g, '');
-
-            const correct1 = input1 === 't=a' || input1 === 't = a';
-            const correct2 = input2 === 'a=b' || input2 === 'a = b';
-            const correct3 = input3 === 'b=t' || input3 === 'b = t';
-
-            if (input1 || input2 || input3) {
-                document.getElementById('codeInput1').classList.toggle('correct', correct1 && input1);
-                document.getElementById('codeInput1').classList.toggle('wrong', input1 && !correct1);
-                document.getElementById('codeInput2').classList.toggle('correct', correct2 && input2);
-                document.getElementById('codeInput2').classList.toggle('wrong', input2 && !correct2);
-                document.getElementById('codeInput3').classList.toggle('correct', correct3 && input3);
-                document.getElementById('codeInput3').classList.toggle('wrong', input3 && !correct3);
-
-                if (correct1 && correct2 && correct3) {
-                    const feedback = document.getElementById('codeFeedback');
-                    feedback.className = 'p-3 rounded-lg bg-green-500/20 text-green-400';
-                    feedback.innerHTML = '✓ 完全正确！t=a → a=b → b=t';
-                    feedback.classList.remove('hidden');
-                    addScore(20);
-                    interactionCount++;
-                }
+            const v1 = document.getElementById('codeInput1').value.trim().replace(/\s/g, '');
+            const v2 = document.getElementById('codeInput2').value.trim().replace(/\s/g, '');
+            const v3 = document.getElementById('codeInput3').value.trim().replace(/\s/g, '');
+            const c1 = v1 === 't=a' || v1 === 't = a';
+            const c2 = v2 === 'a=b' || v2 === 'a = b';
+            const c3 = v3 === 'b=t' || v3 === 'b = t';
+            document.getElementById('codeInput1').classList.toggle('correct', c1 && v1);
+            document.getElementById('codeInput1').classList.toggle('wrong', v1 && !c1);
+            document.getElementById('codeInput2').classList.toggle('correct', c2 && v2);
+            document.getElementById('codeInput2').classList.toggle('wrong', v2 && !c2);
+            document.getElementById('codeInput3').classList.toggle('correct', c3 && v3);
+            document.getElementById('codeInput3').classList.toggle('wrong', v3 && !c3);
+            if (c1 && c2 && c3) {
+                const fb = document.getElementById('codeFeedback');
+                fb.className = 'p-2 rounded-lg text-sm bg-green-500/20 text-green-400';
+                fb.innerHTML = '✓ 完全正确！';
+                fb.classList.remove('hidden');
+                addScore(20);
             }
-
-            // 检查第二题
-            const input4 = document.getElementById('codeInput4').value.trim().replace(/\s/g, '').replace(/\*\*/g, '^');
-            const correct4 = input4.includes('y=') && (input4.includes('x*x') || input4.includes('x^2'));
-            if (input4) {
-                document.getElementById('codeInput4').classList.toggle('correct', correct4);
-                document.getElementById('codeInput4').classList.toggle('wrong', !correct4);
-
-                if (correct4) {
-                    const feedback2 = document.getElementById('codeFeedback2');
-                    feedback2.className = 'mt-4 p-3 rounded-lg bg-green-500/20 text-green-400';
-                    feedback2.innerHTML = '✓ 正确！y = x * x';
-                    feedback2.classList.remove('hidden');
-                    addScore(20);
-                    interactionCount++;
-                }
+            const v4 = document.getElementById('codeInput4').value.trim().replace(/\s/g, '').replace(/\*\*/g, '^');
+            const c4 = v4.includes('y=') && (v4.includes('x*x') || v4.includes('x^2'));
+            document.getElementById('codeInput4').classList.toggle('correct', c4);
+            document.getElementById('codeInput4').classList.toggle('wrong', v4 && !c4);
+            if (c4) {
+                const fb2 = document.getElementById('codeFeedback2');
+                fb2.className = 'mt-2 p-2 rounded-lg text-sm bg-green-500/20 text-green-400';
+                fb2.innerHTML = '✓ 正确！y = x * x';
+                fb2.classList.remove('hidden');
+                addScore(20);
             }
-
-            // 检查是否全部完成
-            const codeNextBtn = document.getElementById('codeNextBtn');
-            if ((correct1 && correct2 && correct3) && (input4 && correct4)) {
-                codeNextBtn.disabled = false;
-            }
+            if ((c1 && c2 && c3) && (v4 && c4)) document.getElementById('codeNextBtn').disabled = false;
         }
 
-        // ==================== 成就与积分 ====================
-        function addScore(points) {
-            score += points;
+        // 积分
+        function addScore(pts) {
+            score += pts;
             document.getElementById('scoreDisplay').textContent = score;
-            showScorePopup(points);
+            const p = document.createElement('div');
+            p.className = 'fixed top-16 right-4 bg-yellow-500 text-black px-3 py-1 rounded-full font-bold text-sm animate-pop';
+            p.textContent = '+' + pts;
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 800);
         }
 
-        function showScorePopup(points) {
-            const popup = document.createElement('div');
-            popup.className = 'fixed top-24 right-8 bg-yellow-500 text-black px-4 py-2 rounded-full font-bold animate-pop';
-            popup.textContent = '+' + points;
-            document.body.appendChild(popup);
-            setTimeout(() => popup.remove(), 1000);
-        }
-
-        function unlockBadge(num) {
-            if (badges[num]) return;
-            badges[num] = true;
-            const badge = document.getElementById(`badge-${num}`);
-            if (badge) {
-                badge.classList.remove('locked');
-                badge.classList.add('unlocked');
+        function createParticles(el) {
+            const rect = el.getBoundingClientRect();
+            for (let i = 0; i < 4; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.textContent = '✨';
+                p.style.left = (rect.left + Math.random() * rect.width) + 'px';
+                p.style.top = (rect.top + Math.random() * rect.height) + 'px';
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 800);
             }
         }
 
-        // ==================== 粒子效果 ====================
-        function createParticles(element, emoji) {
-            const rect = element.getBoundingClientRect();
-            for (let i = 0; i < 6; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.textContent = emoji;
-                particle.style.left = (rect.left + Math.random() * rect.width) + 'px';
-                particle.style.top = (rect.top + Math.random() * rect.height) + 'px';
-                document.body.appendChild(particle);
-                setTimeout(() => particle.remove(), 1000);
-            }
-        }
-
-        // ==================== 最终报告 ====================
+        // 报告
         function showFinalReport() {
             const elapsed = Math.round((Date.now() - startTime) / 1000);
-            const correctCount = Object.entries(quizAnswers).filter(([k, v]) => v === quizAnswersMap[parseInt(k)]).length;
-            const accuracy = Math.round((correctCount / 3) * 100);
-
+            const correct = Object.entries(quizAnswers).filter(([k, v]) => v === quizMap[parseInt(k)]).length;
             document.getElementById('reportTime').textContent = elapsed + '秒';
-            document.getElementById('reportAccuracy').textContent = accuracy + '%';
-            document.getElementById('reportInteractions').textContent = interactionCount;
+            document.getElementById('reportAccuracy').textContent = correct + '/3';
             document.getElementById('reportScore').textContent = score;
-
-            // 显示徽章
-            const badgesEl = document.getElementById('reportBadges');
-            const badgeEmojis = ['🌱', '🖱️', '🎯', '🔄', '💯', '🏆'];
-            badgesEl.innerHTML = badgeEmojis.map((emoji, i) => {
-                return `<div class="text-center ${badges[i+1] ? '' : 'opacity-30 grayscale'}">${emoji}</div>`;
-            }).join('');
-
-            // 解锁最终徽章
-            unlockBadge(6);
         }
 
         function restartLearn() {
-            // 重置所有状态
-            currentStep = 1;
-            score = 0;
-            streak = 0;
-            interactionCount = 0;
-            quizAnswers = {};
-            quizCompleted = 0;
-            badges = {};
-            startTime = Date.now();
-            swapStep = 0;
-            codeExecuted = [];
-
+            currentStep = 1; score = 0; streak = 0; interactionCount = 0;
+            quizAnswers = {}; quizDone = 0; badges = {}; startTime = Date.now();
+            swapStep = 0; codeExecuted = [];
             document.getElementById('scoreDisplay').textContent = '0';
             document.getElementById('streakDisplay').textContent = '0';
-
-            // 重置所有徽章
-            for (let i = 1; i <= 6; i++) {
-                const badge = document.getElementById(`badge-${i}`);
-                if (badge) {
-                    badge.classList.add('locked');
-                    badge.classList.remove('unlocked');
-                }
-            }
-
-            // 重置测验UI
-            [1, 2, 3].forEach(num => {
-                const options = document.querySelectorAll(`#quiz${num}Options .quiz-option`);
-                options.forEach(opt => {
-                    opt.classList.remove('correct', 'wrong', 'selected', 'pointer-events-none');
-                });
-                const feedback = document.getElementById(`quiz${num}Feedback`);
-                feedback.classList.add('hidden');
-            });
-
-            // 重置代码输入
-            ['codeInput1', 'codeInput2', 'codeInput3', 'codeInput4'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.value = '';
-                    el.classList.remove('correct', 'wrong');
-                }
-            });
+            document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('correct', 'wrong', 'pointer-events-none'));
+            [1, 2, 3].forEach(n => document.getElementById(`quiz${n}Feedback`).classList.add('hidden'));
+            ['codeInput1', 'codeInput2', 'codeInput3', 'codeInput4'].forEach(id => { const el = document.getElementById(id); if (el) { el.value = ''; el.classList.remove('correct', 'wrong'); } });
             document.getElementById('codeFeedback')?.classList.add('hidden');
             document.getElementById('codeFeedback2')?.classList.add('hidden');
-            document.getElementById('codeNextBtn').disabled = true;
             document.getElementById('quizNextBtn').disabled = true;
-
-            // 重置拖拽和交换
+            document.getElementById('codeNextBtn').disabled = true;
             resetDragTask();
             resetCode();
             resetSwap();
-
             showStep(1);
         }
 
-        function shareResult() {
-            const elapsed = Math.round((Date.now() - startTime) / 1000);
-            const text = `我刚完成了《变量赋值与交换》的学习！\n` +
-                        `🕐 用时：${elapsed}秒\n` +
-                        `⭐ 积分：${score}\n` +
-                        `📊 正确率：${Object.entries(quizAnswers).filter(([k, v]) => v === quizAnswersMap[parseInt(k)]).length}/3\n\n` +
-                        `#CourseHub #编程入门`;
-
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(text).then(() => {
-                    alert('结果已复制到剪贴板！');
-                });
-            }
-        }
-
-        // ==================== 初始化 ====================
         updateProgress();
     </script>
 </body>
