@@ -72,7 +72,7 @@
         <!-- 第2页：顺序执行 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">顺序执行</h2>
-            <div class="code-block animate-item" onclick="executeCode(this)">
+            <div class="code-block animate-item" onclick="executeCode(this, event)">
                 a = <span class="number">5</span>      <span class="comment"># 第1步</span><br>
                 b = <span class="number">3</span>      <span class="comment"># 第2步</span><br>
                 c = a + b  <span class="comment"># 第3步</span><br>
@@ -135,7 +135,7 @@
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-7　三位数反转（2）</h2>
             <p class="text-gray-300 mb-4 animate-item">把结果存到变量 m 中，再输出</p>
-            <div class="code-block animate-item" onclick="executeCode(this)">
+            <div class="code-block animate-item" onclick="executeCode(this, event)">
                 n = <span class="function">int</span>(<span class="function">input</span>())<br>
                 m = (n%10)*<span class="number">100</span> + (n//10%10)*<span class="number">10</span> + (n//100)<br>
                 <span class="function">print</span>(<span class="string">f"{m:03d}"</span>)  <span class="comment"># 用宽度3，不足补0</span>
@@ -160,7 +160,7 @@
         <!-- 第8页：程序1-8 三变量法 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-8　变量交换（1）三变量法</h2>
-            <div class="code-block animate-item" onclick="executeCode(this)">
+            <div class="code-block animate-item" onclick="executeCode(this, event)">
                 a, b = <span class="function">map</span>(<span class="function">int</span>, <span class="function">input</span>().<span class="function">split</span>())<br>
                 t = a  <span class="comment"># t = 3，把a的值备份到t</span><br>
                 a = b  <span class="comment"># a = 5，b的值赋给a</span><br>
@@ -192,7 +192,7 @@
         <!-- 第10页：程序1-10 最简单的方法 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-10　变量交换（3）直接输出</h2>
-            <div class="code-block animate-item" onclick="executeCode(this)">
+            <div class="code-block animate-item" onclick="executeCode(this, event)">
                 a, b = <span class="function">map</span>(<span class="function">int</span>, <span class="function">input</span>().<span class="function">split</span>())<br>
                 <span class="function">print</span>(b, a)  <span class="comment"># 直接调换顺序输出！</span>
                 <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
@@ -256,7 +256,8 @@
 
         // 代码执行可视化
         let executedCodes = new Set();
-        function executeCode(element) {
+        function executeCode(element, event) {
+            if (event) event.stopPropagation();
             if (element.classList.contains('executed')) return;
             element.classList.add('executed');
             element.querySelector('.text-xs').textContent = '✓ 已执行';

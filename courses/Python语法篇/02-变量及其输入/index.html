@@ -276,7 +276,7 @@
         <!-- 第4页：变量使用 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">变量的使用</h2>
-            <div class="code-block animate-item" onclick="executeCode(this)">
+            <div class="code-block animate-item" onclick="executeCode(this, event)">
                 <span class="function">a</span> = <span class="number">5</span>  <span class="text-gray-500"># 把 5 放进 a</span><br>
                 <span class="function">print</span>(<span class="function">a</span>)  <span class="text-gray-500"># 显示 a 里面的内容</span>
                 <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
@@ -319,7 +319,7 @@
         <!-- 第7页：程序1-4 a+b问题 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-4　a+b问题</h2>
-            <div class="code-block animate-item" onclick="executeCode(this)">
+            <div class="code-block animate-item" onclick="executeCode(this, event)">
                 a = <span class="function">int</span>(<span class="function">input</span>())<br>
                 b = <span class="function">int</span>(<span class="function">input</span>())<br>
                 <span class="function">print</span>(a + b)
@@ -358,7 +358,7 @@
         <!-- 第9页：程序1-5 圆柱体表面积 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-5　圆柱体的表面积</h2>
-            <div class="code-block animate-item" onclick="executeCode(this)">
+            <div class="code-block animate-item" onclick="executeCode(this, event)">
                 <span class="keyword">import</span> math<br>
                 r, h = <span class="function">map</span>(<span class="function">float</span>, <span class="function">input</span>().<span class="function">split</span>())<br>
                 s1 = math.pi * r * r<br>
@@ -391,7 +391,7 @@
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">变量交换：三变量法</h2>
             <p class="text-gray-300 mb-6 animate-item">如何交换 a=3 和 b=5，变成 a=5, b=3？</p>
-            <div class="code-block animate-item" onclick="executeCode(this)">
+            <div class="code-block animate-item" onclick="executeCode(this, event)">
                 <span class="function">a</span> = <span class="number">3</span><br>
                 <span class="function">b</span> = <span class="number">5</span><br>
                 <span class="function">t</span> = <span class="function">a</span>  <span class="text-gray-500"># 把 a 的值先存到 t</span><br>
@@ -607,7 +607,8 @@
 
         // 代码执行可视化
         let executedCodes = new Set();
-        function executeCode(element) {
+        function executeCode(element, event) {
+            if (event) event.stopPropagation();
             if (element.classList.contains('executed')) return;
             element.classList.add('executed');
             element.querySelector('.text-xs').textContent = '✓ 已执行';

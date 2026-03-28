@@ -368,7 +368,7 @@
         <!-- 第4页：程序1-1 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-1　计算并输出1+2的值</h2>
-            <div class="code-block animate-item" onclick="executeCode(this, 'print(1 + 2)', '3')">
+            <div class="code-block animate-item" onclick="executeCode(this, 'print(1 + 2)', '3', event)">
                 <span class="function">print</span>(<span class="number">1</span> + <span class="number">2</span>)
                 <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
             </div>
@@ -479,7 +479,7 @@
         <!-- 第8页：程序1-2 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-2　计算并输出8÷5的商，保留小数点后1位</h2>
-            <div class="code-block animate-item" onclick="executeCode(this, 'print("%.1f" % (8.0 / 5.0))', '1.6')">
+            <div class="code-block animate-item" onclick="executeCode(this, 'print(\"%.1f\" % (8.0 / 5.0))', '1.6', event)">
                 <span class="function">print</span>(<span class="string">"%.1f"</span> % (<span class="number">8.0</span> / <span class="number">5.0</span>))
                 <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
             </div>
@@ -492,7 +492,7 @@
         <!-- 第9页：程序1-3 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-3　复杂的表达式计算</h2>
-            <div class="code-block animate-item" onclick="executeCode(this, 'import math\\nprint("{:.8f}".format(1 + 2 * math.sqrt(3) / (5 - 0.1)))', '1.73246726')">
+            <div class="code-block animate-item" onclick="executeCode(this, 'import math\\nprint(\"{:.8f}\".format(1 + 2 * math.sqrt(3) / (5 - 0.1)))', '1.73246726', event)">
                 <span class="keyword">import</span> math<br>
                 <span class="function">print</span>(<span class="string">"{:.8f}"</span>.<span class="function">format</span>(<span class="number">1</span> + <span class="number">2</span> * math.<span class="function">sqrt</span>(<span class="number">3</span>) / (<span class="number">5</span> - <span class="number">0.1</span>)))
                 <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
@@ -508,7 +508,7 @@
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">数学函数：sqrt() 求平方根</h2>
             <div class="text-6xl mb-6 animate-item">√</div>
-            <div class="code-block animate-item" onclick="executeCode(this, 'import math\\nprint(math.sqrt(9))', '3.0')">
+            <div class="code-block animate-item" onclick="executeCode(this, 'import math\\nprint(math.sqrt(9))', '3.0', event)">
                 <span class="keyword">import</span> math<br>
                 <span class="function">print</span>(math.<span class="function">sqrt</span>(<span class="number">9</span>))
                 <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
@@ -702,7 +702,8 @@
 
         // 代码执行可视化
         let executedCodes = new Set();
-        function executeCode(element, code, result) {
+        function executeCode(element, code, result, event) {
+            if (event) event.stopPropagation();
             if (executedCodes.has(code)) return;
             executedCodes.add(code);
 
