@@ -136,6 +136,87 @@
             background: rgba(255,255,255,0.05);
             color: #f0f0f0;
         }
+
+        /* 代码执行可视化 */
+        .code-block {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .code-block:hover {
+            border-color: #60a5fa;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+        }
+        .code-block.executed {
+            border-color: #22c55e;
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
+        }
+        .code-execution {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid #22c55e;
+            border-radius: 8px;
+            animation: slideUp 0.3s ease;
+        }
+        .code-execution.show {
+            display: block;
+        }
+
+        /* 测验选项 */
+        .quiz-option {
+            padding: 0.75rem 1rem;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0.5rem 0;
+        }
+        .quiz-option:hover {
+            border-color: #3b82f6;
+            background: rgba(59,130,246,0.1);
+        }
+        .quiz-option.correct {
+            border-color: #22c55e;
+            background: rgba(34,197,94,0.2);
+        }
+        .quiz-option.wrong {
+            border-color: #ef4444;
+            background: rgba(239,68,68,0.2);
+        }
+        .quiz-option .letter {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        .quiz-option.correct .letter { background: #22c55e; }
+        .quiz-option.wrong .letter { background: #ef4444; }
+
+        /* 粒子效果 */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.25rem;
+            animation: confetti 0.8s ease forwards;
+            z-index: 1000;
+        }
+        @keyframes confetti {
+            0% { opacity: 1; transform: scale(1) translateY(0); }
+            100% { opacity: 0; transform: scale(1.5) translateY(-60px); }
+        }
+
+        @keyframes slideUp {
+            0% { transform: translateY(10px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -195,9 +276,14 @@
         <!-- 第4页：变量使用 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">变量的使用</h2>
-            <div class="code-block animate-item">
+            <div class="code-block animate-item" onclick="executeCode(this)">
                 <span class="function">a</span> = <span class="number">5</span>  <span class="text-gray-500"># 把 5 放进 a</span><br>
                 <span class="function">print</span>(<span class="function">a</span>)  <span class="text-gray-500"># 显示 a 里面的内容</span>
+                <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
+            </div>
+            <div class="code-execution">
+                <div class="text-green-400 font-bold mb-2">✓ 执行结果</div>
+                <div class="text-xl">输出：<span class="text-yellow-400 font-bold">5</span></div>
             </div>
             <div class="card mt-6 animate-item">
                 <p class="text-green-400 font-bold">输出：5</p>
@@ -233,10 +319,15 @@
         <!-- 第7页：程序1-4 a+b问题 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-4　a+b问题</h2>
-            <div class="code-block animate-item">
+            <div class="code-block animate-item" onclick="executeCode(this)">
                 a = <span class="function">int</span>(<span class="function">input</span>())<br>
                 b = <span class="function">int</span>(<span class="function">input</span>())<br>
                 <span class="function">print</span>(a + b)
+                <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
+            </div>
+            <div class="code-execution">
+                <div class="text-green-400 font-bold mb-2">✓ 执行结果（输入 3 5）</div>
+                <div class="text-xl">输出：<span class="text-yellow-400 font-bold">8</span></div>
             </div>
             <div class="grid grid-cols-2 gap-4 mt-4 w-full max-w-2xl">
                 <div class="card animate-item">
@@ -267,13 +358,18 @@
         <!-- 第9页：程序1-5 圆柱体表面积 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-5　圆柱体的表面积</h2>
-            <div class="code-block animate-item">
+            <div class="code-block animate-item" onclick="executeCode(this)">
                 <span class="keyword">import</span> math<br>
                 r, h = <span class="function">map</span>(<span class="function">float</span>, <span class="function">input</span>().<span class="function">split</span>())<br>
                 s1 = math.pi * r * r<br>
                 s2 = <span class="number">2</span> * math.pi * r * h<br>
                 s = s1 * <span class="number">2.0</span> + s2<br>
                 <span class="function">print</span>(<span class="string">"Area = {:.3f}"</span>.<span class="function">format</span>(s))
+                <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
+            </div>
+            <div class="code-execution">
+                <div class="text-green-400 font-bold mb-2">✓ 执行结果（输入 3.5 9）</div>
+                <div class="text-xl">输出：<span class="text-yellow-400 font-bold">Area = 274.889</span></div>
             </div>
         </div>
 
@@ -295,12 +391,20 @@
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">变量交换：三变量法</h2>
             <p class="text-gray-300 mb-6 animate-item">如何交换 a=3 和 b=5，变成 a=5, b=3？</p>
-            <div class="code-block animate-item">
+            <div class="code-block animate-item" onclick="executeCode(this)">
                 <span class="function">a</span> = <span class="number">3</span><br>
                 <span class="function">b</span> = <span class="number">5</span><br>
                 <span class="function">t</span> = <span class="function">a</span>  <span class="text-gray-500"># 把 a 的值先存到 t</span><br>
                 <span class="function">a</span> = <span class="function">b</span>  <span class="text-gray-500"># 把 b 的值给 a</span><br>
                 <span class="function">b</span> = <span class="function">t</span>  <span class="text-gray-500"># 把 t 里保存的值给 b</span>
+                <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
+            </div>
+            <div class="code-execution">
+                <div class="text-green-400 font-bold mb-2">✓ 执行结果</div>
+                <div class="flex gap-4 mt-2">
+                    <div class="text-xl">a = <span class="text-yellow-400 font-bold">5</span></div>
+                    <div class="text-xl">b = <span class="text-yellow-400 font-bold">3</span></div>
+                </div>
             </div>
         </div>
 
@@ -500,6 +604,45 @@
         });
 
         updateProgress();
+
+        // 代码执行可视化
+        let executedCodes = new Set();
+        function executeCode(element) {
+            if (element.classList.contains('executed')) return;
+            element.classList.add('executed');
+            element.querySelector('.text-xs').textContent = '✓ 已执行';
+
+            const executionDiv = element.nextElementSibling;
+            if (executionDiv && executionDiv.classList.contains('code-execution')) {
+                executionDiv.classList.add('show');
+            }
+
+            createParticles(element);
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const emojis = ['✨', '⭐', '🌟', '💫'];
+            for (let i = 0; i < 5; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                particle.style.left = (rect.left + rect.width / 2 + (Math.random() - 0.5) * 100) + 'px';
+                particle.style.top = rect.top + 'px';
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 800);
+            }
+        }
+
+        function selectOption(element, isCorrect) {
+            if (element.classList.contains('correct') || element.classList.contains('wrong')) return;
+            if (isCorrect) {
+                element.classList.add('correct');
+                createParticles(element);
+            } else {
+                element.classList.add('wrong');
+            }
+        }
     </script>
 </body>
 </html>

@@ -29,6 +29,27 @@
         .info-table th, .info-table td { border: 1px solid rgba(255,255,255,0.2); padding: 0.75rem 1rem; text-align: center; }
         .info-table th { background: rgba(59, 130, 246, 0.4); color: #ffffff; }
         .info-table td { background: rgba(255,255,255,0.05); color: #f0f0f0; }
+
+        /* 代码执行可视化 */
+        .code-block { cursor: pointer; transition: all 0.3s ease; }
+        .code-block:hover { border-color: #60a5fa; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4); }
+        .code-block.executed { border-color: #22c55e; box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3); }
+        .code-execution { display: none; margin-top: 1rem; padding: 1rem; background: rgba(34, 197, 94, 0.1); border: 1px solid #22c55e; border-radius: 8px; animation: slideUp 0.3s ease; }
+        .code-execution.show { display: block; }
+
+        /* 测验选项 */
+        .quiz-option { padding: 0.75rem 1rem; border: 2px solid rgba(255,255,255,0.15); border-radius: 0.5rem; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 0.75rem; margin: 0.5rem 0; }
+        .quiz-option:hover { border-color: #3b82f6; background: rgba(59,130,246,0.1); }
+        .quiz-option.correct { border-color: #22c55e; background: rgba(34,197,94,0.2); }
+        .quiz-option.wrong { border-color: #ef4444; background: rgba(239,68,68,0.2); }
+        .quiz-option .letter { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-weight: 600; }
+        .quiz-option.correct .letter { background: #22c55e; }
+        .quiz-option.wrong .letter { background: #ef4444; }
+
+        /* 粒子效果 */
+        .particle { position: fixed; pointer-events: none; font-size: 1.25rem; animation: confetti 0.8s ease forwards; z-index: 1000; }
+        @keyframes confetti { 0% { opacity: 1; transform: scale(1) translateY(0); } 100% { opacity: 0; transform: scale(1.5) translateY(-60px); } }
+        @keyframes slideUp { 0% { transform: translateY(10px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -51,11 +72,19 @@
         <!-- 第2页：if 语句基本格式 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">if 语句</h2>
-            <div class="code-block animate-item">
+            <div class="code-block animate-item" onclick="executeCode(this)">
                 <span class="keyword">if</span> 条件:<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;语句1<br>
                 <span class="keyword">else</span>:<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;语句2
+                <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
+            </div>
+            <div class="code-execution">
+                <div class="text-green-400 font-bold mb-2">✓ 分支执行流程</div>
+                <div class="space-y-2 text-sm">
+                    <div>如果 <span class="text-yellow-400">条件为真</span> → 执行<span class="text-green-400">语句1</span></div>
+                    <div>如果 <span class="text-yellow-400">条件为假</span> → 执行<span class="text-red-400">语句2</span></div>
+                </div>
             </div>
             <p class="text-gray-400 mt-4 animate-item">条件为真执行语句1，否则执行语句2</p>
         </div>
@@ -119,7 +148,7 @@
         <!-- 第6页：程序1-11 鸡兔同笼 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-11　鸡兔同笼</h2>
-            <div class="code-block animate-item">
+            <div class="code-block animate-item" onclick="executeCode(this)">
                 n, m = <span class="function">map</span>(<span class="function">int</span>, <span class="function">input</span>().<span class="function">split</span>())<br>
                 a = (<span class="number">4</span>*n - m) // <span class="number">2</span><br>
                 b = n - a<br>
@@ -127,6 +156,14 @@
                 &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(<span class="string">"No answer"</span>)<br>
                 <span class="keyword">else</span>:<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(a, b)
+                <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
+            </div>
+            <div class="code-execution">
+                <div class="text-green-400 font-bold mb-2">✓ 执行结果</div>
+                <div class="space-y-1 text-sm">
+                    <div>输入 14 32 → 输出：<span class="text-yellow-400 font-bold">12 2</span></div>
+                    <div>输入 10 16 → 输出：<span class="text-red-400 font-bold">No answer</span></div>
+                </div>
             </div>
         </div>
 
@@ -141,7 +178,7 @@
         <!-- 第8页：程序1-13 三整数排序 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-13　三整数排序（elif版）</h2>
-            <div class="code-block animate-item">
+            <div class="code-block animate-item" onclick="executeCode(this)">
                 a, b, c = <span class="function">map</span>(<span class="function">int</span>, <span class="function">input</span>().<span class="function">split</span>())<br>
                 <span class="keyword">if</span> a <= b <= c: <span class="function">print</span>(a, b, c)<br>
                 <span class="keyword">elif</span> a <= c <= b: <span class="function">print</span>(a, c, b)<br>
@@ -149,6 +186,11 @@
                 <span class="keyword">elif</span> b <= c <= a: <span class="function">print</span>(b, c, a)<br>
                 <span class="keyword">elif</span> c <= a <= b: <span class="function">print</span>(c, a, b)<br>
                 <span class="keyword">else</span>: <span class="function">print</span>(c, b, a)
+                <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
+            </div>
+            <div class="code-execution">
+                <div class="text-green-400 font-bold mb-2">✓ 执行结果（输入 20 7 33）</div>
+                <div class="text-xl">输出：<span class="text-yellow-400 font-bold">7 20 33</span></div>
             </div>
         </div>
 
@@ -168,7 +210,7 @@
         <!-- 第10页：多条件分支 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">if...elif...else</h2>
-            <div class="code-block animate-item">
+            <div class="code-block animate-item" onclick="executeCode(this)">
                 score = <span class="function">int</span>(<span class="function">input</span>())<br><br>
                 <span class="keyword">if</span> score >= <span class="number">90</span>:<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(<span class="string">"优秀"</span>)<br>
@@ -178,6 +220,16 @@
                 &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(<span class="string">"及格"</span>)<br>
                 <span class="keyword">else</span>:<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(<span class="string">"不及格"</span>)
+                <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
+            </div>
+            <div class="code-execution">
+                <div class="text-green-400 font-bold mb-2">✓ 执行结果</div>
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                    <div>score=95 → <span class="text-yellow-400">"优秀"</span></div>
+                    <div>score=85 → <span class="text-yellow-400">"良好"</span></div>
+                    <div>score=70 → <span class="text-yellow-400">"及格"</span></div>
+                    <div>score=50 → <span class="text-yellow-400">"不及格"</span></div>
+                </div>
             </div>
         </div>
 
@@ -223,6 +275,35 @@
         document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); if (!showNextItem()) nextSlide(); } else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); } });
         document.addEventListener('click', (e) => { if (e.target.closest('.dot')) return; if (!showNextItem()) nextSlide(); });
         updateProgress();
+
+        // 代码执行可视化
+        let executedCodes = new Set();
+        function executeCode(element) {
+            if (element.classList.contains('executed')) return;
+            element.classList.add('executed');
+            element.querySelector('.text-xs').textContent = '✓ 已执行';
+
+            const executionDiv = element.nextElementSibling;
+            if (executionDiv && executionDiv.classList.contains('code-execution')) {
+                executionDiv.classList.add('show');
+            }
+
+            createParticles(element);
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const emojis = ['✨', '⭐', '🌟', '💫'];
+            for (let i = 0; i < 5; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                particle.style.left = (rect.left + rect.width / 2 + (Math.random() - 0.5) * 100) + 'px';
+                particle.style.top = rect.top + 'px';
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 800);
+            }
+        }
     </script>
 </body>
 </html>

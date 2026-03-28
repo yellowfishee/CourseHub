@@ -178,6 +178,125 @@
             color: #6b7280;
             font-size: 0.875rem;
         }
+
+        /* 代码执行可视化 */
+        .code-block {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .code-block:hover {
+            border-color: #60a5fa;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+        }
+        .code-block.executed {
+            border-color: #22c55e;
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
+        }
+        .code-execution {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid #22c55e;
+            border-radius: 8px;
+            animation: slideUp 0.3s ease;
+        }
+        .code-execution.show {
+            display: block;
+        }
+        .code-line-highlight {
+            background: rgba(59, 130, 246, 0.2);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            margin: 0.25rem 0;
+        }
+
+        /* 测验选项 */
+        .quiz-option {
+            padding: 0.75rem 1rem;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0.5rem 0;
+        }
+        .quiz-option:hover {
+            border-color: #3b82f6;
+            background: rgba(59,130,246,0.1);
+        }
+        .quiz-option.correct {
+            border-color: #22c55e;
+            background: rgba(34,197,94,0.2);
+        }
+        .quiz-option.wrong {
+            border-color: #ef4444;
+            background: rgba(239,68,68,0.2);
+        }
+        .quiz-option .letter {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .quiz-option.correct .letter {
+            background: #22c55e;
+        }
+        .quiz-option.wrong .letter {
+            background: #ef4444;
+        }
+
+        /* 粒子效果 */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.25rem;
+            animation: confetti 0.8s ease forwards;
+            z-index: 1000;
+        }
+        @keyframes confetti {
+            0% { opacity: 1; transform: scale(1) translateY(0); }
+            100% { opacity: 0; transform: scale(1.5) translateY(-60px); }
+        }
+
+        /* 展开/收起答案 */
+        .answer-toggle {
+            cursor: pointer;
+            padding: 0.75rem 1rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px dashed rgba(255,255,255,0.2);
+            border-radius: 0.5rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        .answer-toggle:hover {
+            border-color: #3b82f6;
+            background: rgba(59,130,246,0.1);
+        }
+        .answer-content {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.3);
+            border-radius: 0.5rem;
+            animation: slideUp 0.3s ease;
+        }
+        .answer-content.show {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            0% { transform: translateY(10px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -249,10 +368,14 @@
         <!-- 第4页：程序1-1 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-1　计算并输出1+2的值</h2>
-            <div class="code-block animate-item">
+            <div class="code-block animate-item" onclick="executeCode(this, 'print(1 + 2)', '3')">
                 <span class="function">print</span>(<span class="number">1</span> + <span class="number">2</span>)
+                <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
             </div>
-            <p class="text-green-400 mt-4 animate-item">输出：3</p>
+            <div class="code-execution" id="exec-1">
+                <div class="text-green-400 font-bold mb-2">✓ 执行结果</div>
+                <div class="text-xl">输出：<span class="text-yellow-400 font-bold">3</span></div>
+            </div>
         </div>
 
         <!-- 第5页：加减乘除 -->
@@ -356,31 +479,44 @@
         <!-- 第8页：程序1-2 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-2　计算并输出8÷5的商，保留小数点后1位</h2>
-            <div class="code-block animate-item">
+            <div class="code-block animate-item" onclick="executeCode(this, 'print("%.1f" % (8.0 / 5.0))', '1.6')">
                 <span class="function">print</span>(<span class="string">"%.1f"</span> % (<span class="number">8.0</span> / <span class="number">5.0</span>))
+                <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
             </div>
-            <p class="text-green-400 mt-4 animate-item">输出：1.6</p>
+            <div class="code-execution" id="exec-2">
+                <div class="text-green-400 font-bold mb-2">✓ 执行结果</div>
+                <div class="text-xl">输出：<span class="text-yellow-400 font-bold">1.6</span></div>
+            </div>
         </div>
 
         <!-- 第9页：程序1-3 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-3　复杂的表达式计算</h2>
-            <div class="code-block animate-item">
+            <div class="code-block animate-item" onclick="executeCode(this, 'import math\\nprint("{:.8f}".format(1 + 2 * math.sqrt(3) / (5 - 0.1)))', '1.73246726')">
                 <span class="keyword">import</span> math<br>
                 <span class="function">print</span>(<span class="string">"{:.8f}"</span>.<span class="function">format</span>(<span class="number">1</span> + <span class="number">2</span> * math.<span class="function">sqrt</span>(<span class="number">3</span>) / (<span class="number">5</span> - <span class="number">0.1</span>)))
+                <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
             </div>
-            <p class="text-gray-400 mt-4 animate-item">计算：1 + 2×√3 ÷ (5-0.1)</p>
+            <div class="code-execution" id="exec-3">
+                <div class="text-green-400 font-bold mb-2">✓ 执行结果</div>
+                <div class="text-xl">输出：<span class="text-yellow-400 font-bold">1.73246726</span></div>
+                <div class="text-gray-400 text-sm mt-2">计算：1 + 2×√3 ÷ (5-0.1)</div>
+            </div>
         </div>
 
         <!-- 第10页：数学函数 sqrt -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">数学函数：sqrt() 求平方根</h2>
             <div class="text-6xl mb-6 animate-item">√</div>
-            <div class="code-block animate-item">
+            <div class="code-block animate-item" onclick="executeCode(this, 'import math\\nprint(math.sqrt(9))', '3.0')">
                 <span class="keyword">import</span> math<br>
                 <span class="function">print</span>(math.<span class="function">sqrt</span>(<span class="number">9</span>))
+                <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
             </div>
-            <p class="text-2xl text-green-400 mt-6 animate-item">输出：3.0</p>
+            <div class="code-execution" id="exec-4">
+                <div class="text-green-400 font-bold mb-2">✓ 执行结果</div>
+                <div class="text-xl">输出：<span class="text-yellow-400 font-bold">3.0</span></div>
+            </div>
             <div class="card mt-6 animate-item">
                 <p class="text-gray-300">sqrt = <span class="text-blue-400">square root</span> = 平方根</p>
                 <p class="text-gray-500 text-sm mt-2">math.sqrt(9) = 3，因为 3 × 3 = 9</p>
@@ -563,6 +699,61 @@
 
         // 初始化
         updateProgress();
+
+        // 代码执行可视化
+        let executedCodes = new Set();
+        function executeCode(element, code, result) {
+            if (executedCodes.has(code)) return;
+            executedCodes.add(code);
+
+            element.classList.add('executed');
+            element.querySelector('.text-xs').textContent = '✓ 已执行';
+
+            // 显示执行结果
+            const executionDiv = element.nextElementSibling;
+            if (executionDiv && executionDiv.classList.contains('code-execution')) {
+                executionDiv.classList.add('show');
+            }
+
+            // 创建粒子效果
+            createParticles(element);
+        }
+
+        // 创建粒子效果
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const emojis = ['✨', '⭐', '🌟', '💫'];
+            for (let i = 0; i < 5; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                particle.style.left = (rect.left + rect.width / 2 + (Math.random() - 0.5) * 100) + 'px';
+                particle.style.top = rect.top + 'px';
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 800);
+            }
+        }
+
+        // 测验选项点击
+        function selectOption(element, isCorrect) {
+            if (element.classList.contains('correct') || element.classList.contains('wrong')) return;
+
+            if (isCorrect) {
+                element.classList.add('correct');
+                createParticles(element);
+            } else {
+                element.classList.add('wrong');
+            }
+        }
+
+        // 展开/收起答案
+        function toggleAnswer(element) {
+            const content = element.nextElementSibling;
+            if (content && content.classList.contains('answer-content')) {
+                content.classList.toggle('show');
+                element.textContent = content.classList.contains('show') ? '点击收起 ▲' : '点击查看答案 ▼';
+            }
+        }
     </script>
 </body>
 </html>
