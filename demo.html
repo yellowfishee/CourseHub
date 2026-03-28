@@ -13,8 +13,11 @@
 
         .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
 
-        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 1.5rem; transition: all 0.3s ease; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 1.25rem; transition: all 0.3s ease; }
         .card:hover { border-color: rgba(59,130,246,0.3); }
+
+        .step { padding-bottom: 6rem; }
+        .step section { padding-bottom: 1rem; }
 
         /* 变量盒子 */
         .var-box {
@@ -120,19 +123,19 @@
 
         /* 步骤导航条 */
         .step-nav {
-            display: flex; gap: 0.375rem; padding: 0.5rem;
-            background: rgba(0,0,0,0.3); border-radius: 12px;
+            display: flex; gap: 0.25rem; padding: 0.375rem;
+            background: rgba(0,0,0,0.4); border-radius: 10px;
             overflow-x: auto; -webkit-overflow-scrolling: touch;
         }
         .step-nav-item {
-            padding: 0.5rem 0.75rem; border-radius: 8px; cursor: pointer; transition: all 0.2s ease;
-            font-size: 0.8rem; display: flex; align-items: center; gap: 0.375rem; white-space: nowrap;
+            padding: 0.375rem 0.625rem; border-radius: 6px; cursor: pointer; transition: all 0.2s ease;
+            font-size: 0.75rem; display: flex; align-items: center; gap: 0.25rem; white-space: nowrap;
             min-width: fit-content;
         }
         .step-nav-item:hover { background: rgba(255,255,255,0.1); }
         .step-nav-item.active { background: rgba(59,130,246,0.4); }
         .step-nav-item.completed { background: rgba(34,197,94,0.2); }
-        .step-nav-item .step-icon { font-size: 0.9rem; }
+        .step-nav-item .step-icon { font-size: 0.8rem; }
 
         /* 粒子效果 */
         .particle { position: fixed; pointer-events: none; font-size: 1.5rem; animation: confetti 1s ease forwards; }
@@ -712,8 +715,8 @@
                     </section>
                 </div>
             <!-- 步骤导航条 -->
-        <nav id="stepNav" class="fixed bottom-20 left-4 right-4 z-40">
-            <div class="step-nav justify-center">
+        <nav id="stepNav" class="fixed bottom-14 left-4 right-4 z-40">
+            <div class="step-nav justify-center max-w-xl mx-auto">
                 <div class="step-nav-item active" data-step="1" onclick="showStep(1)">
                     <span class="step-icon">📖</span><span class="hidden sm:inline">概念</span>
                 </div>
@@ -739,7 +742,7 @@
         </nav>
 
         <!-- 底部导航 -->
-        <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 flex gap-3 z-50">
+        <div class="fixed bottom-4 left-4 right-4 z-50 flex justify-between items-center max-w-2xl mx-auto">
             <button onclick="prevStep()" id="prevBtn" class="btn btn-secondary hidden">
                 <span>←</span> 上一步
             </button>
