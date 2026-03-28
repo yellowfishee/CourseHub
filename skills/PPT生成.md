@@ -131,24 +131,47 @@
 - 底部进度导航条
 - 平滑切换动画
 
+## 全屏布局规范
+
+PPT 必须使用全屏 flexbox 布局，充分利用视口高度：
+
+```css
+/* 全屏容器 */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.header {
+    padding: 0.75rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.step-container {
+    flex: 1;
+    padding: 1.5rem;
+    padding-bottom: 5rem; /* 防止内容被导航遮挡 */
+}
+.nav-bar {
+    padding: 0.75rem 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+```
+
 ## 技术栈
 
 - TailwindCSS（国内 CDN）
 - 复杂页面使用 Vue3（CDN）
 - 单个 HTML 文件，可直接打开运行
 
-## 严禁行为
-
-- 堆字 / 密集排版
-- 花哨配色
-- 专业词汇不解释
-- 横屏比例偏离
-- 偏离极简科技风
-
 ## 默认规则
 
 - 未指定页数：自动生成 8~20 页
-- 未指定风格：默认乔布斯风
+- 未指定风格：默认极简科技风
 
 ## PPT 结构模板
 

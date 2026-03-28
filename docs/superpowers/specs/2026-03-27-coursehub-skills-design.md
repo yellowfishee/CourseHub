@@ -90,7 +90,8 @@ AI: 设计通俗易懂的例子 + 生活类比
 ```
 CourseHub/skills/
 ├── 教案生成.md        # 教案编写规范 + 模板（通俗易懂 + 生活类比）
-├── PPT生成.md         # HTML PPT 编写规范（乔布斯风）
+├── PPT生成.md         # HTML PPT 编写规范（交互式全屏布局）
+├── 交互课件生成.md     # 交互式课件生成规范（拖拽/测验/代码执行）
 └── 图表生成.md        # 可视化工具选择策略
 ```
 
@@ -210,12 +211,43 @@ prerequisites: 前置知识（可选）
 课程结束：[用通俗的话总结今天学了什么]
 ```
 
+### 全屏布局规范（必须遵守）
+
+PPT 必须使用全屏 flexbox 布局，确保充分利用视口：
+
+```css
+/* 全屏容器 */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.header {
+    padding: 0.75rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.step-container {
+    flex: 1;
+    padding: 1.5rem;
+    padding-bottom: 5rem; /* 防止内容被导航遮挡 */
+}
+.nav-bar {
+    padding: 0.75rem 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+```
+
 ### 视觉规范
 
 | 项目 | 规范 |
 |------|------|
-| 比例 | 16:9 横屏 |
-| 背景 | #000000 或 #0a0a0a + 模糊光斑动画 |
+| 比例 | 全屏布局，不限制宽高比 |
+| 背景 | #0a0a0a + 模糊光斑动画 或 渐变背景 |
 | 主文字 | #ffffff |
 | 辅助文字 | #9ca3af |
 | 中文字体 | HarmonyOS Sans SC / 思源黑体 |
@@ -226,14 +258,200 @@ prerequisites: 前置知识（可选）
 - 键盘 ← → 翻页
 - 底部进度导航条
 - 平滑切换动画
+- 支持点击/空格逐步显示内容
 
-### 严禁行为
+---
 
-- 堆字 / 密集排版
-- 花哨配色
-- 专业词汇不解释
-- 横屏比例偏离
-- 偏离极简科技风
+## 交互课件生成规范
+
+### 核心理念
+
+交互课件是增强版 PPT，包含：
+- **拖拽操作** — 可视化赋值、交换等概念
+- **代码执行可视化** — 逐行高亮执行过程
+- **随堂测验** — 即时反馈的选择题
+- **编程练习** — 代码输入与验证
+- **学习追踪** — 分数、连胜、进度
+
+### 全屏交互布局
+
+交互课件必须使用全屏 flexbox 布局：
+
+```html
+<div class="app-container">
+    <!-- 顶部栏 -->
+    <header class="header">
+        <div><!-- 标题区 --></div>
+        <div><!-- 分数/连胜显示 --></div>
+    </header>
+    <!-- 步骤内容 -->
+    <div class="content">
+        <div class="step-container">
+            <!-- 当前步骤内容 -->
+        </div>
+    </div>
+    <!-- 底部导航 -->
+    <div class="nav-bar">
+        <nav class="step-nav">
+            <!-- 步骤1 步骤2 步骤3 ... -->
+        </nav>
+    </div>
+</div>
+```
+
+```css
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.content { flex: 1; display: flex; flex-direction: column; }
+.step-container { flex: 1; padding: 1.5rem; padding-bottom: 5rem; }
+```
+
+### 交互元素设计
+
+#### 1. 拖拽赋值（变量赋值概念）
+
+```html
+<!-- 拖拽源：数值方块 -->
+<div class="var-box" draggable="true" data-value="5">
+    <span class="text-2xl">5</span>
+    <span class="text-xs">数值</span>
+</div>
+
+<!-- 放置槽：变量 -->
+<div class="slot" data-var="a">
+    <span class="text-gray-400">a</span>
+    <span class="text-xs text-gray-500">变量</span>
+</div>
+```
+
+#### 2. 代码执行可视化
+
+```html
+<div class="code-block">
+    <div class="code-line" data-line="1">
+        <span class="code-keyword">int</span> a = <span class="code-number">5</span>;
+    </div>
+    <div class="code-line" data-line="2">
+        a = a + <span class="code-number">1</span>;
+    </div>
+</div>
+<script>
+// 逐行高亮执行
+codeLines.forEach((line, i) => {
+    setTimeout(() => {
+        line.classList.add('executed');
+    }, i * 1000);
+});
+</script>
+```
+
+#### 3. 随堂测验
+
+```html
+<div class="quiz-option" data-correct="true">
+    <span class="letter">A</span>
+    <span>6</span>
+</div>
+<div class="quiz-option" data-correct="false">
+    <span class="letter">B</span>
+    <span>5</span>
+</div>
+```
+
+#### 4. 即时反馈动画
+
+```javascript
+// 正确反馈
+function showCorrect(element) {
+    element.classList.add('correct');
+    createParticles(element); // 彩色粒子效果
+    updateScore(10);
+    updateStreak();
+}
+
+// 错误反馈
+function showWrong(element) {
+    element.classList.add('wrong');
+    resetStreak();
+}
+```
+
+### 学习追踪系统
+
+```javascript
+const learningData = {
+    score: 0,
+    streak: 0,
+    completedSteps: [],
+    quizResults: []
+};
+
+function updateScore(points) {
+    learningData.score += points;
+    document.getElementById('scoreDisplay').textContent = learningData.score;
+}
+
+function updateStreak() {
+    learningData.streak++;
+    document.getElementById('streakDisplay').textContent = learningData.streak;
+    if (learningData.streak >= 3) {
+        showBadge('连胜达成');
+    }
+}
+```
+
+### 动画效果库
+
+```css
+/* 浮动动画 */
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.animate-float { animation: float 3s ease-in-out infinite; }
+
+/* 弹入动画 */
+@keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.animate-pop { animation: popIn 0.3s ease; }
+
+/* 上滑动画 */
+@keyframes slideUp { 0% { transform: translateY(10px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+.animate-slide { animation: slideUp 0.3s ease; }
+
+/* 粒子效果 */
+.particle { position: fixed; pointer-events: none; animation: confetti 0.8s ease forwards; }
+@keyframes confetti { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(2) translateY(-50px); } }
+```
+
+### 典型交互流程
+
+```
+步骤1: 概念引入（卡片展示 + 生活类比）
+    ↓ 点击/空格
+步骤2: 拖拽赋值（拖动数值方块到变量槽）
+    ↓ 正确完成
+步骤3: 代码执行（逐行高亮 + 变量变化动画）
+    ↓ 点击"下一步"
+步骤4: 变量交换（三变量法演示）
+    ↓ 点击
+步骤5: 随堂测验（选择题，即时反馈）
+    ↓
+步骤6: 编程练习（输入代码，验证正确性）
+    ↓
+步骤7: 总结报告（学习数据回顾）
+```
+
+### 文件输出
+
+输出路径: `courses/课程名/课时名/index.html`
+
+### 技术栈
+
+- TailwindCSS（CDN）
+- 原生 HTML5 Drag and Drop API
+- 原生 JavaScript
+- CSS Animations
+- 无需 Vue/React，保持轻量
 
 ---
 
@@ -284,12 +502,14 @@ print("Hello")
 
 - `/生成教案 课时名` — 生成教案
 - `/生成PPT 课时名` — 生成 PPT
+- `/生成交互课件 课时名` — 生成交互式课件（含拖拽/测验/代码执行）
 - `/生成图表 课时名` — 仅生成图表
 
 ### 对话触发
 
 - "帮我写一节关于变量的教案"
 - "帮我生成排序算法的 PPT"
+- "帮我生成一个交互式课件讲变量赋值"
 
 ### 半自动流程
 
@@ -297,6 +517,17 @@ print("Hello")
 2. AI 生成预览
 3. 用户确认/修改
 4. AI 写入文件
+
+### 交互课件适用场景
+
+推荐对以下知识点生成交互课件：
+- 变量赋值与交换
+- if/else 条件判断
+- for/while 循环
+- 数组遍历与操作
+- 函数调用与返回值
+
+对于简单概念，可用标准 PPT；对于需要动手操作的知识点，用交互课件。
 
 ---
 
@@ -313,5 +544,5 @@ print("Hello")
 ## 文件命名
 
 - 教案: `courses/课程名/课时名/教案.md`
-- PPT: `courses/课程名/课时名/index.html`
+- PPT/交互课件: `courses/课程名/课时名/index.html`
 - 图表: 内联嵌入或单独文件
