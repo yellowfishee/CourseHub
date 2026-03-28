@@ -66,13 +66,64 @@
 | 项目 | 规范 |
 |------|------|
 | 比例 | 16:9 横屏 |
-| 背景 | #000000 或 #0a0a0a + 模糊光斑动画 |
-| 主文字 | #ffffff |
-| 辅助文字 | #9ca3af |
+| 背景 | #0a0a0a 或 #111111 + 模糊光斑动画 |
+| **文字颜色 | 必须使用亮色：#ffffff、#f0f0f0、#e0e0e0，禁止使用深色（黑色、深灰）** |
+| 辅助文字 | #b0b0b0、#a0a0a0 |
+| 强调色 | #60a5fa（亮蓝）、#34d399（亮绿）、#fbbf24（亮黄）、#f472b6（亮粉） |
 | 中文字体 | HarmonyOS Sans SC / 思源黑体 |
 | 英文字体 | Inter / Roboto |
 | 标题字重 | font-bold |
 | 正文字重 | font-light / font-normal |
+
+### 逐步显示动画（重要！用户触发式）
+
+**同一页内，点击逐步显示元素，全部显示完后才翻页：**
+
+1. **核心逻辑**：
+   - 每页所有元素默认隐藏（opacity: 0, transform: translateY(20px)）
+   - 每次点击空格/右箭头，显示下一个元素
+   - 当前页元素全部显示完后，再点击才翻到下一页
+   - 左箭头：已显示元素重新隐藏（回到上一个状态）
+
+2. **CSS 动画**：
+   ```css
+   .animate-item {
+       opacity: 0;
+       transform: translateY(20px);
+       transition: opacity 0.3s ease, transform 0.3s ease;
+   }
+   .animate-item.visible {
+       opacity: 1;
+       transform: translateY(0);
+   }
+   ```
+
+3. **JavaScript 逻辑**：
+   ```javascript
+   let currentSlide = 0;
+   let currentItem = 0;  // 当前页已显示的元素索引
+
+   document.addEventListener('keydown', (e) => {
+       if (e.key === 'ArrowRight' || e.key === ' ') {
+           // 获取当前页所有元素
+           const items = slides[currentSlide].querySelectorAll('.animate-item');
+           if (currentItem < items.length) {
+               // 还有元素没显示，显示下一个
+               items[currentItem].classList.add('visible');
+               currentItem++;
+           } else {
+               // 元素已全部显示，翻到下一页
+               nextSlide();
+           }
+       }
+   });
+
+   function nextSlide() {
+       // 翻页逻辑，重置 currentItem = 0
+   }
+   ```
+
+4. **每个元素都要添加 `animate-item` class**
 
 ## 交互要求
 
@@ -258,7 +309,18 @@
         }
 
         .dot.active {
-            background: #3b82f6;
+            background: #60a5fa;
+        }
+
+        /* 逐步显示动画 - 用户触发 */
+        .animate-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .animate-item.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>

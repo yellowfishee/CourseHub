@@ -25,12 +25,13 @@ function renderCourseList() {
         <a href="course.html?slug=${encodeURIComponent(course.slug)}" class="course-card">
             <div class="card-header">
                 <span class="card-icon">${course.icon || '📖'}</span>
-                <div>
-                    <h2>${escapeHTML(course.title)}</h2>
-                </div>
+                <h2>${escapeHTML(course.title)}</h2>
             </div>
             <p class="card-description">${escapeHTML(course.description) || '暂无描述'}</p>
-            <span class="card-arrow">→</span>
+            <div class="card-footer">
+                <span class="card-meta">${course.lessons || ''}</span>
+                <span class="card-arrow">→</span>
+            </div>
         </a>
     `).join('');
 }

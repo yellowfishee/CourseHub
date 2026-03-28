@@ -41,6 +41,90 @@ const COURSES_DATA = [
         "hasMeta": false
       }
     ]
+  },
+  {
+    "slug": "03-cpp语法基础",
+    "title": "03-cpp语法基础",
+    "description": "",
+    "lessons": [
+      {
+        "slug": "01-简单程序设计",
+        "title": "01-简单程序设计",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      }
+    ]
+  },
+  {
+    "slug": "C++语法篇",
+    "title": "C++语法篇",
+    "description": "",
+    "lessons": [
+      {
+        "slug": "01-算术表达式",
+        "title": "01-算术表达式",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "02-变量及其输入",
+        "title": "02-变量及其输入",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "03-顺序结构程序设计",
+        "title": "03-顺序结构程序设计",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "04-分支结构程序设计",
+        "title": "04-分支结构程序设计",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      }
+    ]
+  },
+  {
+    "slug": "Python语法篇",
+    "title": "Python语法篇",
+    "description": "",
+    "lessons": [
+      {
+        "slug": "01-算术表达式",
+        "title": "01-算术表达式",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "02-变量及其输入",
+        "title": "02-变量及其输入",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "03-顺序结构程序设计",
+        "title": "03-顺序结构程序设计",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "04-分支结构程序设计",
+        "title": "04-分支结构程序设计",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      }
+    ]
   }
 ];
 export default COURSES_DATA;

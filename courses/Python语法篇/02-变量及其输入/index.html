@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>变量及其输入 - 让计算机"记住"数据</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=HarmonyOS+Sans+SC:wght@300;400;700&display=swap');
+
+        body {
+            font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif;
+            background: #0a0a0a;
+            overflow: hidden;
+        }
+
+        .bg-blur {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.25;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(50px, 50px); }
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .animate-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .animate-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            transition: width 0.3s ease;
+        }
+
+        .progress-dots {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #334155;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #60a5fa;
+            transform: scale(1.3);
+        }
+
+        .code-block {
+            background: #1e1e2e;
+            border: 1px solid #3b82f6;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 1.2rem;
+            color: #f0f0f0;
+            margin: 1rem 0;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+        }
+
+        .code-block .keyword { color: #f472b6; }
+        .code-block .function { color: #34d399; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .string { color: #a78bfa; }
+
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .info-table th, .info-table td {
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.75rem 1rem;
+            text-align: center;
+        }
+
+        .info-table th {
+            background: rgba(59, 130, 246, 0.4);
+            color: #ffffff;
+        }
+
+        .info-table td {
+            background: rgba(255,255,255,0.05);
+            color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-blur" style="top: -200px; left: -200px; background: #3b82f6;"></div>
+    <div class="bg-blur" style="bottom: -200px; right: -200px; background: #8b5cf6; animation-delay: -4s;"></div>
+
+    <div id="slides-container">
+
+        <!-- 第1页：封面 -->
+        <div class="slide active">
+            <h1 class="text-5xl font-bold text-gray-100 mb-8 animate-item">变量及其输入</h1>
+            <p class="text-2xl text-blue-400 mb-8 animate-item">让计算机"记住"数据</p>
+            <div class="grid grid-cols-3 gap-6 w-full max-w-4xl mb-6">
+                <div class="card animate-item">
+                    <div class="text-4xl mb-3">📦</div>
+                    <p class="text-lg text-gray-100 font-bold">变量</p>
+                    <p class="text-gray-400 text-sm">存放数据的盒子</p>
+                </div>
+                <div class="card animate-item">
+                    <div class="text-4xl mb-3">⌨️</div>
+                    <p class="text-lg text-gray-100 font-bold">输入</p>
+                    <p class="text-gray-400 text-sm">input() 命令</p>
+                </div>
+                <div class="card animate-item">
+                    <div class="text-4xl mb-3">🔄</div>
+                    <p class="text-lg text-gray-100 font-bold">赋值</p>
+                    <p class="text-gray-400 text-sm">把值存进变量</p>
+                </div>
+            </div>
+            <p class="text-gray-500 animate-item">Python 语法篇 · 第 2 课</p>
+        </div>
+
+        <!-- 第2页：引入 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">上节课的问题</h2>
+            <div class="card w-full max-w-2xl animate-item">
+                <div class="text-6xl mb-4">🤔</div>
+                <p class="text-xl text-gray-100 mb-4">如何让计算机记住你输入的数字？</p>
+                <p class="text-gray-400">下次再用的时候，还能找到它</p>
+            </div>
+        </div>
+
+        <!-- 第3页：变量是什么 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">变量是什么？</h2>
+            <div class="card animate-item">
+                <div class="text-6xl mb-4">📦</div>
+                <p class="text-xl text-gray-100 mb-4">变量就像一个"盒子"</p>
+                <p class="text-gray-300">盒子上贴个名字，里面可以放东西</p>
+            </div>
+            <div class="code-block mt-6 animate-item">
+                <span class="function">a</span> = <span class="number">5</span>
+            </div>
+            <p class="text-gray-400 text-sm mt-2 animate-item">把数字 5 放进叫 a 的盒子</p>
+        </div>
+
+        <!-- 第4页：变量使用 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">变量的使用</h2>
+            <div class="code-block animate-item">
+                <span class="function">a</span> = <span class="number">5</span>  <span class="text-gray-500"># 把 5 放进 a</span><br>
+                <span class="function">print</span>(<span class="function">a</span>)  <span class="text-gray-500"># 显示 a 里面的内容</span>
+            </div>
+            <div class="card mt-6 animate-item">
+                <p class="text-green-400 font-bold">输出：5</p>
+                <p class="text-gray-400 text-sm mt-2">print(a) 会显示 a 盒子里的数字</p>
+            </div>
+        </div>
+
+        <!-- 第5页：input() 命令 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">如何让计算机读取输入？</h2>
+            <div class="text-6xl mb-6 animate-item">⌨️</div>
+            <div class="code-block animate-item">
+                <span class="function">a</span> = <span class="function">input</span>()
+            </div>
+            <p class="text-gray-300 mt-4 animate-item">让计算机等待你输入，存到变量 a</p>
+        </div>
+
+        <!-- 第6页：input() 转数字 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">input() 读取数字</h2>
+            <div class="card animate-item">
+                <p class="text-yellow-400 font-bold mb-4">input() 读进来的是"字符串"</p>
+                <p class="text-gray-300">需要用 int() 转成整数</p>
+            </div>
+            <div class="code-block mt-4 animate-item">
+                <span class="function">a</span> = <span class="function">int</span>(<span class="function">input</span>())
+            </div>
+            <div class="code-block mt-4 animate-item">
+                <span class="function">a</span> = <span class="function">float</span>(<span class="function">input</span>())  <span class="text-gray-500"># 转成浮点数</span>
+            </div>
+        </div>
+
+        <!-- 第7页：程序1-4 a+b问题 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-4　a+b问题</h2>
+            <div class="code-block animate-item">
+                a = <span class="function">int</span>(<span class="function">input</span>())<br>
+                b = <span class="function">int</span>(<span class="function">input</span>())<br>
+                <span class="function">print</span>(a + b)
+            </div>
+            <div class="grid grid-cols-2 gap-4 mt-4 w-full max-w-2xl">
+                <div class="card animate-item">
+                    <p class="text-gray-400 text-sm">输入：3 5</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-green-400 font-bold">输出：8</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第8页：例题1-1 圆柱体表面积 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">例题1-1　圆柱体的表面积</h2>
+            <p class="text-gray-300 mb-4 animate-item">输入底面半径 r 和高 h，输出圆柱体的表面积</p>
+            <div class="grid grid-cols-2 gap-4 w-full max-w-2xl">
+                <div class="card animate-item">
+                    <p class="text-gray-400 text-sm">样例输入</p>
+                    <p class="text-green-400">3.5 9</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-gray-400 text-sm">样例输出</p>
+                    <p class="text-green-400">274.889</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第9页：程序1-5 圆柱体表面积 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-5　圆柱体的表面积</h2>
+            <div class="code-block animate-item">
+                <span class="keyword">import</span> math<br>
+                r, h = <span class="function">map</span>(<span class="function">float</span>, <span class="function">input</span>().<span class="function">split</span>())<br>
+                s1 = math.pi * r * r<br>
+                s2 = <span class="number">2</span> * math.pi * r * h<br>
+                s = s1 * <span class="number">2.0</span> + s2<br>
+                <span class="function">print</span>(<span class="string">"Area = {:.3f}"</span>.<span class="function">format</span>(s))
+            </div>
+        </div>
+
+        <!-- 第10页：赋值运算 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">赋值运算的理解</h2>
+            <div class="card animate-item">
+                <p class="text-xl text-red-400 font-bold mb-4">⚠️ = 不是"等于"！</p>
+                <p class="text-gray-100">= 是"赋值"：把右边的值放进左边的变量</p>
+            </div>
+            <div class="code-block mt-4 animate-item">
+                <span class="function">a</span> = <span class="number">5</span>  <span class="text-gray-500"># a 盒子放 5</span><br>
+                <span class="function">a</span> = <span class="function">a</span> + <span class="number">1</span>  <span class="text-gray-500"># 算出来 6，再放进 a</span>
+            </div>
+            <p class="text-yellow-400 mt-4 animate-item">变量是"喜新厌旧"的，新的值会覆盖旧的值！</p>
+        </div>
+
+        <!-- 第11页：变量交换 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">变量交换：三变量法</h2>
+            <p class="text-gray-300 mb-6 animate-item">如何交换 a=3 和 b=5，变成 a=5, b=3？</p>
+            <div class="code-block animate-item">
+                <span class="function">a</span> = <span class="number">3</span><br>
+                <span class="function">b</span> = <span class="number">5</span><br>
+                <span class="function">t</span> = <span class="function">a</span>  <span class="text-gray-500"># 把 a 的值先存到 t</span><br>
+                <span class="function">a</span> = <span class="function">b</span>  <span class="text-gray-500"># 把 b 的值给 a</span><br>
+                <span class="function">b</span> = <span class="function">t</span>  <span class="text-gray-500"># 把 t 里保存的值给 b</span>
+            </div>
+        </div>
+
+        <!-- 第12页：交换类比 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">变量交换的类比</h2>
+            <div class="grid grid-cols-3 gap-4 w-full max-w-3xl">
+                <div class="card animate-item">
+                    <div class="text-4xl mb-3">🍶</div>
+                    <p class="text-gray-100 font-bold">酱油瓶 a</p>
+                    <p class="text-gray-400 text-sm">a = 3</p>
+                </div>
+                <div class="card animate-item">
+                    <div class="text-4xl mb-3">🍾</div>
+                    <p class="text-gray-100 font-bold">醋瓶 b</p>
+                    <p class="text-gray-400 text-sm">b = 5</p>
+                </div>
+                <div class="card animate-item">
+                    <div class="text-4xl mb-3">🥛</div>
+                    <p class="text-gray-100 font-bold">空杯子 t</p>
+                    <p class="text-gray-400 text-sm">临时存放</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4 mt-4 w-full max-w-3xl">
+                <div class="card animate-item">
+                    <p class="text-yellow-400 text-sm">t = a</p>
+                    <p class="text-gray-300 text-xs">酱油倒进空杯</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-yellow-400 text-sm">a = b</p>
+                    <p class="text-gray-300 text-xs">醋倒进酱油瓶</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-yellow-400 text-sm">b = t</p>
+                    <p class="text-gray-300 text-xs">酱油倒进醋瓶</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第13页：整数和浮点数 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">两种数字类型</h2>
+            <table class="info-table w-full max-w-2xl animate-item">
+                <thead>
+                    <tr>
+                        <th>类型</th>
+                        <th>名字</th>
+                        <th>例子</th>
+                        <th>用途</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-blue-400 font-bold">int</td>
+                        <td class="text-gray-100">整数</td>
+                        <td class="text-gray-100">1, 100, -5</td>
+                        <td class="text-gray-400">人数、个数</td>
+                    </tr>
+                    <tr>
+                        <td class="text-green-400 font-bold">float</td>
+                        <td class="text-gray-100">浮点数</td>
+                        <td class="text-gray-100">3.14, -0.5</td>
+                        <td class="text-gray-400">金钱、重量</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="code-block mt-4 animate-item">
+                <span class="function">int</span>(<span class="number">3.14</span>)  <span class="text-gray-500">→ 3</span><br>
+                <span class="function">float</span>(<span class="number">5</span>)  <span class="text-gray-500">→ 5.0</span>
+            </div>
+        </div>
+
+        <!-- 第14页：总结 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">今天学了什么？</h2>
+            <div class="grid grid-cols-2 gap-4 w-full max-w-3xl">
+                <div class="card animate-item">
+                    <p class="text-blue-400 font-bold">程序1-4</p>
+                    <p class="text-gray-400 text-sm">a+b问题</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-green-400 font-bold">程序1-5</p>
+                    <p class="text-gray-400 text-sm">圆柱体表面积</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-yellow-400 font-bold">变量 a = 5</p>
+                    <p class="text-gray-400 text-sm">让计算机记住数据</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-purple-400 font-bold">变量交换</p>
+                    <p class="text-gray-400 text-sm">三变量法</p>
+                </div>
+            </div>
+            <p class="text-gray-400 mt-6 animate-item">变量就像便利贴，用完还可以贴新的东西上去！</p>
+        </div>
+
+        <!-- 第15页：下节课预告 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">下节课预告</h2>
+            <div class="card animate-item">
+                <div class="text-4xl mb-4">📝</div>
+                <p class="text-2xl text-gray-100 font-bold">顺序结构程序设计</p>
+                <p class="text-gray-400 mt-4">一步一步执行，像做菜一样</p>
+                <p class="text-gray-500 text-sm mt-2">三位数反转、变量交换的妙用</p>
+            </div>
+            <p class="text-gray-500 mt-8 animate-item">Python 语法篇 · 第 3 课</p>
+        </div>
+
+    </div>
+
+    <div class="fixed top-4 right-4 text-gray-500 text-sm animate-item">
+        点击空格/右箭头逐步显示
+    </div>
+
+    <div class="progress-bar" id="progress"></div>
+    <div class="progress-dots" id="dots"></div>
+
+    <script>
+        let currentSlide = 0;
+        let currentItem = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        const dotsContainer = document.getElementById('dots');
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsContainer.appendChild(dot);
+        }
+
+        function getCurrentItems() {
+            return slides[currentSlide].querySelectorAll('.animate-item');
+        }
+
+        function showNextItem() {
+            const items = getCurrentItems();
+            if (currentItem < items.length) {
+                items[currentItem].classList.add('visible');
+                currentItem++;
+                return true;
+            }
+            return false;
+        }
+
+        function hideAllItems() {
+            const items = getCurrentItems();
+            items.forEach(item => item.classList.remove('visible'));
+            currentItem = 0;
+        }
+
+        function goToSlide(index) {
+            if (index < 0 || index >= totalSlides) return;
+            slides[currentSlide].classList.remove('active');
+            document.querySelectorAll('.dot')[currentSlide].classList.remove('active');
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+            document.querySelectorAll('.dot')[currentSlide].classList.add('active');
+            hideAllItems();
+            updateProgress();
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+
+        function updateProgress() {
+            document.getElementById('progress').style.width =
+                ((currentSlide + 1) / totalSlides * 100) + '%';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                if (!showNextItem()) {
+                    nextSlide();
+                }
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.dot')) return;
+            if (!showNextItem()) {
+                nextSlide();
+            }
+        });
+
+        updateProgress();
+    </script>
+</body>
+</html>

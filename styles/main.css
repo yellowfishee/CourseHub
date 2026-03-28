@@ -98,31 +98,28 @@ body {
     border-left: 3px solid var(--primary-color);
 }
 
+/* 课程卡片网格布局 */
+#courses-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
 .course-card {
     background: var(--card-bg);
     border-radius: var(--border-radius);
-    padding: 2rem;
+    padding: 1.5rem;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 4px 6px rgba(0,0,0,0.03);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     text-decoration: none;
     color: inherit;
-    display: block;
+    display: flex;
+    flex-direction: column;
     border: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
-}
-
-.course-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: linear-gradient(180deg, var(--primary-color), var(--primary-light));
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    min-height: 180px;
 }
 
 .course-card:hover {
@@ -131,13 +128,9 @@ body {
     border-color: var(--primary-light);
 }
 
-.course-card:hover::before {
-    opacity: 1;
-}
-
 .course-card .card-header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 1rem;
     margin-bottom: 1rem;
 }
@@ -145,50 +138,47 @@ body {
 .course-card .card-icon {
     font-size: 2.5rem;
     line-height: 1;
+    flex-shrink: 0;
 }
 
 .course-card h2 {
     color: var(--text-color);
-    font-size: 1.35rem;
+    font-size: 1.2rem;
     font-weight: 700;
-    margin-bottom: 0.25rem;
     letter-spacing: -0.01em;
 }
 
 .course-card .card-description {
     color: var(--text-light);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     line-height: 1.6;
-    margin-bottom: 1.25rem;
+    flex-grow: 1;
 }
 
-.course-card .card-meta {
+.course-card .card-footer {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    font-size: 0.85rem;
-    color: var(--text-light);
-}
-
-.course-card .card-meta span {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
 }
 
 .course-card .card-arrow {
-    position: absolute;
-    right: 1.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-light);
+    color: var(--primary-color);
+    font-size: 1.25rem;
     opacity: 0;
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .course-card:hover .card-arrow {
     opacity: 1;
-    transform: translateY(-50%) translateX(4px);
+    transform: translateX(4px);
+}
+
+.course-card .card-meta {
+    font-size: 0.85rem;
+    color: var(--text-light);
 }
 
 /* ==================== 课程页样式 ==================== */
