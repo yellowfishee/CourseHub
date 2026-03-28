@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注解与习题 - 第1章总复习</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=HarmonyOS+Sans+SC:wght@300;400;700&display=swap');
+        body { font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif; background: #0a0a0a; overflow: hidden; }
+        .bg-blur { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); opacity: 0.25; animation: float 8s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(50px, 50px); } }
+        .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4rem; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        .slide.active { opacity: 1; pointer-events: auto; }
+        .animate-item { opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease; }
+        .animate-item.visible { opacity: 1; transform: translateY(0); }
+        .progress-bar { position: fixed; bottom: 0; left: 0; height: 4px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 0.3s ease; }
+        .progress-dots { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; cursor: pointer; transition: all 0.3s ease; }
+        .dot.active { background: #60a5fa; transform: scale(1.3); }
+        .code-block { background: #1e1e2e; border: 1px solid #3b82f6; border-radius: 12px; padding: 1.5rem 2rem; font-family: 'Monaco', 'Menlo', monospace; font-size: 1.1rem; color: #f0f0f0; margin: 1rem 0; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2); }
+        .code-block .keyword { color: #f472b6; }
+        .code-block .function { color: #34d399; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .string { color: #a78bfa; }
+        .code-block .comment { color: #6b7280; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 1.5rem; text-align: center; }
+        .info-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        .info-table th, .info-table td { border: 1px solid rgba(255,255,255,0.2); padding: 0.75rem 1rem; text-align: center; }
+        .info-table th { background: rgba(59, 130, 246, 0.4); color: #ffffff; }
+        .info-table td { background: rgba(255,255,255,0.05); color: #f0f0f0; }
+        .code-block { cursor: pointer; transition: all 0.3s ease; }
+        .code-block:hover { border-color: #60a5fa; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4); }
+        .code-block.executed { border-color: #22c55e; box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3); }
+        .code-execution { display: none; margin-top: 1rem; padding: 1rem; background: rgba(34, 197, 94, 0.1); border: 1px solid #22c55e; border-radius: 8px; animation: slideUp 0.3s ease; }
+        .code-execution.show { display: block; }
+        .particle { position: fixed; pointer-events: none; font-size: 1.25rem; animation: confetti 0.8s ease forwards; z-index: 1000; }
+        @keyframes confetti { 0% { opacity: 1; transform: scale(1) translateY(0); } 100% { opacity: 0; transform: scale(1.5) translateY(-60px); } }
+        @keyframes slideUp { 0% { transform: translateY(10px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div class="bg-blur" style="top: -200px; left: -200px; background: #3b82f6;"></div>
+    <div class="bg-blur" style="bottom: -200px; right: -200px; background: #8b5cf6; animation-delay: -4s;"></div>
+
+    <div id="slides-container">
+        <!-- 第1页：封面 -->
+        <div class="slide active">
+            <h1 class="text-5xl font-bold text-gray-100 mb-8 animate-item">注解与习题</h1>
+            <p class="text-2xl text-blue-400 mb-8 animate-item">第1章总复习</p>
+            <div class="grid grid-cols-3 gap-6 w-full max-w-4xl mb-6">
+                <div class="card animate-item"><div class="text-4xl mb-3">🔍</div><p class="text-lg text-gray-100 font-bold">常见错误</p><p class="text-gray-400 text-sm">SyntaxError</p></div>
+                <div class="card animate-item"><div class="text-4xl mb-3">🛠️</div><p class="text-lg text-gray-100 font-bold">调试技巧</p><p class="text-gray-400 text-sm">看报错信息</p></div>
+                <div class="card animate-item"><div class="text-4xl mb-3">📝</div><p class="text-lg text-gray-100 font-bold">习题讲解</p><p class="text-gray-400 text-sm">原书习题</p></div>
+            </div>
+            <p class="text-gray-500 animate-item">Python 语法篇 · 第 1 章</p>
+        </div>
+
+        <!-- 第2页：本章回顾 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">第1章知识回顾</h2>
+            <div class="code-block animate-item">
+                <span class="comment">第1章：程序设计入门</span><br><br>
+                <span class="function">01-算术表达式</span>：计算机的"本职"工作是计算<br>
+                <span class="function">02-变量及其输入</span>：让计算机"记住"数据<br>
+                <span class="function">03-顺序结构程序设计</span>：一步一步来<br>
+                <span class="function">04-分支结构程序设计</span>：遇到岔路口做选择
+            </div>
+            <p class="text-gray-400 mt-4 animate-item">今天我们来做总复习！</p>
+        </div>
+
+        <!-- 第3页：常见错误类型 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">常见错误类型</h2>
+            <div class="grid grid-cols-3 gap-4 w-full max-w-3xl">
+                <div class="card animate-item">
+                    <div class="text-3xl mb-2 text-red-400">❌</div>
+                    <p class="text-yellow-400 font-bold">SyntaxError</p>
+                    <p class="text-gray-400 text-sm">语法错误</p>
+                </div>
+                <div class="card animate-item">
+                    <div class="text-3xl mb-2 text-red-400">❌</div>
+                    <p class="text-yellow-400 font-bold">IndentationError</p>
+                    <p class="text-gray-400 text-sm">缩进错误</p>
+                </div>
+                <div class="card animate-item">
+                    <div class="text-3xl mb-2 text-red-400">❌</div>
+                    <p class="text-yellow-400 font-bold">NameError</p>
+                    <p class="text-gray-400 text-sm">名字错误</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第4页：语法错误示例 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">语法错误 SyntaxError</h2>
+            <p class="text-gray-300 mb-4 animate-item">错误原因：代码写错了格式</p>
+            <div class="grid grid-cols-2 gap-4 w-full max-w-3xl">
+                <div class="card animate-item">
+                    <p class="text-red-400 font-bold mb-2">✗ 错误</p>
+                    <div class="code-block text-sm">
+                        <span class="function">print</span>（<span class="number">1</span> + <span class="number">2</span>）<br>
+                        <span class="comment"># 中文括号！</span>
+                    </div>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-green-400 font-bold mb-2">✓ 正确</p>
+                    <div class="code-block text-sm">
+                        <span class="function">print</span>(<span class="number">1</span> + <span class="number">2</span>)<br>
+                        <span class="comment"># 英文括号</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第5页：缩进错误 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">缩进错误 IndentationError</h2>
+            <p class="text-gray-300 mb-4 animate-item">错误原因：空格和Tab混用，或者缩进不一致</p>
+            <div class="code-block animate-item">
+                <span class="keyword">if</span> score >= <span class="number">60</span>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(<span class="string">"及格"</span>)  <span class="comment"># 正确：缩进了</span><br>
+                <span class="function">print</span>(<span class="string">"及格"</span>)  <span class="comment"># 错误：没有缩进</span>
+            </div>
+            <div class="card mt-4 animate-item">
+                <p class="text-yellow-400 font-bold">💡 解决方法：Tab和空格不要混用</p>
+            </div>
+        </div>
+
+        <!-- 第6页：调试三步骤 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">调试技巧：看报错信息</h2>
+            <div class="code-block animate-item">
+                <span class="comment"># 示例报错信息</span><br>
+                File <span class="string">"test.py"</span>, line <span class="number">3</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(<span class="string">"Hello</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="text-red-400">^</span><br>
+                <span class="text-red-400">SyntaxError</span>: EOL while scanning string literal
+            </div>
+            <div class="grid grid-cols-3 gap-4 mt-6 w-full max-w-3xl">
+                <div class="card animate-item">
+                    <div class="text-2xl text-blue-400 font-bold">1</div>
+                    <p class="text-gray-300 text-sm">找到错误在哪一行</p>
+                </div>
+                <div class="card animate-item">
+                    <div class="text-2xl text-blue-400 font-bold">2</div>
+                    <p class="text-gray-300 text-sm">看清错误类型</p>
+                </div>
+                <div class="card animate-item">
+                    <div class="text-2xl text-blue-400 font-bold">3</div>
+                    <p class="text-gray-300 text-sm">检查那一行代码</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第7页：竞赛要点 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">竞赛题目要点</h2>
+            <div class="space-y-4 w-full max-w-2xl">
+                <div class="card animate-item">
+                    <p class="text-red-400 font-bold">❌ 不要加提示语</p>
+                    <p class="text-gray-500 text-sm mt-1">print("请输入a:") - 错误！</p>
+                    <p class="text-gray-500 text-sm">input() - 正确！</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-green-400 font-bold">✓ 输出格式要严格</p>
+                    <p class="text-gray-500 text-sm mt-1">题目说保留3位小数，就用 {:.3f}</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-yellow-400 font-bold">✓ 整数除法要小心</p>
+                    <p class="text-gray-500 text-sm mt-1">用 // 而不是 /</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第8页：习题1-平均数 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">习题1-1　平均数</h2>
+            <p class="text-gray-300 mb-4 animate-item">输入3个整数，输出它们的平均值，保留3位小数</p>
+            <div class="grid grid-cols-2 gap-4 w-full max-w-2xl mb-4">
+                <div class="card animate-item">
+                    <p class="text-gray-400 text-sm">示例输入</p>
+                    <p class="text-green-400">3 4 5</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-gray-400 text-sm">示例输出</p>
+                    <p class="text-green-400">4.000</p>
+                </div>
+            </div>
+            <div class="code-block animate-item" onclick="executeCode(this, event)">
+                <span class="function">a</span> = <span class="function">float</span>(<span class="function">input</span>())<br>
+                <span class="function">b</span> = <span class="function">float</span>(<span class="function">input</span>())<br>
+                <span class="function">c</span> = <span class="function">float</span>(<span class="function">input</span>())<br>
+                <span class="function">print</span>(<span class="string">f"{(a + b + c) / 3:.3f}"</span>)
+                <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
+            </div>
+            <div class="code-execution">
+                <div class="text-green-400 font-bold mb-2">✓ 执行结果</div>
+                <div>输入：3 4 5 → 输出：<span class="text-yellow-400 font-bold">4.000</span></div>
+            </div>
+        </div>
+
+        <!-- 第9页：习题2-温度 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">习题1-2　温度</h2>
+            <p class="text-gray-300 mb-4 animate-item">输入华氏温度 f，输出摄氏温度 c，保留3位小数</p>
+            <p class="text-blue-400 text-sm mb-4 animate-item">公式：c = 5(f-32)/9</p>
+            <div class="grid grid-cols-2 gap-4 w-full max-w-2xl mb-4">
+                <div class="card animate-item">
+                    <p class="text-gray-400 text-sm">示例输入</p>
+                    <p class="text-green-400">100</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-gray-400 text-sm">示例输出</p>
+                    <p class="text-green-400">37.778</p>
+                </div>
+            </div>
+            <div class="code-block animate-item" onclick="executeCode(this, event)">
+                f = <span class="function">float</span>(<span class="function">input</span>())<br>
+                c = <span class="number">5.0</span> * (f - <span class="number">32.0</span>) / <span class="number">9.0</span><br>
+                <span class="function">print</span>(<span class="string">f"{c:.3f}"</span>)
+                <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
+            </div>
+            <div class="code-execution">
+                <div class="text-green-400 font-bold mb-2">✓ 执行结果</div>
+                <div>输入：100 → 输出：<span class="text-yellow-400 font-bold">37.778</span></div>
+            </div>
+        </div>
+
+        <!-- 第10页：习题3-连续和 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">习题1-3　连续和</h2>
+            <p class="text-gray-300 mb-4 animate-item">输入正整数 n，输出 1+2+...+n 的值</p>
+            <div class="grid grid-cols-2 gap-4 w-full max-w-2xl mb-4">
+                <div class="card animate-item">
+                    <p class="text-gray-400 text-sm">示例输入</p>
+                    <p class="text-green-400">100</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-gray-400 text-sm">示例输出</p>
+                    <p class="text-green-400">5050</p>
+                </div>
+            </div>
+            <div class="code-block animate-item" onclick="executeCode(this, event)">
+                n = <span class="function">int</span>(<span class="function">input</span>())<br>
+                <span class="function">print</span>(n * (n + <span class="number">1</span>) // <span class="number">2</span>)
+                <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
+            </div>
+            <div class="code-execution">
+                <div class="text-green-400 font-bold mb-2">✓ 执行结果</div>
+                <div class="text-sm">
+                    <div>输入：100 → 输出：<span class="text-yellow-400 font-bold">5050</span></div>
+                    <div class="text-gray-400 mt-2">使用求和公式：n*(n+1)/2</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第11页：习题4-打折 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">习题1-5　打折</h2>
+            <p class="text-gray-300 mb-4 animate-item">一件衣服95元，满300元打八五折</p>
+            <div class="grid grid-cols-2 gap-4 w-full max-w-2xl mb-4">
+                <div class="card animate-item">
+                    <p class="text-gray-400 text-sm">示例输入</p>
+                    <p class="text-green-400">4</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-gray-400 text-sm">示例输出</p>
+                    <p class="text-green-400">323.00</p>
+                </div>
+            </div>
+            <div class="code-block animate-item" onclick="executeCode(this, event)">
+                n = <span class="function">int</span>(<span class="function">input</span>())<br>
+                total = n * <span class="number">95.0</span><br>
+                <span class="keyword">if</span> total >= <span class="number">300.0</span>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;total *= <span class="number">0.85</span><br>
+                <span class="function">print</span>(<span class="string">f"{total:.2f}"</span>)
+                <div class="text-xs text-gray-400 mt-2">点击运行 ▶</div>
+            </div>
+            <div class="code-execution">
+                <div class="text-green-400 font-bold mb-2">✓ 执行结果</div>
+                <div class="text-sm">
+                    <div>输入：4 → 总价=380 → 打八五折</div>
+                    <div>输出：<span class="text-yellow-400 font-bold">323.00</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第12页：总结 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">本章小结</h2>
+            <div class="grid grid-cols-2 gap-4 w-full max-w-3xl">
+                <div class="card animate-item">
+                    <p class="text-red-400 font-bold">常见错误</p>
+                    <p class="text-gray-400 text-sm mt-2">语法错误、缩进错误、引号错误</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-blue-400 font-bold">调试方法</p>
+                    <p class="text-gray-400 text-sm mt-2">看报错信息，找准行号</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-green-400 font-bold">竞赛要点</p>
+                    <p class="text-gray-400 text-sm mt-2">不添提示语，格式要严格</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-yellow-400 font-bold">提高方法</p>
+                    <p class="text-gray-400 text-sm mt-2">多练习！多练习！多练习！</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第13页：下节课预告 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">第2章预告</h2>
+            <div class="card animate-item">
+                <div class="text-4xl mb-4">🔄</div>
+                <p class="text-2xl text-gray-100 font-bold">循环结构程序设计</p>
+                <p class="text-gray-400 mt-4">重复执行，让计算机做重复的事</p>
+            </div>
+            <p class="text-gray-500 mt-8 animate-item">Python 语法篇 · 第 2 章</p>
+        </div>
+    </div>
+
+    <div class="fixed top-4 right-4 text-gray-500 text-sm animate-item">点击空格/右箭头逐步显示</div>
+    <div class="progress-bar" id="progress"></div>
+    <div class="progress-dots" id="dots"></div>
+
+    <script>
+        let currentSlide = 0, currentItem = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const dotsContainer = document.getElementById('dots');
+        for (let i = 0; i < totalSlides; i++) { const dot = document.createElement('div'); dot.className = 'dot' + (i === 0 ? ' active' : ''); dot.addEventListener('click', () => goToSlide(i)); dotsContainer.appendChild(dot); }
+        function getCurrentItems() { return slides[currentSlide].querySelectorAll('.animate-item'); }
+        function showNextItem() { const items = getCurrentItems(); if (currentItem < items.length) { items[currentItem].classList.add('visible'); currentItem++; return true; } return false; }
+        function hideAllItems() { const items = getCurrentItems(); items.forEach(item => item.classList.remove('visible')); currentItem = 0; }
+        function goToSlide(index) { if (index < 0 || index >= totalSlides) return; slides[currentSlide].classList.remove('active'); document.querySelectorAll('.dot')[currentSlide].classList.remove('active'); currentSlide = index; slides[currentSlide].classList.add('active'); document.querySelectorAll('.dot')[currentSlide].classList.add('active'); hideAllItems(); updateProgress(); }
+        function nextSlide() { if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1); }
+        function prevSlide() { if (currentSlide > 0) goToSlide(currentSlide - 1); }
+        function updateProgress() { document.getElementById('progress').style.width = ((currentSlide + 1) / totalSlides * 100) + '%'; }
+        document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); if (!showNextItem()) nextSlide(); } else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); } });
+        document.addEventListener('click', (e) => { if (e.target.closest('.dot')) return; if (!showNextItem()) nextSlide(); });
+        updateProgress();
+
+        // 代码执行可视化
+        function executeCode(element, event) {
+            if (event) event.stopPropagation();
+            if (element.classList.contains('executed')) return;
+            element.classList.add('executed');
+            element.querySelector('.text-xs').textContent = '✓ 已执行';
+
+            const executionDiv = element.nextElementSibling;
+            if (executionDiv && executionDiv.classList.contains('code-execution')) {
+                executionDiv.classList.add('show');
+            }
+
+            createParticles(element);
+        }
+
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const emojis = ['✨', '⭐', '🌟', '💫'];
+            for (let i = 0; i < 5; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                particle.style.left = (rect.left + rect.width / 2 + (Math.random() - 0.5) * 100) + 'px';
+                particle.style.top = rect.top + 'px';
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 800);
+            }
+        }
+    </script>
+</body>
+</html>
