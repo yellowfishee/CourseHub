@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>凯撒密码：从字符串到加密算法</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', 'Noto Sans SC', sans-serif;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+    .slide-container { position: relative; width: 100%; height: 100%; }
+    .slide {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .slide.active { display: flex; opacity: 1; }
+    .glow-bg {
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      filter: blur(150px);
+      opacity: 0.15;
+      pointer-events: none;
+    }
+    .glow-1 { background: #ef4444; top: -200px; right: -200px; animation: float1 8s ease-in-out infinite; }
+    .glow-2 { background: #f59e0b; bottom: -200px; left: -200px; animation: float2 10s ease-in-out infinite; }
+    .glow-3 { background: #10b981; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: float3 12s ease-in-out infinite; }
+    @keyframes float1 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-50px, 50px); } }
+    @keyframes float2 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(50px, -50px); } }
+    @keyframes float3 { 0%, 100% { opacity: 0.1; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 0.2; transform: translate(-50%, -50%) scale(1.2); } }
+    .progress-bar {
+      position: fixed;
+      bottom: 0; left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
+      transition: width 0.3s ease;
+    }
+    .slide-number { position: fixed; bottom: 20px; right: 30px; font-size: 14px; color: #6b7280; font-weight: 500; }
+    .nav-hint { position: fixed; bottom: 20px; left: 30px; font-size: 12px; color: #4b5563; }
+    .code-block {
+      background: rgba(17, 17, 17, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px 24px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 14px;
+      line-height: 1.8;
+      width: 100%;
+      max-width: 520px;
+      overflow-x: auto;
+    }
+    .code-block .keyword { color: #c678dd; }
+    .code-block .function { color: #61afef; }
+    .code-block .string { color: #98c379; }
+    .code-block .comment { color: #5c6370; font-style: italic; }
+    .code-block .variable { color: #e5c07b; }
+    .code-block .number { color: #d19a66; }
+    .bullet-list { list-style: none; width: 100%; max-width: 500px; }
+    .bullet-list li {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    .bullet-list li:last-child { border-bottom: none; }
+    .bullet-dot {
+      width: 8px; height: 8px;
+      background: #f59e0b;
+      border-radius: 50%;
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+    .section-label {
+      font-size: 11px;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+    .chapter-num {
+      font-size: 120px;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.05);
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+    }
+    .chapter-title {
+      font-size: 28px;
+      font-weight: 700;
+      position: relative;
+      z-index: 1;
+    }
+    .statement-text {
+      font-size: 28px;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.5;
+      max-width: 700px;
+    }
+    .ascii-table {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      width: 100%;
+      max-width: 500px;
+      margin-top: 16px;
+    }
+    .ascii-cell {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 8px;
+      padding: 10px 4px;
+      text-align: center;
+      font-size: 12px;
+    }
+    .ascii-cell .char { font-size: 18px; font-weight: 700; color: #fbbf24; }
+    .ascii-cell .code { color: #9ca3af; margin-top: 2px; }
+    .string-demo {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+    .string-char {
+      background: rgba(239, 68, 68, 0.15);
+      border: 2px solid rgba(239, 68, 68, 0.4);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .string-index {
+      font-size: 10px;
+      color: #6b7280;
+      margin-top: 4px;
+      text-align: center;
+    }
+    .cipher-demo {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .cipher-word { display: flex; gap: 4px; }
+    .cipher-box {
+      background: rgba(16, 185, 129, 0.15);
+      border: 2px solid rgba(16, 185, 129, 0.4);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 18px;
+      font-weight: 600;
+      min-width: 44px;
+      text-align: center;
+    }
+    .cipher-box.original { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); }
+    .cipher-arrow { font-size: 24px; color: #6b7280; }
+    .formula-box {
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 12px;
+      padding: 20px 32px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      margin: 20px 0;
+    }
+    .key-badge {
+      display: inline-block;
+      background: rgba(139, 92, 246, 0.2);
+      border-radius: 6px;
+      padding: 4px 12px;
+      color: #a78bfa;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- Slide 01: Hero -->
+    <div class="slide active" data-slide="1">
+      <div class="glow-bg glow-1"></div>
+      <div class="glow-bg glow-2"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="relative z-10 text-center">
+        <div class="section-label">Python 编程入门</div>
+        <h1 class="text-4xl md:text-5xl font-black mb-6 leading-tight">凯撒密码</h1>
+        <p class="text-lg text-gray-400">从字符串到加密算法</p>
+      </div>
+    </div>
+
+    <!-- Slide 02: What is Caesar Cipher -->
+    <div class="slide" data-slide="2">
+      <div class="glow-bg glow-1"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="emoji-large" style="font-size:64px">🔐</div>
+      <h2 class="text-2xl font-bold mb-4">什么是凯撒密码？</h2>
+      <p class="text-gray-400 text-center max-w-md leading-relaxed">
+        一种最简单的加密方法<br>
+        把每个字母向后移动<span class="text-yellow-400 font-bold">固定位数</span>
+      </p>
+      <div class="cipher-demo mt-6">
+        <div class="cipher-word">
+          <div class="cipher-box original">H</div>
+          <div class="cipher-box original">E</div>
+          <div class="cipher-box original">L</div>
+          <div class="cipher-box original">L</div>
+          <div class="cipher-box original">O</div>
+        </div>
+        <div class="cipher-arrow">→</div>
+        <div class="cipher-word">
+          <div class="cipher-box">K</div>
+          <div class="cipher-box">H</div>
+          <div class="cipher-box">O</div>
+          <div class="cipher-box">O</div>
+          <div class="cipher-box">R</div>
+        </div>
+      </div>
+      <p class="text-gray-500 text-sm">密钥 key = 3（每个字母向后移3位）</p>
+    </div>
+
+    <!-- Slide 03: Chapter - 知识点1 -->
+    <div class="slide" data-slide="3">
+      <div class="glow-bg glow-2"></div>
+      <div class="chapter-num">01</div>
+      <div class="chapter-title">字符串：字符的容器</div>
+    </div>
+
+    <!-- Slide 04: What is String -->
+    <div class="slide" data-slide="4">
+      <div class="glow-bg glow-1"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="section-label">知识点一</div>
+      <h2 class="text-2xl font-bold mb-6">什么是字符串？</h2>
+      <p class="text-gray-400 mb-4">字符串就是一串字符，用引号包裹</p>
+      <div class="code-block text-left">
+        <div><span class="variable">text</span> = <span class="string">"HELLO"</span></div>
+        <div><span class="variable">name</span> = <span class="string">"凯撒"</span></div>
+        <div><span class="variable">secret</span> = <span class="string">'ABC123'</span></div>
+      </div>
+      <p class="text-gray-500 text-sm mt-4">单引号 ' 或双引号 " 都可以</p>
+    </div>
+
+    <!-- Slide 05: String Index -->
+    <div class="slide" data-slide="5">
+      <div class="glow-bg glow-2"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="section-label">字符串索引</div>
+      <h2 class="text-xl font-bold mb-2">每个字符都有一个位置编号</h2>
+      <p class="text-gray-500 text-sm mb-4">从 0 开始计数</p>
+      <div class="string-demo">
+        <div><div class="string-char">H</div><div class="string-index">0</div></div>
+        <div><div class="string-char">E</div><div class="string-index">1</div></div>
+        <div><div class="string-char">L</div><div class="string-index">2</div></div>
+        <div><div class="string-char">L</div><div class="string-index">3</div></div>
+        <div><div class="string-char">O</div><div class="string-index">4</div></div>
+      </div>
+      <div class="code-block text-left mt-4">
+        <div><span class="variable">text</span> = <span class="string">"HELLO"</span></div>
+        <div><span class="function">print</span>(<span class="variable">text</span>[<span class="number">0</span>])  <span class="comment"># 输出: H</span></div>
+        <div><span class="function">print</span>(<span class="variable">text</span>[<span class="number">1</span>])  <span class="comment"># 输出: E</span></div>
+        <div><span class="function">print</span>(<span class="variable">text</span>[<span class="number">4</span>])  <span class="comment"># 输出: O</span></div>
+      </div>
+    </div>
+
+    <!-- Slide 06: String Length -->
+    <div class="slide" data-slide="6">
+      <div class="glow-bg glow-1"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="section-label">获取字符串长度</div>
+      <div class="code-block text-left">
+        <div><span class="variable">text</span> = <span class="string">"HELLO"</span></div>
+        <div><span class="variable">length</span> = <span class="function">len</span>(<span class="variable">text</span>)</div>
+        <div><span class="function">print</span>(<span class="variable">length</span>)  <span class="comment"># 输出: 5</span></div>
+      </div>
+      <ul class="bullet-list max-w-md mt-6">
+        <li><span class="bullet-dot"></span><div><code class="text-yellow-400">len()</code> 返回字符串的长度</div></li>
+        <li><span class="bullet-dot"></span><div>常用于<span class="text-green-400">遍历字符串</span>时确定范围</div></li>
+      </ul>
+    </div>
+
+    <!-- Slide 07: Chapter - 知识点2 -->
+    <div class="slide" data-slide="7">
+      <div class="glow-bg glow-1"></div>
+      <div class="chapter-num">02</div>
+      <div class="chapter-title">ASCII码：字符的数字身份</div>
+    </div>
+
+    <!-- Slide 08: What is ASCII -->
+    <div class="slide" data-slide="8">
+      <div class="glow-bg glow-2"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="section-label">知识点二</div>
+      <h2 class="text-2xl font-bold mb-4">什么是 ASCII 码？</h2>
+      <p class="text-gray-400 text-center max-w-md mb-6">
+        每个字符在计算机中都有一个<span class="text-yellow-400 font-bold">数字编号</span>
+      </p>
+      <div class="ascii-table">
+        <div class="ascii-cell"><div class="char">A</div><div class="code">65</div></div>
+        <div class="ascii-cell"><div class="char">B</div><div class="code">66</div></div>
+        <div class="ascii-cell"><div class="char">C</div><div class="code">67</div></div>
+        <div class="ascii-cell"><div class="char">D</div><div class="code">68</div></div>
+        <div class="ascii-cell"><div class="char">E</div><div class="code">69</div></div>
+        <div class="ascii-cell"><div class="char">F</div><div class="code">70</div></div>
+        <div class="ascii-cell"><div class="char">a</div><div class="code">97</div></div>
+        <div class="ascii-cell"><div class="char">b</div><div class="code">98</div></div>
+        <div class="ascii-cell"><div class="char">c</div><div class="code">99</div></div>
+        <div class="ascii-cell"><div class="char">d</div><div class="code">100</div></div>
+        <div class="ascii-cell"><div class="char">e</div><div class="code">101</div></div>
+        <div class="ascii-cell"><div class="char">f</div><div class="code">102</div></div>
+      </div>
+      <p class="text-gray-500 text-xs mt-4">A=65, B=66, C=67 ... a=97, b=98, c=99 ...</p>
+    </div>
+
+    <!-- Slide 09: ord and chr -->
+    <div class="slide" data-slide="9">
+      <div class="glow-bg glow-1"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="section-label">字符 ↔ 数字的转换</div>
+      <h2 class="text-xl font-bold mb-6">两个核心函数</h2>
+      <div class="code-block text-left">
+        <div><span class="comment"># 字符 → 数字</span></div>
+        <div><span class="function">ord</span>(<span class="string">'A'</span>)  <span class="comment"># 返回 65</span></div>
+        <div><span class="function">ord</span>(<span class="string">'a'</span>)  <span class="comment"># 返回 97</span></div>
+        <div class="mt-4"><span class="comment"># 数字 → 字符</span></div>
+        <div><span class="function">chr</span>(<span class="number">65</span>)  <span class="comment"># 返回 'A'</span></div>
+        <div><span class="function">chr</span>(<span class="number">97</span>)  <span class="comment"># 返回 'a'</span></div>
+      </div>
+      <p class="text-gray-500 text-sm mt-4">这是实现凯撒密码的<span class="text-green-400 font-bold">关键</span></p>
+    </div>
+
+    <!-- Slide 10: Why ASCII for Cipher -->
+    <div class="slide" data-slide="10">
+      <div class="glow-bg glow-2"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="section-label">为什么需要 ASCII？</div>
+      <p class="statement-text text-xl">
+        要把字母<span class="text-red-400">向后移动</span>，<br>
+        就要先把字母<span class="text-yellow-400">变成数字</span>
+      </p>
+      <div class="mt-8 flex items-center gap-3">
+        <div class="text-2xl font-bold text-red-400">A</div>
+        <div class="text-gray-600">→</div>
+        <div class="text-xl text-yellow-400">ord('A') = 65</div>
+        <div class="text-gray-600">→</div>
+        <div class="text-xl text-green-400">65 + 3 = 68</div>
+        <div class="text-gray-600">→</div>
+        <div class="text-2xl font-bold text-green-400">D</div>
+      </div>
+      <p class="text-gray-500 text-sm mt-4">A 向后移 3 位 → D</p>
+    </div>
+
+    <!-- Slide 11: Chapter - 知识点3 -->
+    <div class="slide" data-slide="11">
+      <div class="glow-bg glow-1"></div>
+      <div class="chapter-num">03</div>
+      <div class="chapter-title">取模运算：环绕的魔法</div>
+    </div>
+
+    <!-- Slide 12: Modulo Problem -->
+    <div class="slide" data-slide="12">
+      <div class="glow-bg glow-2"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="section-label">问题来了</div>
+      <h2 class="text-xl font-bold mb-4">Z + 3 = ?</h2>
+      <div class="flex items-center gap-3 mb-4">
+        <div class="text-2xl font-bold text-red-400">Z</div>
+        <div class="text-gray-600">→</div>
+        <div class="text-xl text-yellow-400">ord('Z') = 90</div>
+        <div class="text-gray-600">→</div>
+        <div class="text-xl text-red-400">90 + 3 = 93</div>
+        <div class="text-gray-600">→</div>
+        <div class="text-2xl font-bold text-red-400">?</div>
+      </div>
+      <p class="text-gray-400 text-center max-w-sm">
+        chr(93) = <span class="text-red-400 font-bold">']'</span><br>
+        不是字母了！怎么办？
+      </p>
+    </div>
+
+    <!-- Slide 13: Modulo Solution -->
+    <div class="slide" data-slide="13">
+      <div class="glow-bg glow-1"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="section-label">取模运算 %</div>
+      <h2 class="text-xl font-bold mb-4">让它绕回来！</h2>
+      <div class="formula-box">
+        (新位置) % (总数) = 实际位置
+      </div>
+      <div class="text-gray-400 text-sm mb-4">26个字母，位置 0-25，超过25就从头开始</div>
+      <div class="code-block text-left">
+        <div><span class="variable">pos</span> = (<span class="number">25</span> + <span class="number">3</span>) % <span class="number">26</span>  <span class="comment"># Z的位置 + 3</span></div>
+        <div><span class="variable">pos</span> = <span class="number">28</span> % <span class="number">26</span></div>
+        <div><span class="variable">pos</span> = <span class="number">2</span>  <span class="comment"># 回到位置2，就是 C</span></div>
+      </div>
+      <p class="text-gray-500 text-sm mt-4">Z → C（绕回开头）</p>
+    </div>
+
+    <!-- Slide 14: Chapter - 实现凯撒密码 -->
+    <div class="slide" data-slide="14">
+      <div class="glow-bg glow-2"></div>
+      <div class="chapter-num">04</div>
+      <div class="chapter-title">动手实现凯撒密码</div>
+    </div>
+
+    <!-- Slide 15: Algorithm Steps -->
+    <div class="slide" data-slide="15">
+      <div class="glow-bg glow-1"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="section-label">算法步骤</div>
+      <ul class="bullet-list max-w-md">
+        <li><span class="bullet-dot" style="background:#ef4444"></span><div><strong class="text-red-400">遍历</strong>字符串的每个字符</div></li>
+        <li><span class="bullet-dot" style="background:#f59e0b"></span><div><strong class="text-yellow-400">判断</strong>是否为字母</div></li>
+        <li><span class="bullet-dot" style="background:#10b981"></span><div>用 <code class="text-green-400">ord()</code> 获取数字编码</div></li>
+        <li><span class="bullet-dot" style="background:#8b5cf6"></span><div><strong class="text-purple-400">位移</strong> + 取模处理环绕</div></li>
+        <li><span class="bullet-dot" style="background:#3b82f6"></span><div>用 <code class="text-blue-400">chr()</code> 转回字符</div></li>
+        <li><span class="bullet-dot"></span><div><strong>拼接</strong>成新的字符串</div></li>
+      </ul>
+    </div>
+
+    <!-- Slide 16: Code Part 1 -->
+    <div class="slide" data-slide="16">
+      <div class="glow-bg glow-2"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="section-label">代码实现（加密）</div>
+      <div class="code-block text-left text-xs">
+        <div><span class="keyword">def</span> <span class="function">caesar_encrypt</span>(<span class="variable">text</span>, <span class="variable">key</span>):</div>
+        <div>    <span class="variable">result</span> = <span class="string">""</span></div>
+        <div>    <span class="keyword">for</span> <span class="variable">char</span> <span class="keyword">in</span> <span class="variable">text</span>:</div>
+        <div>        <span class="keyword">if</span> <span class="variable">char</span>.<span class="function">isupper</span>():</div>
+        <div>            <span class="comment"># 大写字母: A=65, 相对位置0-25</span></div>
+        <div>            <span class="variable">pos</span> = (<span class="function">ord</span>(<span class="variable">char</span>) - <span class="number">65</span> + <span class="variable">key</span>) % <span class="number">26</span></div>
+        <div>            <span class="variable">result</span> += <span class="function">chr</span>(<span class="variable">pos</span> + <span class="number">65</span>)</div>
+        <div>        <span class="keyword">elif</span> <span class="variable">char</span>.<span class="function">islower</span>():</div>
+        <div>            <span class="comment"># 小写字母: a=97</span></div>
+        <div>            <span class="variable">pos</span> = (<span class="function">ord</span>(<span class="variable">char</span>) - <span class="number">97</span> + <span class="variable">key</span>) % <span class="number">26</span></div>
+        <div>            <span class="variable">result</span> += <span class="function">chr</span>(<span class="variable">pos</span> + <span class="number">97</span>)</div>
+        <div>        <span class="keyword">else</span>:</div>
+        <div>            <span class="comment"># 非字母保持不变</span></div>
+        <div>            <span class="variable">result</span> += <span class="variable">char</span></div>
+        <div>    <span class="keyword">return</span> <span class="variable">result</span></div>
+      </div>
+    </div>
+
+    <!-- Slide 17: Code Explanation -->
+    <div class="slide" data-slide="17">
+      <div class="glow-bg glow-1"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="section-label">关键代码解析</div>
+      <div class="code-block text-left">
+        <div><span class="variable">pos</span> = (<span class="function">ord</span>(<span class="variable">char</span>) - <span class="number">65</span> + <span class="variable">key</span>) % <span class="number">26</span></div>
+      </div>
+      <ul class="bullet-list max-w-lg mt-6">
+        <li><span class="bullet-dot" style="background:#f59e0b"></span><div><code class="text-yellow-400">ord(char) - 65</code> → 把字母变成 0-25</div></li>
+        <li><span class="bullet-dot" style="background:#10b981"></span><div><code class="text-green-400">+ key</code> → 向后移动 key 位</div></li>
+        <li><span class="bullet-dot" style="background:#8b5cf6"></span><div><code class="text-purple-400">% 26</code> → 超过25就绕回开头</div></li>
+        <li><span class="bullet-dot" style="background:#3b82f6"></span><div><code class="text-blue-400">chr(pos + 65)</code> → 变回字母</div></li>
+      </ul>
+    </div>
+
+    <!-- Slide 18: Example Run -->
+    <div class="slide" data-slide="18">
+      <div class="glow-bg glow-2"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="section-label">运行示例</div>
+      <div class="code-block text-left">
+        <div><span class="variable">message</span> = <span class="string">"HELLO WORLD"</span></div>
+        <div><span class="variable">key</span> = <span class="number">3</span></div>
+        <div></div>
+        <div><span class="variable">encrypted</span> = <span class="function">caesar_encrypt</span>(<span class="variable">message</span>, <span class="variable">key</span>)</div>
+        <div><span class="function">print</span>(<span class="variable">encrypted</span>)</div>
+        <div class="mt-2"><span class="comment"># 输出: KHOOR ZRUOG</span></div>
+      </div>
+      <div class="cipher-demo mt-6">
+        <div class="cipher-word">
+          <div class="cipher-box original">H</div>
+          <div class="cipher-box original">E</div>
+          <div class="cipher-box original">L</div>
+          <div class="cipher-box original">L</div>
+          <div class="cipher-box original">O</div>
+        </div>
+        <div class="cipher-arrow">→</div>
+        <div class="cipher-word">
+          <div class="cipher-box">K</div>
+          <div class="cipher-box">H</div>
+          <div class="cipher-box">O</div>
+          <div class="cipher-box">O</div>
+          <div class="cipher-box">R</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 19: Decrypt -->
+    <div class="slide" data-slide="19">
+      <div class="glow-bg glow-1"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="section-label">解密怎么做？</div>
+      <p class="text-xl text-center mb-6">
+        解密 = <span class="text-yellow-400">反向移动</span>
+      </p>
+      <div class="code-block text-left">
+        <div><span class="comment"># 解密 = 用负数密钥加密</span></div>
+        <div><span class="variable">decrypted</span> = <span class="function">caesar_encrypt</span>(<span class="string">"KHOOR"</span>, -<span class="number">3</span>)</div>
+        <div><span class="function">print</span>(<span class="variable">decrypted</span>)  <span class="comment"># 输出: HELLO</span></div>
+      </div>
+      <p class="text-gray-500 text-sm mt-4">或者写一个专门的 <code>caesar_decrypt</code> 函数</p>
+    </div>
+
+    <!-- Slide 20: Summary -->
+    <div class="slide" data-slide="20">
+      <div class="glow-bg glow-1"></div>
+      <div class="glow-bg glow-2"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="section-label">知识回顾</div>
+      <h2 class="text-2xl font-bold mb-6">凯撒密码需要的知识点</h2>
+      <ul class="bullet-list max-w-md">
+        <li><span class="bullet-dot" style="background:#ef4444"></span><div><span class="text-red-400 font-semibold">字符串</span>：字符序列，可用索引访问</div></li>
+        <li><span class="bullet-dot" style="background:#f59e0b"></span><div><span class="text-yellow-400 font-semibold">ASCII码</span>：字符与数字的对应关系</div></li>
+        <li><span class="bullet-dot" style="background:#10b981"></span><div><code class="text-green-400">ord()</code> / <code class="text-green-400">chr()</code>：字符与数字互转</div></li>
+        <li><span class="bullet-dot" style="background:#8b5cf6"></span><div><span class="text-purple-400 font-semibold">取模 %</span>：处理环绕（Z→A）</div></li>
+        <li><span class="bullet-dot" style="background:#3b82f6"></span><div><span class="text-blue-400 font-semibold">for循环</span>：遍历每个字符</div></li>
+      </ul>
+    </div>
+
+    <!-- Slide 21: Practice -->
+    <div class="slide" data-slide="21">
+      <div class="glow-bg glow-1"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="section-label">练习任务</div>
+      <div class="exercise-box" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3);">
+        <div class="task-num" style="color:#ef4444">TASK</div>
+        <div class="task-title">挑战：扩展凯撒密码</div>
+        <ol class="exercise-steps">
+          <li style="margin-left:0">支持数字加密（0-9 也参与位移）</li>
+          <li style="margin-left:0">写一个暴力破解函数（尝试所有密钥）</li>
+          <li style="margin-left:0">让用户输入密钥，交互式加解密</li>
+        </ol>
+      </div>
+      <p class="text-gray-500 text-xs mt-6">提示：数字 '0'-'9' 的 ASCII 码是 48-57</p>
+    </div>
+
+    <!-- Slide 22: End -->
+    <div class="slide" data-slide="22">
+      <div class="glow-bg glow-1"></div>
+      <div class="glow-bg glow-2"></div>
+      <div class="glow-bg glow-3"></div>
+      <div class="text-5xl mb-6">🔐</div>
+      <p class="text-xl font-semibold text-center max-w-md leading-relaxed">
+        加密的本质<br>
+        <span class="text-gray-500">就是把信息变成</span><br>
+        <span class="text-yellow-400">别人看不懂的样子</span>
+      </p>
+      <div class="mt-12 text-gray-500 text-sm">凯撒密码是密码学的入门，也是编程思维的好练习</div>
+    </div>
+  </div>
+
+  <div class="progress-bar" id="progress"></div>
+  <div class="slide-number" id="slideNum">1 / 22</div>
+  <div class="nav-hint">← → 翻页</div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let currentSlide = 0;
+
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.classList.remove('active');
+        if (i === index) slide.classList.add('active');
+      });
+      document.getElementById('progress').style.width = ((index + 1) / totalSlides * 100) + '%';
+      document.getElementById('slideNum').textContent = (index + 1) + ' / ' + totalSlides;
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+        e.preventDefault();
+        currentSlide = (currentSlide + 1) % totalSlides;
+        showSlide(currentSlide);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+        showSlide(currentSlide);
+      }
+    });
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+    document.addEventListener('touchend', (e) => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) {
+        currentSlide = diff > 0 ? (currentSlide + 1) % totalSlides : (currentSlide - 1 + totalSlides) % totalSlides;
+        showSlide(currentSlide);
+      }
+    });
+
+    showSlide(0);
+  </script>
+</body>
+</html>

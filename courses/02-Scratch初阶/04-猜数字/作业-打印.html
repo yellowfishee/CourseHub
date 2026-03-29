@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>猜数字 - 作业</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "思源黑体", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+            font-size: 14pt;
+            line-height: 1.8;
+            color: #000;
+            background: #fff;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20mm;
+        }
+
+        h1 {
+            font-size: 22pt;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30pt;
+            padding-bottom: 10pt;
+            border-bottom: 2px solid #000;
+        }
+
+        h2 {
+            font-size: 16pt;
+            font-weight: bold;
+            margin-top: 25pt;
+            margin-bottom: 15pt;
+        }
+
+        .section {
+            margin-bottom: 20pt;
+        }
+
+        .question {
+            margin-bottom: 18pt;
+            padding-left: 0;
+        }
+
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 8pt;
+        }
+
+        .options {
+            padding-left: 25pt;
+        }
+
+        .option {
+            display: inline-block;
+            margin-right: 20pt;
+            margin-bottom: 4pt;
+        }
+
+        .answer-line {
+            margin-top: 8pt;
+            padding-left: 25pt;
+            border-bottom: 1px solid #ccc;
+            height: 30pt;
+            width: 100%;
+        }
+
+        .answer-text {
+            font-size: 12pt;
+            color: #666;
+            margin-top: 4pt;
+            padding-left: 25pt;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 20pt 0;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>猜数字 - 作业</h1>
+
+    <div class="section">
+        <h2>一、选择题</h2>
+
+        <div class="question">
+            <div class="question-text">1. 想让计算机产生一个 1~100 的随机数字，应该用哪个积木？</div>
+            <div class="options">
+                <span class="option">A. 询问并等待</span>
+                <span class="option">B. 取随机数 1 到 100</span>
+                <span class="option">C. 重复执行</span>
+                <span class="option">D. 如果...那么</span>
+            </div>
+        </div>
+
+        <div class="question">
+            <div class="question-text">2. "回答" 这个积木里面存放的是什么？</div>
+            <div class="options">
+                <span class="option">A. 计算机随机想的数字</span>
+                <span class="option">B. 你输入的答案</span>
+                <span class="option">C. 猜对或猜错的提示</span>
+                <span class="option">D. 猜测的次数</span>
+            </div>
+        </div>
+
+        <div class="question">
+            <div class="question-text">3. 如果猜的数字比答案大，计算机应该说什么？</div>
+            <div class="options">
+                <span class="option">A. "猜对了！"</span>
+                <span class="option">B. "太小了！"</span>
+                <span class="option">C. "太大了！"</span>
+                <span class="option">D. "再来一次！"</span>
+            </div>
+        </div>
+
+        <div class="question">
+            <div class="question-text">4. 下面哪种方法能最快猜到答案？</div>
+            <div class="options">
+                <span class="option">A. 从 1 开始一个一个猜</span>
+                <span class="option">B. 随便猜</span>
+                <span class="option">C. 每次猜中间的数字</span>
+                <span class="option">D. 从 100 开始倒着猜</span>
+            </div>
+        </div>
+
+        <div class="question">
+            <div class="question-text">5. "重复执行" 积木的作用是什么？</div>
+            <div class="options">
+                <span class="option">A. 让积木只运行一次</span>
+                <span class="option">B. 让积木停止运行</span>
+                <span class="option">C. 让积木反复运行</span>
+                <span class="option">D. 让积木按照顺序运行</span>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="section">
+        <h2>二、简答题</h2>
+
+        <div class="question">
+            <div class="question-text">6. 为什么每次猜中间的数字，可以最快找到答案？请说明原因。</div>
+            <div class="answer-line"></div>
+            <div class="answer-line"></div>
+            <div class="answer-line"></div>
+        </div>
+    </div>
+</body>
+</html>
