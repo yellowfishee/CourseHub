@@ -3,729 +3,617 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>15-函数和结构体 - 算法入门经典</title>
+    <title>函数和结构体 - C++语法篇</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=HarmonyOS+Sans+SC:wght@300;400;500;700&display=swap');
-        
-        * { box-sizing: border-box; }
-        
-        body {
-            font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif;
-            background: #0a0a0a;
-            overflow: hidden;
-        }
-
-        .bg-blur {
-            position: fixed;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.25;
-            animation: float 8s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(50px, 50px); }
-        }
-
-        .slide {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 5rem 4rem 6rem 4rem;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-            overflow-y: auto;
-        }
-
-        .slide.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .animate-item {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-
-        .animate-item.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .progress-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            transition: width 0.3s ease;
-        }
-
-        .progress-dots {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #334155;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .dot.active {
-            background: #60a5fa;
-            transform: scale(1.3);
-        }
-
-        .code-block {
-            background: #1e1e2e;
-            border: 1px solid #3b82f6;
-            border-radius: 12px;
-            padding: 1.25rem;
-            font-family: 'JetBrains Mono', 'Fira Code', monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            overflow-x: auto;
-            max-width: 100%;
-        }
-
-        .code-block code {
-            color: #e2e8f0;
-        }
-
-        .code-comment { color: #6b7280; }
-        .code-keyword { color: #c084fc; }
-        .code-string { color: #34d399; }
-        .code-number { color: #fbbf24; }
-        .code-function { color: #60a5fa; }
-
-        .quiz-option {
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 1rem 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .quiz-option:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: rgba(96, 165, 250, 0.5);
-        }
-
-        .quiz-option.correct {
-            background: rgba(52, 211, 153, 0.2);
-            border-color: #34d399;
-            animation: correctPulse 0.5s ease;
-        }
-
-        .quiz-option.wrong {
-            background: rgba(248, 113, 113, 0.2);
-            border-color: #f87171;
-            animation: shake 0.3s ease;
-        }
-
-        .quiz-option .letter {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: #e5e7eb;
-        }
-
-        .quiz-option.correct .letter {
-            background: #34d399;
-            color: #0a0a0a;
-        }
-
-        .quiz-option.wrong .letter {
-            background: #f87171;
-            color: #0a0a0a;
-        }
-
-        @keyframes correctPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        .tip-box {
-            background: rgba(251, 191, 36, 0.1);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            border-radius: 12px;
-            padding: 1rem 1.25rem;
-            color: #fbbf24;
-        }
-
-        .particle {
-            position: fixed;
-            pointer-events: none;
-            animation: confetti 0.8s ease forwards;
-        }
-
-        @keyframes confetti {
-            0% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(2) translateY(-50px); }
-        }
-
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-            background: linear-gradient(to bottom, rgba(10,10,10,0.9), transparent);
-        }
-
-        .score-display {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #fbbf24;
-        }
-
-        .streak-display {
-            font-size: 1rem;
-            color: #f472b6;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=HarmonyOS+Sans+SC:wght@300;400;700&family=JetBrains+Mono:wght@400&display=swap');
+        body { font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif; background: #0a0a0a; overflow: hidden; }
+        .bg-blur { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); opacity: 0.25; animation: float 8s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(50px, 50px); } }
+        .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4rem; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        .slide.active { opacity: 1; pointer-events: auto; }
+        .animate-item { opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease; }
+        .animate-item.visible { opacity: 1; transform: translateY(0); }
+        .progress-bar { position: fixed; bottom: 0; left: 0; height: 4px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 0.3s ease; }
+        .progress-dots { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 100; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; cursor: pointer; transition: all 0.3s ease; }
+        .dot.active { background: #60a5fa; transform: scale(1.3); }
+        .dot.completed { background: #34d399; }
+        .code-block { background: #1e1e2e; border: 1px solid #3b82f6; border-radius: 12px; padding: 1.5rem 2rem; font-family: 'JetBrains Mono', monospace; font-size: 1rem; color: #f0f0f0; margin: 1rem 0; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2); line-height: 1.8; }
+        .code-block .keyword { color: #f472b6; }
+        .code-block .function { color: #34d399; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .string { color: #a78bfa; }
+        .code-block .comment { color: #6b7280; }
+        .code-block .operator { color: #f97316; }
+        .code-block .type { color: #38bdf8; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 1.5rem; text-align: center; }
+        .drag-item { background: rgba(59, 130, 246, 0.2); border: 2px solid #3b82f6; border-radius: 8px; padding: 0.75rem 1.5rem; cursor: grab; user-select: none; transition: all 0.2s ease; color: #e2e8f0; }
+        .drag-item:hover { background: rgba(59, 130, 246, 0.4); transform: scale(1.05); }
+        .drag-item.dragging { opacity: 0.5; }
+        .drop-zone { min-width: 80px; min-height: 50px; border: 2px dashed #475569; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; color: #64748b; }
+        .drop-zone.drag-over { border-color: #60a5fa; background: rgba(96, 165, 250, 0.1); }
+        .drop-zone.correct { border-color: #34d399; background: rgba(52, 211, 153, 0.2); color: #34d399; animation: correctPulse 0.5s ease; }
+        .drop-zone.wrong { border-color: #f87171; animation: shake 0.3s ease; }
+        @keyframes correctPulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+        @keyframes confetti { 0% { opacity: 1; transform: scale(1) translateY(0) rotate(0deg); } 100% { opacity: 0; transform: scale(1.5) translateY(-60px) rotate(360deg); } }
+        .particle { position: fixed; width: 10px; height: 10px; border-radius: 50%; pointer-events: none; animation: confetti 0.8s ease forwards; z-index: 1000; }
+        .quiz-option { background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 1rem 1.5rem; cursor: pointer; transition: all 0.2s ease; color: #e2e8f0; text-align: left; }
+        .quiz-option:hover { background: rgba(59, 130, 246, 0.2); border-color: #60a5fa; transform: translateX(4px); }
+        .quiz-option.correct { border-color: #34d399; background: rgba(52, 211, 153, 0.2); animation: correctPulse 0.5s ease; }
+        .quiz-option.wrong { border-color: #f87171; animation: shake 0.3s ease; }
+        .feedback { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 1rem 2rem; border-radius: 12px; font-size: 1.5rem; font-weight: bold; z-index: 1000; animation: fadeIn 0.3s ease; }
+        .feedback.correct { background: rgba(52, 211, 153, 0.9); color: white; }
+        .feedback.wrong { background: rgba(248, 113, 113, 0.9); color: white; }
+        @keyframes fadeIn { from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+        .score-display { position: fixed; top: 20px; right: 20px; background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; border-radius: 8px; padding: 0.5rem 1rem; color: #60a5fa; font-size: 1rem; }
+        .streak-display { position: fixed; top: 20px; right: 150px; background: rgba(251, 191, 36, 0.2); border: 1px solid #fbbf24; border-radius: 8px; padding: 0.5rem 1rem; color: #fbbf24; font-size: 1rem; }
+        .analogy-box { background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(59, 130, 246, 0.1)); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 12px; padding: 1.5rem; margin: 1rem 0; }
+        .nav-btn { position: fixed; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; color: #e2e8f0; z-index: 100; }
+        .nav-btn:hover { background: rgba(59, 130, 246, 0.3); border-color: #60a5fa; }
+        .nav-btn.prev { left: 20px; }
+        .nav-btn.next { right: 20px; }
+        .nav-btn.disabled { opacity: 0.3; cursor: not-allowed; }
     </style>
 </head>
-<body class="text-gray-200">
-    <div class="header">
-        <div class="score-display">得分: <span id="scoreValue">0</span></div>
-        <div class="streak-display">连胜: <span id="streakValue">0</span></div>
-    </div>
-
+<body>
     <div class="bg-blur" style="top: -200px; left: -200px; background: #3b82f6;"></div>
     <div class="bg-blur" style="bottom: -200px; right: -200px; background: #8b5cf6; animation-delay: -4s;"></div>
 
-    <!-- Slide 1: Title -->
-    <div class="slide active" data-slide="1">
-        <div class="max-w-4xl w-full">
-            <div class="text-center mb-12">
-                <div class="animate-item inline-block px-4 py-1 bg-orange-500/20 rounded-full text-orange-400 text-sm mb-4">第15课</div>
-                <h1 class="animate-item text-5xl font-bold mb-4 text-gray-100">函数和结构体</h1>
-                <p class="animate-item text-xl text-gray-400">模块化编程的基础</p>
+    <div class="streak-display">🔥 连胜: <span id="streakValue">0</span></div>
+    <div class="score-display">⭐ 得分: <span id="scoreValue">0</span></div>
+
+    <button class="nav-btn prev disabled" id="prevBtn" onclick="prevSlide()">◀</button>
+    <button class="nav-btn next" id="nextBtn" onclick="nextSlide()">▶</button>
+
+    <div id="slides-container">
+
+        <!-- 第1页：封面 -->
+        <div class="slide active">
+            <h1 class="text-5xl font-bold text-gray-100 mb-8 animate-item">函数和结构体</h1>
+            <p class="text-2xl text-blue-400 mb-8 animate-item">组织代码的强大工具</p>
+            <div class="grid grid-cols-3 gap-6 w-full max-w-4xl mb-6">
+                <div class="card animate-item"><div class="text-4xl mb-3">🎯</div><p class="text-lg text-gray-100 font-bold">函数</p><p class="text-gray-400 text-sm">封装功能</p></div>
+                <div class="card animate-item"><div class="text-4xl mb-3">📦</div><p class="text-lg text-gray-100 font-bold">结构体</p><p class="text-gray-400 text-sm">打包数据</p></div>
+                <div class="card animate-item"><div class="text-4xl mb-3">🧩</div><p class="text-lg text-gray-100 font-bold">模块化</p><p class="text-gray-400 text-sm">代码复用</p></div>
             </div>
-            
-            <div class="animate-item mt-12 text-center">
-                <div class="text-6xl mb-6">🔧</div>
-                <p class="text-xl text-gray-300">让代码更加清晰和可复用</p>
+            <p class="text-gray-500 animate-item">C++ 语法篇 · 第 15 课</p>
+        </div>
+
+        <!-- 第2页：什么是函数 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">什么是函数？</h2>
+            <div class="analogy-box w-full max-w-3xl animate-item">
+                <p class="text-2xl text-purple-300 mb-4">🍳 生活类比：微波炉</p>
+                <p class="text-gray-300 text-lg">函数就像一台<strong class="text-green-400">微波炉</strong></p>
+                <ul class="text-gray-300 text-lg mt-2 space-y-1">
+                    <li>📥 <strong class="text-yellow-400">放东西进去</strong>（输入参数）</li>
+                    <li>⚙️ <strong class="text-blue-400">按按钮选择功能</strong>（执行代码）</li>
+                    <li>📤 <strong class="text-green-400">出来美味食物</strong>（输出结果）</li>
+                </ul>
+            </div>
+            <div class="card mt-6 animate-item">
+                <p class="text-xl text-gray-100">函数就是<strong class="text-pink-400">封装好的可以重复使用的代码块</strong>！</p>
             </div>
         </div>
-    </div>
 
-    <!-- Slide 2: Function Introduction -->
-    <div class="slide" data-slide="2">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📦 函数是什么？</h2>
-            
-            <div class="animate-item mb-8">
-                <p class="text-gray-300 mb-4">函数就像一个小型工厂：</p>
-                
-                <div class="flex items-center justify-center gap-8 mb-8">
-                    <div class="text-center">
-                        <div class="text-4xl mb-2">📥</div>
-                        <p class="text-gray-400">输入</p>
-                    </div>
-                    <div class="text-4xl">→</div>
-                    <div class="bg-white/10 rounded-xl p-6 border border-white/20">
-                        <div class="text-3xl mb-2">🏭</div>
-                        <p class="text-blue-400 font-bold">函数</p>
-                        <p class="text-gray-400 text-sm">处理加工</p>
-                    </div>
-                    <div class="text-4xl">→</div>
-                    <div class="text-center">
-                        <div class="text-4xl mb-2">📤</div>
-                        <p class="text-gray-400">输出</p>
-                    </div>
+        <!-- 第3页：为什么需要函数 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">为什么需要函数？</h2>
+            <div class="grid grid-cols-3 gap-6 w-full max-w-4xl">
+                <div class="card animate-item">
+                    <div class="text-3xl mb-3">♻️</div>
+                    <p class="text-xl text-gray-100 font-bold">代码复用</p>
+                    <p class="text-gray-400 mt-2">写一次，用多次</p>
                 </div>
-            </div>
-
-            <div class="animate-item tip-box">
-                <p class="font-bold mb-1">💡 生活类比</p>
-                <p class="text-gray-300">就像微波炉：放入食物（输入），设置时间（参数），微波炉工作（函数执行），得到热腾腾的食物（输出）</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 3: Function Definition -->
-    <div class="slide" data-slide="3">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📝 函数定义</h2>
-            
-            <div class="animate-item mb-8">
-                <div class="code-block">
-                    <code>
-<span class="code-comment">// 函数定义的基本格式</span><br>
-<span class="code-keyword">返回类型</span> <span class="code-function">函数名</span>(<span class="code-keyword">参数列表</span>) {<br>
-&nbsp;&nbsp;<span class="code-comment">// 函数体：具体的处理步骤</span><br>
-&nbsp;&nbsp;<span class="code-keyword">return</span> 结果;<br>
-}
-                    </code>
+                <div class="card animate-item">
+                    <div class="text-3xl mb-3">📖</div>
+                    <p class="text-xl text-gray-100 font-bold">易于阅读</p>
+                    <p class="text-gray-400 mt-2">让代码更清晰</p>
                 </div>
-            </div>
-
-            <div class="animate-item mb-6">
-                <p class="text-gray-300 mb-4">例：计算两个整数的最大值</p>
-                <div class="code-block">
-                    <code>
-<span class="code-keyword">int</span> <span class="code-function">max</span>(<span class="code-keyword">int</span> a, <span class="code-keyword">int</span> b) {<br>
-&nbsp;&nbsp;<span class="code-keyword">if</span> (a > b)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">return</span> a;<br>
-&nbsp;&nbsp;<span class="code-keyword">else</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">return</span> b;<br>
-}
-                    </code>
-                </div>
-            </div>
-
-            <div class="animate-item tip-box">
-                <p class="font-bold mb-1">💡 提示</p>
-                <p class="text-gray-300">函数名通常是动词或动词短语，如 max, sum, print 等</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 4: Function Call -->
-    <div class="slide" data-slide="4">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📞 函数调用</h2>
-            
-            <div class="animate-item mb-8">
-                <div class="code-block">
-                    <code>
-<span class="code-keyword">#include</span> <span class="code-string">&lt;stdio.h&gt;</span><br><br>
-<span class="code-keyword">int</span> <span class="code-function">max</span>(<span class="code-keyword">int</span> a, <span class="code-keyword">int</span> b) {<br>
-&nbsp;&nbsp;<span class="code-keyword">return</span> a > b ? a : b;<br>
-}<br><br>
-<span class="code-keyword">int</span> main() {<br>
-&nbsp;&nbsp;<span class="code-keyword">int</span> x = <span class="code-number">10</span>, y = <span class="code-number">20</span>;<br>
-&nbsp;&nbsp;<span class="code-keyword">int</span> m = <span class="code-function">max</span>(x, y);&nbsp;&nbsp;<span class="code-comment">// 调用max函数</span><br>
-&nbsp;&nbsp;<span class="code-function">printf</span>(<span class="code-string">"max = %d\n"</span>, m);<br>
-&nbsp;&nbsp;<span class="code-keyword">return</span> <span class="code-number">0</span>;<br>
-}
-                    </code>
-                </div>
-            </div>
-
-            <div class="animate-item bg-green-500/20 border border-green-500/50 rounded-lg p-4">
-                <p class="text-green-400 font-bold">运行结果：max = 20</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 5: Void Function -->
-    <div class="slide" data-slide="5">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📵 无返回值的函数</h2>
-            
-            <div class="animate-item mb-8">
-                <p class="text-gray-300 mb-4">如果函数不需要返回结果，用 <span class="text-purple-400">void</span> 表示返回类型：</p>
-                
-                <div class="code-block">
-                    <code>
-<span class="code-keyword">void</span> <span class="code-function">printHello</span>() {<br>
-&nbsp;&nbsp;<span class="code-function">printf</span>(<span class="code-string">"Hello!\n"</span>);<br>
-}<br><br>
-<span class="code-keyword">int</span> main() {<br>
-&nbsp;&nbsp;<span class="code-function">printHello</span>();&nbsp;&nbsp;<span class="code-comment">// 调用，不需要接收返回值</span><br>
-&nbsp;&nbsp;<span class="code-keyword">return</span> <span class="code-number">0</span>;<br>
-}
-                    </code>
-                </div>
-            </div>
-
-            <div class="animate-item tip-box">
-                <p class="font-bold mb-1">💡 提示</p>
-                <p class="text-gray-300">void 表示"空"，即没有返回值</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 6: Struct Introduction -->
-    <div class="slide" data-slide="6">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🏠 结构体是什么？</h2>
-            
-            <div class="animate-item mb-8">
-                <p class="text-gray-300 mb-4">结构体就像一个自定义的"数据包"：</p>
-                
-                <div class="flex items-center justify-center gap-8 mb-8">
-                    <div class="bg-white/10 rounded-xl p-6 border border-white/20 text-center">
-                        <div class="text-3xl mb-3">📋</div>
-                        <p class="text-blue-400 font-bold mb-2">学生信息</p>
-                        <div class="text-left text-sm space-y-1">
-                            <p>姓名: "小明"</p>
-                            <p>年龄: 15</p>
-                            <p>分数: 95.5</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="animate-item tip-box">
-                <p class="font-bold mb-1">💡 生活类比</p>
-                <p class="text-gray-300">就像学校的成绩单：把姓名、年龄、分数等信息打包在一起</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 7: Struct Definition -->
-    <div class="slide" data-slide="7">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📝 结构体定义</h2>
-            
-            <div class="animate-item mb-8">
-                <div class="code-block">
-                    <code>
-<span class="code-keyword">struct</span> <span class="code-function">Student</span> {<br>
-&nbsp;&nbsp;<span class="code-keyword">char</span> name[<span class="code-number">50</span>];&nbsp;&nbsp;<span class="code-comment">// 姓名</span><br>
-&nbsp;&nbsp;<span class="code-keyword">int</span> age;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// 年龄</span><br>
-&nbsp;&nbsp;<span class="code-keyword">double</span> score;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// 分数</span><br>
-};
-                    </code>
-                </div>
-            </div>
-
-            <div class="animate-item mb-6">
-                <p class="text-gray-300 mb-4">声明结构体变量：</p>
-                <div class="code-block">
-                    <code>
-<span class="code-keyword">struct</span> <span class="code-function">Student</span> s1, s2;
-                    </code>
+                <div class="card animate-item">
+                    <div class="text-3xl mb-3">🐛</div>
+                    <p class="text-xl text-gray-100 font-bold">便于调试</p>
+                    <p class="text-gray-400 mt-2">问题容易定位</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Slide 8: Struct Access -->
-    <div class="slide" data-slide="8">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🖊️ 访问结构体成员</h2>
-            
-            <div class="animate-item mb-8">
-                <p class="text-gray-300 mb-4">使用点号(.)访问结构体的成员：</p>
-                
-                <div class="code-block">
-                    <code>
-<span class="code-keyword">struct</span> <span class="code-function">Student</span> s1;<br><br>
-<span class="code-comment">// 给成员赋值</span><br>
-<span class="code-function">strcpy</span>(s1.name, <span class="code-string">"小明"</span>);<br>
-s1.age = <span class="code-number">15</span>;<br>
-s1.score = <span class="code-number">95.5</span>;<br><br>
-<span class="code-comment">// 访问成员</span><br>
-<span class="code-function">printf</span>(<span class="code-string">"%s %d %.1f\n"</span>, s1.name, s1.age, s1.score);
-                    </code>
+        <!-- 第4页：函数的定义 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">函数的定义</h2>
+            <div class="code-block animate-item">
+                <span class="keyword">返回值类型</span> <span class="function">函数名</span>(<span class="keyword">参数列表</span>) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// 函数体：需要执行的代码</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> 结果;<br>
+                }
+            </div>
+            <div class="grid grid-cols-3 gap-4 mt-6 animate-item">
+                <div class="card">
+                    <p class="text-lg text-pink-400 font-bold">int</p>
+                    <p class="text-gray-400 text-sm">返回整数</p>
                 </div>
-            </div>
-
-            <div class="animate-item bg-green-500/20 border border-green-500/50 rounded-lg p-4">
-                <p class="text-green-400 font-bold">输出：小明 15 95.5</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 9: Function with Struct -->
-    <div class="slide" data-slide="9">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🔧 结构体与函数</h2>
-            
-            <div class="animate-item mb-8">
-                <p class="text-gray-300 mb-4">结构体作为函数的参数和返回值：</p>
-                
-                <div class="code-block">
-                    <code>
-<span class="code-keyword">struct</span> <span class="code-function">Point</span> {<br>
-&nbsp;&nbsp;<span class="code-keyword">int</span> x, y;<br>
-};<br><br>
-<span class="code-comment">// 结构体作为参数</span><br>
-<span class="code-keyword">int</span> <span class="code-function">getDistance</span>(<span class="code-keyword">struct</span> Point p) {<br>
-&nbsp;&nbsp;<span class="code-keyword">return</span> p.x * p.x + p.y * p.y;<br>
-}<br><br>
-<span class="code-comment">// 结构体作为返回值</span><br>
-<span class="code-keyword">struct</span> Point <span class="code-function">move</span>(<span class="code-keyword">struct</span> Point p, <span class="code-keyword">int</span> dx, <span class="code-keyword">int</span> dy) {<br>
-&nbsp;&nbsp;<span class="code-keyword">struct</span> Point result = {p.x + dx, p.y + dy};<br>
-&nbsp;&nbsp;<span class="code-keyword">return</span> result;<br>
-}
-                    </code>
+                <div class="card">
+                    <p class="text-lg text-green-400 font-bold">add</p>
+                    <p class="text-gray-400 text-sm">函数名叫add</p>
+                </div>
+                <div class="card">
+                    <p class="text-lg text-yellow-400 font-bold">a, b</p>
+                    <p class="text-gray-400 text-sm">两个参数</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Slide 10: Quiz 1 -->
-    <div class="slide" data-slide="10">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验</h2>
-            
-            <div class="animate-item mb-8">
-                <p class="text-xl text-gray-300 mb-6">以下哪个是正确的函数定义？</p>
-                
-                <div class="space-y-4">
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">A</span>
-                        <span>int max(int a, b)</span>
-                    </div>
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">B</span>
-                        <span>int max(a, b)</span>
-                    </div>
-                    <div class="quiz-option" data-correct="true">
-                        <span class="letter">C</span>
-                        <span>int max(int a, int b)</span>
-                    </div>
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">D</span>
-                        <span>void max(int a, int b) return a;</span>
-                    </div>
+        <!-- 第5页：函数示例 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">函数示例：加法</h2>
+            <div class="code-block animate-item">
+                <span class="comment">// 定义一个加法函数</span><br>
+                <span class="keyword">int</span> <span class="function">add</span>(<span class="keyword">int</span> a, <span class="keyword">int</span> b) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span> result = a + b;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> result;<br>
+                }<br><br>
+                <span class="comment">// 使用函数</span><br>
+                <span class="keyword">int</span> x = <span class="function">add</span>(<span class="number">3</span>, <span class="number">5</span>);  <span class="comment">// x = 8</span>
+            </div>
+        </div>
+
+        <!-- 第6页：函数练习1 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">练习：完善函数</h2>
+            <p class="text-xl text-gray-300 mb-6 animate-item">补全代码使函数返回两数较大值</p>
+            <div class="code-block animate-item text-lg">
+                <span class="keyword">int</span> <span class="function">max</span>(<span class="keyword">int</span> a, <span class="keyword">int</span> b) {<br>
+                &nbsp;&nbsp;<span class="keyword">if</span>(a <span class="drop-zone" data-answer=">">?</span> b) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="drop-zone" data-answer="a">?</span>;<br>
+                &nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;<span class="keyword">return</span> b;<br>
+                }
+            </div>
+            <div class="drag-items flex gap-4 mt-6 animate-item">
+                <div class="drag-item" draggable="true" data-value=">">&gt;</div>
+                <div class="drag-item" draggable="true" data-value="<">&lt;</div>
+                <div class="drag-item" draggable="true" data-value="a">a</div>
+                <div class="drag-item" draggable="true" data-value="b">b</div>
+            </div>
+        </div>
+
+        <!-- 第7页：void函数 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">void函数（无返回值）</h2>
+            <div class="analogy-box w-full max-w-3xl animate-item">
+                <p class="text-2xl text-purple-300 mb-4">📢 生活类比：广播</p>
+                <p class="text-gray-300 text-lg">有些函数只<strong class="text-green-400">做事不返回结果</strong></p>
+                <p class="text-gray-300 text-lg mt-2">就像<strong class="text-yellow-400">学校广播</strong>，只播报通知</p>
+                <p class="text-gray-300 text-lg mt-2">不需要<strong class="text-pink-400">回答任何问题</strong></p>
+            </div>
+            <div class="code-block animate-item mt-4">
+                <span class="keyword">void</span> <span class="function">sayHello</span>() {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"Hello!\n"</span>);<br>
+                }
+            </div>
+        </div>
+
+        <!-- 第8页：什么是结构体 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">什么是结构体？</h2>
+            <div class="analogy-box w-full max-w-3xl animate-item">
+                <p class="text-2xl text-purple-300 mb-4">📋 生活类比：学生档案</p>
+                <p class="text-gray-300 text-lg">一个学生有很多<strong class="text-green-400">不同的信息</strong></p>
+                <ul class="text-gray-300 text-lg mt-2 space-y-1">
+                    <li>👤 姓名（字符串）</li>
+                    <li>🎂 年龄（整数）</li>
+                    <li>📏 身高（小数）</li>
+                </ul>
+                <p class="text-gray-300 text-lg mt-4">结构体就是把这些<strong class="text-yellow-400">不同类型的数据打包</strong>在一起！</p>
+            </div>
+        </div>
+
+        <!-- 第9页：结构体的定义 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">定义结构体</h2>
+            <div class="code-block animate-item">
+                <span class="keyword">struct</span> Student {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">char</span> name[<span class="number">20</span>];  <span class="comment">// 姓名</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span> age;           <span class="comment">// 年龄</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">float</span> height;     <span class="comment">// 身高</span><br>
+                };
+            </div>
+            <div class="card mt-6 animate-item">
+                <p class="text-xl text-gray-100"><span class="text-pink-400">struct</span> 是关键字，<span class="text-green-400">Student</span> 是类型名</p>
+            </div>
+        </div>
+
+        <!-- 第10页：结构体的使用 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">使用结构体变量</h2>
+            <div class="code-block animate-item">
+                <span class="comment">// 定义结构体变量</span><br>
+                <span class="keyword">struct</span> Student stu;<br><br>
+                <span class="comment">// 给成员赋值</span><br>
+                stu.age = <span class="number">15</span>;<br>
+                stu.height = <span class="number">1.65</span>;<br>
+                <span class="function">strcpy</span>(stu.name, <span class="string">"Tom"</span>);<br><br>
+                <span class="comment">// 访问成员</span><br>
+                <span class="function">printf</span>(<span class="string">"%s %d %.2f"</span>, stu.name, stu.age, stu.height);
+            </div>
+        </div>
+
+        <!-- 第11页：结构体练习1 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">练习：结构体赋值</h2>
+            <p class="text-xl text-gray-300 mb-6 animate-item">以下代码输出什么？</p>
+            <div class="code-block animate-item text-lg">
+                <span class="keyword">struct</span> Point {<br>
+                &nbsp;&nbsp;<span class="keyword">int</span> x;<br>
+                &nbsp;&nbsp;<span class="keyword">int</span> y;<br>
+                };<br>
+                <span class="keyword">struct</span> Point p;<br>
+                p.x = <span class="number">10</span>;<br>
+                p.y = <span class="number">20</span>;<br>
+                <span class="function">printf</span>(<span class="string">"%d,%d"</span>, p.x, p.y);
+            </div>
+            <div class="space-y-4 w-full max-w-md mt-6">
+                <div class="quiz-option animate-item" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-blue-400 font-bold mr-4">A</span>
+                    <span>10,20</span>
+                </div>
+                <div class="quiz-option animate-item" data-correct="true" onclick="checkAnswer(this)">
+                    <span class="letter text-blue-400 font-bold mr-4">B</span>
+                    <span>10,20（正确）</span>
+                </div>
+                <div class="quiz-option animate-item" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-blue-400 font-bold mr-4">C</span>
+                    <span>x,y</span>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Slide 11: Quiz 2 -->
-    <div class="slide" data-slide="11">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验</h2>
-            
-            <div class="animate-item mb-8">
-                <p class="text-xl text-gray-300 mb-6">如何访问结构体变量 s 的成员 age？</p>
-                
-                <div class="space-y-4">
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">A</span>
-                        <span>s->age</span>
-                    </div>
-                    <div class="quiz-option" data-correct="true">
-                        <span class="letter">B</span>
-                        <span>s.age</span>
-                    </div>
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">C</span>
-                        <span>s[age]</span>
-                    </div>
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">D</span>
-                        <span>s:age</span>
-                    </div>
+        <!-- 第12页：结构体数组 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">结构体数组</h2>
+            <div class="analogy-box w-full max-w-3xl animate-item">
+                <p class="text-2xl text-purple-300 mb-4">🏫 生活类比：全班学生</p>
+                <p class="text-gray-300 text-lg">一个班级有<strong class="text-green-400">很多学生</strong></p>
+                <p class="text-gray-300 text-lg mt-2">用<strong class="text-yellow-400">结构体数组</strong>存储</p>
+                <p class="text-gray-300 text-lg mt-2">就像一个<strong class="text-pink-400">名单</strong>，每人一条记录</p>
+            </div>
+            <div class="code-block animate-item mt-4">
+                <span class="keyword">struct</span> Student class[<span class="number">30</span>];  <span class="comment">// 30个学生的数组</span><br>
+                class[<span class="number">0</span>].age = <span class="number">15</span>;  <span class="comment">// 访问第1个学生的年龄</span>
+            </div>
+        </div>
+
+        <!-- 第13页：结构体数组练习 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">练习：结构体数组</h2>
+            <p class="text-xl text-gray-300 mb-6 animate-item">给第3个学生（索引2）的年龄+1</p>
+            <div class="code-block animate-item text-lg">
+                <span class="keyword">struct</span> Student stu[<span class="number">5</span>];<br>
+                <span class="comment">// 怎么写？</span><br>
+                stu[<span class="drop-zone" data-answer="2">?</span>].age = stu[<span class="number">2</span>].age + <span class="number">1</span>;
+            </div>
+            <div class="drag-items flex gap-4 mt-6 animate-item">
+                <div class="drag-item" draggable="true" data-value="0">0</div>
+                <div class="drag-item" draggable="true" data-value="1">1</div>
+                <div class="drag-item" draggable="true" data-value="2">2</div>
+                <div class="drag-item" draggable="true" data-value="3">3</div>
+            </div>
+        </div>
+
+        <!-- 第14页：函数返回结构体 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">函数返回结构体</h2>
+            <div class="code-block animate-item">
+                <span class="comment">// 返回一个Point结构体</span><br>
+                <span class="keyword">struct</span> Point <span class="function">createPoint</span>(<span class="keyword">int</span> x, <span class="keyword">int</span> y) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">struct</span> Point p;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;p.x = x;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;p.y = y;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> p;<br>
+                }<br><br>
+                <span class="comment">// 使用</span><br>
+                <span class="keyword">struct</span> Point p1 = <span class="function">createPoint</span>(<span class="number">3</span>, <span class="number">4</span>);
+            </div>
+        </div>
+
+        <!-- 第15页：函数与结构体结合 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">函数与结构体：计算距离</h2>
+            <div class="code-block animate-item">
+                <span class="comment">// 计算两点距离</span><br>
+                <span class="keyword">float</span> <span class="function">distance</span>(<span class="keyword">struct</span> Point a, <span class="keyword">struct</span> Point b) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span> dx = a.x - b.x;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span> dy = a.y - b.y;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="function">sqrt</span>(dx*dx + dy*dy);<br>
+                }
+            </div>
+            <div class="card mt-6 animate-item">
+                <p class="text-xl text-gray-100">结构体可以<strong class="text-pink-400">作为函数的参数和返回值</strong>！</p>
+            </div>
+        </div>
+
+        <!-- 第16页：选择题 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">思考：函数返回类型</h2>
+            <p class="text-xl text-gray-300 mb-6 animate-item">函数只打印信息不返回值，应该用什么返回类型？</p>
+            <div class="space-y-4 w-full max-w-2xl">
+                <div class="quiz-option animate-item" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-blue-400 font-bold mr-4">A</span>
+                    <span>int</span>
+                </div>
+                <div class="quiz-option animate-item" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-blue-400 font-bold mr-4">B</span>
+                    <span>float</span>
+                </div>
+                <div class="quiz-option animate-item" data-correct="true" onclick="checkAnswer(this)">
+                    <span class="letter text-blue-400 font-bold mr-4">C</span>
+                    <span>void</span>
+                </div>
+                <div class="quiz-option animate-item" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-blue-400 font-bold mr-4">D</span>
+                    <span>string</span>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Slide 12: Summary -->
-    <div class="slide" data-slide="12">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📋 本课总结</h2>
-            
-            <div class="animate-item grid grid-cols-2 gap-6">
-                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <div class="text-3xl mb-3">📦</div>
-                    <h3 class="font-bold mb-2 text-gray-100">函数</h3>
-                    <p class="text-gray-400 text-sm">组织代码的基本单元，可以重复调用</p>
+        <!-- 第17页：实际应用 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">实际应用：学生管理系统</h2>
+            <div class="code-block animate-item text-sm">
+                <span class="keyword">struct</span> Student {<br>
+                &nbsp;&nbsp;<span class="keyword">char</span> name[<span class="number">20</span>];<br>
+                &nbsp;&nbsp;<span class="keyword">int</span> score;<br>
+                };<br><br>
+                <span class="keyword">void</span> <span class="function">printStudent</span>(<span class="keyword">struct</span> Student s) {<br>
+                &nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"姓名: %s, 成绩: %d\n"</span>, s.name, s.score);<br>
+                }
+            </div>
+        </div>
+
+        <!-- 第18页：知识总结 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">本节知识总结</h2>
+            <div class="grid grid-cols-2 gap-6 w-full max-w-4xl">
+                <div class="card animate-item">
+                    <p class="text-xl text-green-400 font-bold mb-2">函数</p>
+                    <ul class="text-gray-300 text-left list-disc pl-6">
+                        <li>封装代码，便于复用</li>
+                        <li>可以有参数和返回值</li>
+                        <li>void表示无返回值</li>
+                    </ul>
                 </div>
-                
-                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <div class="text-3xl mb-3">🏠</div>
-                    <h3 class="font-bold mb-2 text-gray-100">结构体</h3>
-                    <p class="text-gray-400 text-sm">自定义数据类型，把相关数据打包</p>
+                <div class="card animate-item">
+                    <p class="text-xl text-green-400 font-bold mb-2">结构体</p>
+                    <ul class="text-gray-300 text-left list-disc pl-6">
+                        <li>打包不同类型数据</li>
+                        <li>用struct定义</li>
+                        <li>用.访问成员</li>
+                    </ul>
                 </div>
-                
-                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <div class="text-3xl mb-3">📞</div>
-                    <h3 class="font-bold mb-2 text-gray-100">函数调用</h3>
-                    <p class="text-gray-400 text-sm">通过函数名和参数来执行</p>
+                <div class="card animate-item">
+                    <p class="text-xl text-green-400 font-bold mb-2">结构体数组</p>
+                    <ul class="text-gray-300 text-left list-disc pl-6">
+                        <li>存储多个结构体</li>
+                        <li>用下标访问</li>
+                        <li>结构体可作为函数参数</li>
+                    </ul>
                 </div>
-                
-                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <div class="text-3xl mb-3">🖊️</div>
-                    <h3 class="font-bold mb-2 text-gray-100">访问成员</h3>
-                    <p class="text-gray-400 text-sm">结构体变量用点号(.)访问成员</p>
+                <div class="card animate-item">
+                    <p class="text-xl text-green-400 font-bold mb-2">使用场景</p>
+                    <ul class="text-gray-300 text-left list-disc pl-6">
+                        <li>组织复杂数据</li>
+                        <li>模块化程序设计</li>
+                        <li>代码更清晰易懂</li>
+                    </ul>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Slide 13: Next -->
-    <div class="slide" data-slide="13">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎓 下章预告</h2>
-            
-            <div class="animate-item text-center">
-                <div class="text-6xl mb-6">📍</div>
-                <h3 class="text-2xl font-bold mb-4 text-gray-100">第16章 函数调用与参数传递</h3>
-                <p class="text-gray-400 mb-8">深入理解参数传递机制！</p>
-                
-                <div class="tip-box inline-block">
-                    <p class="text-gray-300">值传递、指针传递、引用传递</p>
-                </div>
+        <!-- 第19页：下节预告 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">下节预告</h2>
+            <div class="card w-full max-w-2xl animate-item">
+                <p class="text-3xl text-purple-400 mb-4">下一课：函数调用与参数传递</p>
+                <p class="text-xl text-gray-300">我们将学习：</p>
+                <ul class="text-xl text-gray-300 mt-4 space-y-2 text-left">
+                    <li>📤 值传递 vs 指针传递</li>
+                    <li>🔄 如何修改原变量</li>
+                    <li>💡 什么时候用什么方式</li>
+                </ul>
             </div>
+            <p class="text-gray-500 mt-8 animate-item">C++ 语法篇 · 第 16 课</p>
         </div>
+
     </div>
 
     <div class="progress-bar" id="progressBar"></div>
     <div class="progress-dots" id="progressDots"></div>
 
-    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-50">
-        <button id="prevBtn" class="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-gray-300 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
-            ← 上一页
-        </button>
-        <button id="nextBtn" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-white transition-all">
-            下一页 →
-        </button>
-    </div>
-
     <script>
-        const totalSlides = 13;
         let currentSlide = 1;
-        let score = 0;
-        let streak = 0;
-
-        const progressBar = document.getElementById('progressBar');
-        const progressDots = document.getElementById('progressDots');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const scoreValue = document.getElementById('scoreValue');
-        const streakValue = document.getElementById('streakValue');
-
-        function updateProgress() {
-            const progress = (currentSlide / totalSlides) * 100;
-            progressBar.style.width = `${progress}%`;
-            
-            document.querySelectorAll('.dot').forEach((dot, i) => {
-                dot.classList.toggle('active', i + 1 === currentSlide);
-            });
-        }
+        const totalSlides = document.querySelectorAll('.slide').length;
+        let learningState = { score: 0, streak: 0, maxStreak: 0 };
 
         function showSlide(n) {
             if (n < 1 || n > totalSlides) return;
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.animate-item').forEach(item => item.classList.remove('visible'));
+            
             currentSlide = n;
+            const slide = document.querySelectorAll('.slide')[n - 1];
+            slide.classList.add('active');
             
-            document.querySelectorAll('.slide').forEach((slide, i) => {
-                slide.classList.toggle('active', i + 1 === currentSlide);
-            });
-
+            setTimeout(() => {
+                slide.querySelectorAll('.animate-item').forEach((item, i) => {
+                    setTimeout(() => item.classList.add('visible'), i * 100);
+                });
+            }, 100);
+            
             updateProgress();
-            prevBtn.disabled = currentSlide === 1;
-            nextBtn.textContent = currentSlide === totalSlides ? '完成！' : '下一页 →';
-            
-            animateSlide();
+            updateNavButtons();
         }
 
-        function animateSlide() {
-            const activeSlide = document.querySelector('.slide.active');
-            if (!activeSlide) return;
+        function updateProgress() {
+            const progress = (currentSlide / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
             
-            const items = activeSlide.querySelectorAll('.animate-item');
-            items.forEach((item, i) => {
-                setTimeout(() => {
-                    item.classList.add('visible');
-                }, i * 100);
+            document.querySelectorAll('.dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i + 1 === currentSlide);
+                dot.classList.toggle('completed', i + 1 < currentSlide);
             });
+        }
+
+        function updateNavButtons() {
+            document.getElementById('prevBtn').classList.toggle('disabled', currentSlide === 1);
+            document.getElementById('nextBtn').classList.toggle('disabled', currentSlide === totalSlides);
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) showSlide(currentSlide - 1);
+        }
+
+        function createDots() {
+            for (let i = 1; i <= totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                dot.addEventListener('click', () => showSlide(i));
+                document.getElementById('progressDots').appendChild(dot);
+            }
         }
 
         function updateScore(points) {
-            score += points;
-            scoreValue.textContent = score;
-            scoreValue.parentElement.classList.add('scale-125');
-            setTimeout(() => scoreValue.parentElement.classList.remove('scale-125'), 200);
+            learningState.score += points;
+            document.getElementById('scoreValue').textContent = learningState.score;
         }
 
         function updateStreak() {
-            streak++;
-            streakValue.textContent = streak;
-            if (streak >= 3) showBadge(`连胜 ${streak}！`);
+            learningState.streak++;
+            document.getElementById('streakValue').textContent = learningState.streak;
+            if (learningState.streak >= 3) {
+                showFeedback('🔥 连胜 ' + learningState.streak + '！', 'correct');
+            }
         }
 
         function resetStreak() {
-            streak = 0;
-            streakValue.textContent = '0';
-        }
-
-        function showBadge(text) {
-            const badge = document.createElement('div');
-            badge.className = 'particle';
-            badge.style.cssText = 'top:50%;left:50%;background:linear-gradient(135deg,#f472b6,#c084fc);color:white;padding:0.75rem 1.5rem;border-radius:2rem;font-weight:bold;font-size:1.25rem;';
-            badge.textContent = text;
-            document.body.appendChild(badge);
-            setTimeout(() => badge.remove(), 800);
+            learningState.streak = 0;
+            document.getElementById('streakValue').textContent = 0;
         }
 
         function showParticles(element) {
             const rect = element.getBoundingClientRect();
             const colors = ['#34d399', '#60a5fa', '#fbbf24', '#f472b6'];
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 10; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
-                particle.style.cssText = `left:${rect.left + rect.width/2}px;top:${rect.top + rect.height/2}px;width:8px;height:8px;background:${colors[i%4]};border-radius:50%;`;
+                particle.style.cssText = `
+                    position: fixed;
+                    left: ${rect.left + rect.width/2 + (Math.random() - 0.5) * 40}px;
+                    top: ${rect.top + rect.height/2}px;
+                    width: 10px;
+                    height: 10px;
+                    background: ${colors[i % 4]};
+                    border-radius: 50%;
+                    pointer-events: none;
+                    animation: confetti 0.8s ease forwards;
+                `;
                 document.body.appendChild(particle);
                 setTimeout(() => particle.remove(), 800);
             }
         }
 
-        prevBtn.addEventListener('click', () => showSlide(currentSlide - 1));
-        nextBtn.addEventListener('click', () => {
-            if (currentSlide === totalSlides) { nextBtn.textContent = '🎉 已完成！'; return; }
-            showSlide(currentSlide + 1);
-        });
+        function showFeedback(message, type) {
+            const feedback = document.createElement('div');
+            feedback.className = 'feedback ' + type;
+            feedback.textContent = message;
+            document.body.appendChild(feedback);
+            setTimeout(() => feedback.remove(), 1500);
+        }
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); showSlide(currentSlide + 1); }
-            else if (e.key === 'ArrowLeft') { e.preventDefault(); showSlide(currentSlide - 1); }
-        });
+        function checkAnswer(element) {
+            if (element.classList.contains('correct') || element.classList.contains('wrong')) return;
+            
+            const isCorrect = element.dataset.correct === 'true';
+            
+            if (isCorrect) {
+                element.classList.add('correct');
+                showParticles(element);
+                updateScore(10);
+                updateStreak();
+                showFeedback('✓ 正确！', 'correct');
+            } else {
+                element.classList.add('wrong');
+                resetStreak();
+                showFeedback('✗ 再想想...', 'wrong');
+                setTimeout(() => element.classList.remove('wrong'), 500);
+            }
+        }
 
-        document.querySelectorAll('.quiz-option').forEach(option => {
-            option.addEventListener('click', function(e) {
-                if (e.target.closest('button')) return;
-                const isCorrect = this.dataset.correct === 'true';
-                if (isCorrect) { this.classList.add('correct'); showParticles(this); updateScore(10); updateStreak(); }
-                else { this.classList.add('wrong'); resetStreak(); setTimeout(() => this.classList.remove('wrong'), 300); }
+        document.addEventListener('DOMContentLoaded', () => {
+            createDots();
+            showSlide(1);
+            
+            const dragItems = document.querySelectorAll('.drag-item[draggable="true"]');
+            const dropZones = document.querySelectorAll('.drop-zone[data-answer]');
+            
+            dragItems.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', this.dataset.value);
+                    this.classList.add('dragging');
+                });
+                item.addEventListener('dragend', function() {
+                    this.classList.remove('dragging');
+                });
+            });
+            
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('drag-over');
+                });
+                
+                zone.addEventListener('dragleave', function() {
+                    this.classList.remove('drag-over');
+                });
+                
+                zone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('drag-over');
+                    const value = e.dataTransfer.getData('text/plain');
+                    const answer = this.dataset.answer;
+                    
+                    if (value === answer) {
+                        this.textContent = value;
+                        this.classList.add('correct');
+                        showParticles(this);
+                        updateScore(10);
+                        updateStreak();
+                        showFeedback('✓ 正确！', 'correct');
+                    } else {
+                        this.classList.add('wrong');
+                        resetStreak();
+                        showFeedback('✗ 再想想...', 'wrong');
+                        setTimeout(() => this.classList.remove('wrong'), 500);
+                    }
+                });
             });
         });
 
-        for (let i = 1; i <= totalSlides; i++) {
-            const dot = document.createElement('div');
-            dot.className = 'dot';
-            if (i === 1) dot.classList.add('active');
-            dot.addEventListener('click', () => showSlide(i));
-            progressDots.appendChild(dot);
-        }
-
-        showSlide(1);
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
     </script>
 </body>
 </html>

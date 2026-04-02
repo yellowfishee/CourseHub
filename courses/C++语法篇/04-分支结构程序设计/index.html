@@ -3,235 +3,577 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>分支结构程序设计 - 遇到岔路口</title>
+    <title>分支结构程序设计 - C++第4课</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=HarmonyOS+Sans+SC:wght@300;400;700&display=swap');
-        body { font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif; background: #0a0a0a; overflow: hidden; }
-        .bg-blur { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); opacity: 0.25; animation: float 8s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(50px, 50px); } }
-        .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4rem; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif; background: #0a0a0a; overflow: hidden; color: #e2e8f0; }
+        .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
         .slide.active { opacity: 1; pointer-events: auto; }
-        .animate-item { opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease; }
-        .animate-item.visible { opacity: 1; transform: translateY(0); }
-        .progress-bar { position: fixed; bottom: 0; left: 0; height: 4px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 0.3s ease; }
-        .progress-dots { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; cursor: pointer; transition: all 0.3s ease; }
-        .dot.active { background: #60a5fa; transform: scale(1.3); }
-        .code-block { background: #1e1e2e; border: 1px solid #3b82f6; border-radius: 12px; padding: 1.5rem 2rem; font-family: 'Monaco', 'Menlo', monospace; font-size: 1.1rem; color: #f0f0f0; margin: 1rem 0; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2); }
+        .code-block { background: #1e1e2e; border: 1px solid #3b82f6; border-radius: 12px; padding: 1.5rem 2rem; font-family: 'Monaco', 'Menlo', monospace; font-size: 1.1rem; color: #f0f0f0; margin: 1rem 0; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2); line-height: 1.8; }
         .code-block .keyword { color: #f472b6; }
         .code-block .function { color: #34d399; }
         .code-block .number { color: #fbbf24; }
         .code-block .string { color: #a78bfa; }
         .code-block .comment { color: #6b7280; }
-        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 1.5rem; text-align: center; }
+        .code-block .operator { color: #60a5fa; }
+        .code-block .type { color: #22d3ee; }
+        .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 1.5rem; text-align: center; }
+        .quiz-option { background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 1rem 1.5rem; cursor: pointer; transition: all 0.2s ease; }
+        .quiz-option:hover { background: rgba(255,255,255,0.1); border-color: #60a5fa; }
+        .quiz-option.correct { background: rgba(52, 211, 153, 0.3); border-color: #34d399; animation: pulse 0.5s ease; }
+        .quiz-option.wrong { background: rgba(248, 113, 113, 0.3); border-color: #f87171; animation: shake 0.3s ease; }
+        .drop-zone { min-width: 80px; min-height: 50px; border: 2px dashed #60a5fa; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; padding: 0.5rem 1rem; transition: all 0.2s ease; }
+        .drop-zone.drag-over { background: rgba(96, 165, 250, 0.2); border-color: #34d399; }
+        .drop-zone.correct { background: rgba(52, 211, 153, 0.3); border-color: #34d399; border-style: solid; }
+        .drop-zone.wrong { background: rgba(248, 113, 113, 0.3); border-color: #f87171; border-style: solid; }
+        .drag-item { background: rgba(96, 165, 250, 0.2); border: 1px solid #60a5fa; border-radius: 8px; padding: 0.5rem 1rem; cursor: grab; transition: all 0.2s ease; user-select: none; }
+        .drag-item:hover { background: rgba(96, 165, 250, 0.4); transform: scale(1.05); }
+        .drag-item.dragging { opacity: 0.5; }
+        .particle { position: fixed; pointer-events: none; border-radius: 50%; animation: confetti 0.8s ease forwards; }
+        .progress-bar { position: fixed; bottom: 0; left: 0; height: 4px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 0.3s ease; z-index: 100; }
+        .progress-dots { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 100; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: #334155; cursor: pointer; transition: all 0.3s ease; }
+        .dot.active { background: #60a5fa; transform: scale(1.3); }
+        .score-display { position: fixed; top: 20px; right: 20px; background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 8px; font-size: 1rem; z-index: 100; }
+        .streak-display { position: fixed; top: 20px; right: 140px; background: rgba(251, 191, 36, 0.2); padding: 0.5rem 1rem; border-radius: 8px; font-size: 1rem; z-index: 100; }
+        .nav-btn { position: fixed; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); border: none; color: #e2e8f0; font-size: 2rem; padding: 1rem; border-radius: 50%; cursor: pointer; transition: all 0.2s ease; z-index: 100; }
+        .nav-btn:hover { background: rgba(255,255,255,0.2); }
+        .nav-btn.prev { left: 20px; }
+        .nav-btn.next { right: 20px; }
+        .feedback { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 1rem 2rem; border-radius: 12px; font-size: 1.5rem; font-weight: bold; opacity: 0; transition: opacity 0.3s ease; z-index: 200; pointer-events: none; }
+        .feedback.show { opacity: 1; }
+        .feedback.correct { background: rgba(52, 211, 153, 0.9); color: white; }
+        .feedback.wrong { background: rgba(248, 113, 113, 0.9); color: white; }
         .info-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
         .info-table th, .info-table td { border: 1px solid rgba(255,255,255,0.2); padding: 0.75rem 1rem; text-align: center; }
-        .info-table th { background: rgba(59, 130, 246, 0.4); color: #ffffff; }
-        .info-table td { background: rgba(255,255,255,0.05); color: #f0f0f0; }
+        .info-table th { background: rgba(59, 130, 246, 0.4); }
+        .info-table td { background: rgba(255,255,255,0.05); }
+        .highlight { color: #fbbf24; font-weight: bold; }
+        .emoji-big { font-size: 4rem; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+        @keyframes confetti { 0% { opacity: 1; transform: scale(1) translateY(0) rotate(0deg); } 100% { opacity: 0; transform: scale(2) translateY(-100px) rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { animation: fadeIn 0.5s ease forwards; }
+        .flow-chart { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+        .flow-box { padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: bold; }
+        .flow-arrow { font-size: 1.5rem; color: #60a5fa; }
+        .condition-box { background: rgba(96, 165, 250, 0.2); border: 2px solid #60a5fa; border-radius: 8px; padding: 0.75rem 1.5rem; }
     </style>
 </head>
 <body>
-    <div class="bg-blur" style="top: -200px; left: -200px; background: #3b82f6;"></div>
-    <div class="bg-blur" style="bottom: -200px; right: -200px; background: #8b5cf6; animation-delay: -4s;"></div>
+    <div class="score-display">得分: <span id="scoreValue">0</span></div>
+    <div class="streak-display">🔥 连胜: <span id="streakValue">0</span></div>
+    <button class="nav-btn prev" onclick="prevSlide()">◀</button>
+    <button class="nav-btn next" onclick="nextSlide()">▶</button>
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="progress-dots" id="progressDots"></div>
+    <div class="feedback" id="feedback"></div>
 
     <div id="slides-container">
         <!-- 第1页：封面 -->
         <div class="slide active">
-            <h1 class="text-5xl font-bold text-gray-100 mb-8 animate-item">分支结构程序设计</h1>
-            <p class="text-2xl text-blue-400 mb-8 animate-item">遇到岔路口，该怎么走？</p>
+            <div class="emoji-big mb-6">🔀</div>
+            <h1 class="text-5xl font-bold mb-4">分支结构程序设计</h1>
+            <p class="text-2xl text-blue-400 mb-8">遇到岔路口，该怎么走？</p>
             <div class="grid grid-cols-3 gap-6 w-full max-w-4xl mb-6">
-                <div class="card animate-item"><div class="text-4xl mb-3">🔀</div><p class="text-lg text-gray-100 font-bold">if 语句</p><p class="text-gray-400 text-sm">如果...那么...</p></div>
-                <div class="card animate-item"><div class="text-4xl mb-3">↔️</div><p class="text-lg text-gray-100 font-bold">if...else</p><p class="text-gray-400 text-sm">两条路选择</p></div>
-                <div class="card animate-item"><div class="text-4xl mb-3">🔀</div><p class="text-lg text-gray-100 font-bold">逻辑运算</p><p class="text-gray-400 text-sm">与、或、非</p></div>
+                <div class="card"><div class="text-3xl mb-2">🔀</div><p class="font-bold">if 语句</p><p class="text-gray-400 text-sm">如果...那么...</p></div>
+                <div class="card"><div class="text-3xl mb-2">↔️</div><p class="font-bold">if...else</p><p class="text-gray-400 text-sm">二选一</p></div>
+                <div class="card"><div class="text-3xl mb-2">🔢</div><p class="font-bold">比较运算符</p><p class="text-gray-400 text-sm">大于小于等于</p></div>
             </div>
-            <p class="text-gray-500 animate-item">C++ 语法篇 · 第 4 课</p>
+            <p class="text-gray-500">C++ 语法篇 · 第 4 课</p>
         </div>
 
-        <!-- 第2页：if 语句基本格式 -->
+        <!-- 第2页：生活类比 -->
         <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">if 语句</h2>
-            <div class="code-block animate-item">
-                <span class="keyword">if</span> (条件)<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;语句1;<br>
-                <span class="keyword">else</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;语句2;
+            <h2 class="text-3xl font-bold mb-6">🚦 十字路口的比喻</h2>
+            <div class="card max-w-2xl mb-6">
+                <p class="text-xl mb-4">想象你走在路上：</p>
+                <p class="text-xl mb-2">如果红灯亮 → <span class="text-red-400">停！</span></p>
+                <p class="text-xl mb-2">如果绿灯亮 → <span class="text-green-400">走！</span></p>
             </div>
-            <p class="text-gray-400 mt-4 animate-item">条件为真执行语句1，否则执行语句2</p>
-        </div>
-
-        <!-- 第3页：比较运算符 -->
-        <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">比较运算符</h2>
-            <table class="info-table w-full max-w-2xl animate-item">
-                <thead><tr><th>运算符</th><th>含义</th><th>例子</th></tr></thead>
-                <tbody>
-                    <tr><td class="text-blue-400">==</td><td class="text-gray-100">等于</td><td class="text-gray-100">a == b</td></tr>
-                    <tr><td class="text-blue-400">!=</td><td class="text-gray-100">不等于</td><td class="text-gray-100">a != b</td></tr>
-                    <tr><td class="text-blue-400">&gt;</td><td class="text-gray-100">大于</td><td class="text-gray-100">a > b</td></tr>
-                    <tr><td class="text-blue-400">&lt;</td><td class="text-gray-100">小于</td><td class="text-gray-100">a < b</td></tr>
-                    <tr><td class="text-blue-400">&gt;=</td><td class="text-gray-100">大于等于</td><td class="text-gray-100">a >= b</td></tr>
-                    <tr><td class="text-blue-400">&lt;=</td><td class="text-gray-100">小于等于</td><td class="text-gray-100">a <= b</td></tr>
-                </tbody>
-            </table>
-            <p class="text-yellow-400 mt-4 animate-item">⚠️ = 是赋值，== 是比较！</p>
-        </div>
-
-        <!-- 第4页：逻辑运算符 -->
-        <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">逻辑运算符</h2>
-            <div class="grid grid-cols-3 gap-4 w-full max-w-3xl">
-                <div class="card animate-item">
-                    <p class="text-green-400 font-bold mb-2">&& 与</p>
-                    <p class="text-gray-300 text-sm mb-2">两个都成立才成立</p>
-                    <div class="code-block text-sm">
-                        a > <span class="number">0</span> &amp;&amp; a < <span class="number">10</span>
-                    </div>
-                </div>
-                <div class="card animate-item">
-                    <p class="text-yellow-400 font-bold mb-2">|| 或</p>
-                    <p class="text-gray-300 text-sm mb-2">至少一个成立就成立</p>
-                    <div class="code-block text-sm">
-                        a == <span class="number">1</span> || a == <span class="number">2</span>
-                    </div>
-                </div>
-                <div class="card animate-item">
-                    <p class="text-purple-400 font-bold mb-2">! 非</p>
-                    <p class="text-gray-300 text-sm mb-2">取反</p>
-                    <div class="code-block text-sm">
-                        !<span class="keyword">false</span>
-                    </div>
-                </div>
+            <div class="card max-w-2xl">
+                <p class="text-xl mb-4">💡 <strong>分支结构</strong>就是这样！</p>
+                <p class="text-gray-400">根据条件是否满足</p>
+                <p class="text-gray-400">决定执行哪一段代码</p>
             </div>
         </div>
 
-        <!-- 第5页：例题1-4 鸡兔同笼 -->
+        <!-- 第3页：if 语句介绍 -->
         <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">例题1-4　鸡兔同笼</h2>
-            <p class="text-gray-300 mb-4 animate-item">已知鸡和兔的总数量为n，总腿数为m</p>
-            <p class="text-gray-300 mb-4 animate-item">输入n和m，输出鸡和兔的数目，无解输出No answer</p>
-            <div class="grid grid-cols-2 gap-4 mt-4 w-full max-w-2xl">
-                <div class="card animate-item"><p class="text-gray-400 text-sm">样例输入1：14 32</p><p class="text-green-400 font-bold">样例输出1：12 2</p></div>
-                <div class="card animate-item"><p class="text-gray-400 text-sm">样例输入2：10 16</p><p class="text-red-400 font-bold">样例输出2：No answer</p></div>
-            </div>
-        </div>
-
-        <!-- 第6页：程序1-11 鸡兔同笼 -->
-        <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-11　鸡兔同笼</h2>
-            <div class="code-block animate-item">
-                <span class="keyword">#include</span> <span class="string">&lt;stdio.h&gt;</span><br>
-                <span class="keyword">int</span> main() {<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span> a, b, n, m;<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">scanf</span>(<span class="string">"%d%d"</span>, &amp;n, &amp;m);<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;a = (<span class="number">4</span>*n-m)/<span class="number">2</span>;<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;b = n-a;<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span>(m % <span class="number">2</span> == <span class="number">1</span> || a < <span class="number">0</span> || b < <span class="number">0</span>)<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"No answer\n"</span>);<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"%d %d\n"</span>, a, b);<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="number">0</span>;<br>
+            <h2 class="text-3xl font-bold mb-6">🔀 if 语句</h2>
+            <p class="text-xl text-gray-400 mb-6">"如果...那么..."</p>
+            <div class="code-block max-w-xl">
+                <span class="keyword">if</span> (条件) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;执行这里<br>
                 }
             </div>
-        </div>
-
-        <!-- 第7页：例题1-5 三整数排序 -->
-        <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">例题1-5　三整数排序</h2>
-            <p class="text-gray-300 mb-4 animate-item">输入3个整数，从小到大排序后输出</p>
-            <p class="text-green-400 mb-4 animate-item">样例输入：20 7 33　　样例输出：7 20 33</p>
-            <p class="text-yellow-400 animate-item">⚠️ 注意：输入"111"时，程序1-12会输出6次"111"！</p>
-        </div>
-
-        <!-- 第8页：程序1-13 三整数排序 -->
-        <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-13　三整数排序（else if版）</h2>
-            <div class="code-block animate-item">
-                <span class="keyword">int</span> a, b, c;<br>
-                <span class="function">scanf</span>(<span class="string">"%d%d%d"</span>, &amp;a, &amp;b, &amp;c);<br>
-                <span class="keyword">if</span>(a &lt;= b &amp;&amp; b &lt;= c) <span class="function">printf</span>(<span class="string">"%d %d %d\n"</span>, a, b, c);<br>
-                <span class="keyword">else if</span>(a &lt;= c &amp;&amp; c &lt;= b) <span class="function">printf</span>(<span class="string">"%d %d %d\n"</span>, a, c, b);<br>
-                <span class="keyword">else if</span>(b &lt;= a &amp;&amp; a &lt;= c) <span class="function">printf</span>(<span class="string">"%d %d %d\n"</span>, b, a, c);<br>
-                <span class="keyword">else if</span>(b &lt;= c &amp;&amp; c &lt;= a) <span class="function">printf</span>(<span class="string">"%d %d %d\n"</span>, b, c, a);<br>
-                <span class="keyword">else if</span>(c &lt;= a &amp;&amp; a &lt;= b) <span class="function">printf</span>(<span class="string">"%d %d %d\n"</span>, c, a, b);<br>
-                <span class="keyword">else</span> <span class="function">printf</span>(<span class="string">"%d %d %d\n"</span>, c, b, a);
+            <div class="card mt-4 max-w-xl">
+                <p class="text-xl">如果条件成立，就执行大括号里的代码</p>
+                <p class="text-gray-400 mt-2">条件不成立，就跳过这段代码</p>
             </div>
         </div>
 
-        <!-- 第9页：程序1-14 三整数排序（交换法） -->
+        <!-- 第4页：比较运算符 -->
         <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-14　三整数排序（两两交换）</h2>
-            <div class="code-block animate-item">
-                <span class="keyword">int</span> a, b, c, t;<br>
-                <span class="function">scanf</span>(<span class="string">"%d%d%d"</span>, &amp;a, &amp;b, &amp;c);<br>
-                <span class="keyword">if</span>(a > b) { t = a; a = b; b = t; } <span class="comment">// 执行完后 a≤b</span><br>
-                <span class="keyword">if</span>(a > c) { t = a; a = c; c = t; } <span class="comment">// 执行完后 a≤c，且a≤b依然成立</span><br>
-                <span class="keyword">if</span>(b > c) { t = b; b = c; c = t; }<br>
-                <span class="function">printf</span>(<span class="string">"%d %d %d\n"</span>, a, b, c);
+            <h2 class="text-3xl font-bold mb-6">🔢 比较运算符</h2>
+            <table class="info-table max-w-2xl">
+                <thead><tr><th>数学</th><th>C++</th><th>意思</th></tr></thead>
+                <tbody>
+                    <tr><td>&gt;</td><td class="operator">&gt;</td><td>大于</td></tr>
+                    <tr><td>&lt;</td><td class="operator">&lt;</td><td>小于</td></tr>
+                    <tr><td>≥</td><td class="operator">&gt;=</td><td>大于等于</td></tr>
+                    <tr><td>≤</td><td class="operator">&lt;=</td><td>小于等于</td></tr>
+                    <tr><td>=</td><td class="operator">==</td><td>等于（两个等号！）</td></tr>
+                    <tr><td>≠</td><td class="operator">!=</td><td>不等于</td></tr>
+                </tbody>
+            </table>
+            <div class="card mt-4 max-w-xl">
+                <p class="text-xl text-yellow-400">⚠️ 重要：等于要用两个等号 ==</p>
+                <p class="text-gray-400">一个等号 = 是赋值！两个等号 == 是比较！</p>
             </div>
-            <p class="text-green-400 mt-4 animate-item">✓ a已经是3个数中的最小值，只需检查b和c的顺序</p>
         </div>
 
-        <!-- 第10页：多条件分支 -->
+        <!-- 第5页：if 例子 -->
         <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">if...else if...else</h2>
-            <div class="code-block animate-item">
-                <span class="keyword">int</span> score;<br>
-                <span class="function">scanf</span>(<span class="string">"%d"</span>, &amp;score);<br><br>
-                <span class="keyword">if</span> (score >= <span class="number">90</span>) {<br>
+            <h2 class="text-3xl font-bold mb-6">📝 if 例子</h2>
+            <p class="text-xl text-gray-400 mb-6">如果年龄大于18，显示"成年"</p>
+            <div class="code-block max-w-xl">
+                <span class="type">int</span> age = <span class="number">20</span>;<br><br>
+                <span class="keyword">if</span> (age <span class="operator">&gt;=</span> <span class="number">18</span>) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"成年\n"</span>);<br>
+                }
+            </div>
+            <div class="card mt-4">
+                <p class="text-xl">因为 age = 20 ≥ 18，所以显示：<span class="text-green-400">成年</span></p>
+            </div>
+        </div>
+
+        <!-- 第6页：if else -->
+        <div class="slide">
+            <h2 class="text-3xl font-bold mb-6">↔️ if...else 语句</h2>
+            <p class="text-xl text-gray-400 mb-6">"如果...否则..."</p>
+            <div class="code-block max-w-xl">
+                <span class="keyword">if</span> (条件) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;条件成立时执行<br>
+                } <span class="keyword">else</span> {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;条件不成立时执行<br>
+                }
+            </div>
+            <div class="card mt-4 max-w-xl">
+                <p class="text-xl">二选一：必执行其中一个！</p>
+            </div>
+        </div>
+
+        <!-- 第7页：if else 例子 -->
+        <div class="slide">
+            <h2 class="text-3xl font-bold mb-6">📝 if...else 例子</h2>
+            <p class="text-xl text-gray-400 mb-6">判断年龄是成年还是未成年</p>
+            <div class="code-block max-w-xl text-sm">
+                <span class="type">int</span> age = <span class="number">15</span>;<br><br>
+                <span class="keyword">if</span> (age <span class="operator">&gt;=</span> <span class="number">18</span>) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"成年\n"</span>);<br>
+                } <span class="keyword">else</span> {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"未成年\n"</span>);<br>
+                }
+            </div>
+            <div class="card mt-4">
+                <p class="text-xl">因为 age = 15 &lt; 18，所以显示：<span class="text-yellow-400">未成年</span></p>
+            </div>
+        </div>
+
+        <!-- 第8页：流程图 -->
+        <div class="slide">
+            <h2 class="text-3xl font-bold mb-6">📊 流程图</h2>
+            <div class="flow-chart">
+                <div class="flow-box bg-blue-500">开始</div>
+                <div class="flow-arrow">↓</div>
+                <div class="condition-box">age >= 18 ?</div>
+                <div class="flow-arrow">↓</div>
+                <div class="grid grid-cols-2 gap-4 w-full max-w-md">
+                    <div class="card border-green-500">
+                        <p class="text-green-400 font-bold">是 →</p>
+                        <p>printf("成年")</p>
+                    </div>
+                    <div class="card border-yellow-500">
+                        <p class="text-yellow-400 font-bold">否 →</p>
+                        <p>printf("未成年")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第9页：选择题 -->
+        <div class="slide">
+            <h2 class="text-3xl font-bold mb-6">❓ 小测验</h2>
+            <p class="text-xl text-gray-400 mb-6">如果 age = 18，会显示什么？</p>
+            <div class="code-block max-w-xl text-sm mb-4">
+                <span class="keyword">if</span> (age <span class="operator">&gt;</span> <span class="number">18</span>) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"大于18"</span>);<br>
+                } <span class="keyword">else</span> {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"不大于18"</span>);<br>
+                }
+            </div>
+            <div class="grid grid-cols-2 gap-4 max-w-xl">
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this, false)">
+                    <span class="text-xl">大于18</span>
+                </div>
+                <div class="quiz-option" data-correct="true" onclick="checkAnswer(this, true)">
+                    <span class="text-xl">不大于18</span>
+                </div>
+            </div>
+            <div class="card mt-4 max-w-xl">
+                <p class="text-gray-400">提示：age = 18，18 &gt; 18 是 false（相等不是大于）</p>
+            </div>
+        </div>
+
+        <!-- 第10页：else if -->
+        <div class="slide">
+            <h2 class="text-3xl font-bold mb-6">🔀 else if 多重判断</h2>
+            <p class="text-xl text-gray-400 mb-6">多个条件，多条路</p>
+            <div class="code-block max-w-xl text-sm">
+                <span class="keyword">if</span> (score <span class="operator">&gt;=</span> <span class="number">90</span>) {<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"优秀\n"</span>);<br>
-                } <span class="keyword">else if</span> (score >= <span class="number">80</span>) {<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"良好\n"</span>);<br>
-                } <span class="keyword">else if</span> (score >= <span class="number">60</span>) {<br>
+                } <span class="keyword">else if</span> (score <span class="operator">&gt;=</span> <span class="number">60</span>) {<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"及格\n"</span>);<br>
                 } <span class="keyword">else</span> {<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"不及格\n"</span>);<br>
                 }
             </div>
+            <div class="card mt-4 max-w-xl">
+                <p class="text-xl">条件按顺序检查，第一个满足的执行</p>
+            </div>
         </div>
 
-        <!-- 第11页：总结 -->
+        <!-- 第11页：else if 例子 -->
         <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">今天学了什么？</h2>
+            <h2 class="text-3xl font-bold mb-6">📝 else if 完整例子</h2>
+            <p class="text-xl text-gray-400 mb-4">成绩评判（score = 75）</p>
+            <div class="code-block max-w-xl text-sm">
+                <span class="type">int</span> score = <span class="number">75</span>;<br><br>
+                <span class="keyword">if</span> (score <span class="operator">&gt;=</span> <span class="number">90</span>) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"优秀\n"</span>);<br>
+                } <span class="keyword">else if</span> (score <span class="operator">&gt;=</span> <span class="number">60</span>) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"及格\n"</span>);<br>
+                } <span class="keyword">else</span> {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"不及格\n"</span>);<br>
+                }
+            </div>
+            <div class="card mt-4">
+                <p class="text-xl">75 &lt; 90 ✗ → 75 &gt;= 60 ✓ → 显示：<span class="text-green-400">及格</span></p>
+            </div>
+        </div>
+
+        <!-- 第12页：逻辑运算符 -->
+        <div class="slide">
+            <h2 class="text-3xl font-bold mb-6">🔗 逻辑运算符</h2>
+            <table class="info-table max-w-2xl">
+                <thead><tr><th>数学</th><th>C++</th><th>意思</th></tr></thead>
+                <tbody>
+                    <tr><td>且</td><td class="operator">&amp;&amp;</td><td>两个都成立</td></tr>
+                    <tr><td>或</td><td class="operator>||</td><td>至少一个成立</td></tr>
+                    <tr><td>非</td><td class="operator">!</td><td>取反</td></tr>
+                </tbody>
+            </table>
+            <div class="card mt-4 max-w-xl">
+                <p class="text-xl">&& = AND = "并且"</p>
+                <p class="text-xl">|| = OR = "或者"</p>
+                <p class="text-xl">! = NOT = "不是"</p>
+            </div>
+        </div>
+
+        <!-- 第13页：逻辑运算例子 -->
+        <div class="slide">
+            <h2 class="text-3xl font-bold mb-6">📝 逻辑运算例子</h2>
+            <div class="code-block max-w-xl text-sm">
+                <span class="comment">// 判断是否在18-60岁之间</span><br>
+                <span class="type">int</span> age = <span class="number">25</span>;<br><br>
+                <span class="keyword">if</span> (age <span class="operator">&gt;=</span> <span class="number">18</span> <span class="operator">&amp;&amp;</span> age <span class="operator">&lt;=</span> <span class="number">60</span>) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"在工作年龄\n"</span>);<br>
+                }
+            </div>
+            <div class="card mt-4">
+                <p class="text-lg">18 &lt;= 25 ✓ 且 25 &lt;= 60 ✓ → 两个都成立 → <span class="text-green-400">在工作年龄</span></p>
+            </div>
+        </div>
+
+        <!-- 第14页：常见错误 -->
+        <div class="slide">
+            <h2 class="text-3xl font-bold mb-6">❌ 常见错误</h2>
             <div class="grid grid-cols-2 gap-4 w-full max-w-3xl">
-                <div class="card animate-item"><p class="text-blue-400 font-bold">if 语句</p><p class="text-gray-400 text-sm">根据条件选择执行</p></div>
-                <div class="card animate-item"><p class="text-green-400 font-bold">else if...else</p><p class="text-gray-400 text-sm">多条路选择</p></div>
-                <div class="card animate-item"><p class="text-yellow-400 font-bold">&& || !</p><p class="text-gray-400 text-sm">逻辑运算</p></div>
-                <div class="card animate-item"><p class="text-purple-400 font-bold">鸡兔同笼/排序</p><p class="text-gray-400 text-sm">分支结构应用</p></div>
+                <div class="card border-red-500">
+                    <p class="text-red-400 font-bold mb-2">✗ 一个等号</p>
+                    <div class="code-block text-sm text-center">
+                        <span class="keyword">if</span> (a = <span class="number">5</span>)
+                    </div>
+                    <p class="text-gray-400 text-sm mt-2">这是赋值，不是比较！</p>
+                </div>
+                <div class="card border-green-500">
+                    <p class="text-green-400 font-bold mb-2">✓ 两个等号</p>
+                    <div class="code-block text-sm text-center">
+                        <span class="keyword">if</span> (a == <span class="number">5</span>)
+                    </div>
+                    <p class="text-gray-400 text-sm mt-2">这是比较！</p>
+                </div>
+                <div class="card border-red-500">
+                    <p class="text-red-400 font-bold mb-2">✗ 少写分号</p>
+                    <div class="code-block text-sm text-center">
+                        <span class="keyword">if</span> (a &gt; <span class="number">5</span>);<br>
+                        { ... }
+                    </div>
+                    <p class="text-gray-400 text-sm mt-2">if 后面不能加分号！</p>
+                </div>
+                <div class="card border-green-500">
+                    <p class="text-green-400 font-bold mb-2">✓ 正确写法</p>
+                    <div class="code-block text-sm text-center">
+                        <span class="keyword">if</span> (a &gt; <span class="number">5</span>)<br>
+                        { ... }
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- 第12页：第一章完结 -->
+        <!-- 第15页：拖拽练习 -->
         <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">第一章完结！</h2>
-            <div class="card animate-item">
-                <p class="text-2xl text-gray-100 font-bold mb-4">C++ 语法篇 · 第一章</p>
-                <p class="text-gray-400">算术表达式 → 变量及其输入 → 顺序结构 → 分支结构</p>
+            <h2 class="text-3xl font-bold mb-6">🎯 拖拽挑战</h2>
+            <p class="text-xl text-gray-400 mb-6">把正确的比较运算符拖到框里</p>
+            <div class="code-block text-xl">
+                <span class="type">int</span> age = <span class="number">18</span>;<br>
+                <span class="keyword">if</span> (age <span class="drop-zone" data-answer="&gt;="> ? </span> <span class="number">18</span>)
             </div>
-            <p class="text-gray-500 mt-8 animate-item">恭喜你完成了第一章的学习！</p>
+            <div class="flex gap-4 mt-6">
+                <div class="drag-item" draggable="true" data-value="&gt;">&gt;</div>
+                <div class="drag-item" draggable="true" data-value="&gt;=">&gt;=</div>
+                <div class="drag-item" draggable="true" data-value="==">==</div>
+            </div>
+        </div>
+
+        <!-- 第16页：总结 -->
+        <div class="slide">
+            <h2 class="text-3xl font-bold mb-6">📝 今日总结</h2>
+            <div class="grid grid-cols-2 gap-4 w-full max-w-3xl">
+                <div class="card">
+                    <p class="text-green-400 font-bold mb-2">if 语句</p>
+                    <p class="text-xl">如果条件成立就执行</p>
+                </div>
+                <div class="card">
+                    <p class="text-green-400 font-bold mb-2">if...else</p>
+                    <p class="text-xl">二选一执行</p>
+                </div>
+                <div class="card">
+                    <p class="text-green-400 font-bold mb-2">else if</p>
+                    <p class="text-xl">多个条件判断</p>
+                </div>
+                <div class="card">
+                    <p class="text-green-400 font-bold mb-2">逻辑运算符</p>
+                    <p class="text-xl">&amp;&amp; || !</p>
+                </div>
+            </div>
+            <div class="card mt-6 max-w-xl">
+                <p class="text-xl">⚠️ <strong>记住：</strong></p>
+                <p class="text-gray-400 mt-2">等于要写 == 不是 =</p>
+                <p class="text-gray-400">if 后面不要加分号</p>
+            </div>
+        </div>
+
+        <!-- 第17页：下节预告 -->
+        <div class="slide">
+            <div class="emoji-big mb-6">🔄</div>
+            <h2 class="text-3xl font-bold mb-6">下节课预告</h2>
+            <div class="card max-w-2xl mb-6">
+                <p class="text-2xl font-bold mb-4">循环结构程序设计</p>
+                <p class="text-xl text-gray-400">让计算机重复做一件事！</p>
+            </div>
+            <div class="text-gray-400">
+                <p>• for 循环 - 数数循环</p>
+                <p>• while 循环 - 条件循环</p>
+                <p>• 循环嵌套</p>
+            </div>
+        </div>
+
+        <!-- 第18页：结束页 -->
+        <div class="slide">
+            <div class="emoji-big mb-6">🎉</div>
+            <h2 class="text-3xl font-bold mb-6">本课结束！</h2>
+            <div class="card max-w-2xl mb-6">
+                <p class="text-xl mb-4">你学会了：</p>
+                <p class="text-lg">✓ if 语句 - 做选择</p>
+                <p class="text-lg">✓ if...else - 二选一</p>
+                <p class="text-lg">✓ else if - 多选一</p>
+                <p class="text-lg">✓ 逻辑运算符</p>
+            </div>
+            <p class="text-gray-400">继续加油！下一课见！</p>
         </div>
     </div>
 
-    <div class="fixed top-4 right-4 text-gray-500 text-sm animate-item">点击空格/右箭头逐步显示</div>
-    <div class="progress-bar" id="progress"></div>
-    <div class="progress-dots" id="dots"></div>
-
     <script>
-        let currentSlide = 0, currentItem = 0;
-        const slides = document.querySelectorAll('.slide');
-        const totalSlides = slides.length;
-        const dotsContainer = document.getElementById('dots');
-        for (let i = 0; i < totalSlides; i++) { const dot = document.createElement('div'); dot.className = 'dot' + (i === 0 ? ' active' : ''); dot.addEventListener('click', () => goToSlide(i)); dotsContainer.appendChild(dot); }
-        function getCurrentItems() { return slides[currentSlide].querySelectorAll('.animate-item'); }
-        function showNextItem() { const items = getCurrentItems(); if (currentItem < items.length) { items[currentItem].classList.add('visible'); currentItem++; return true; } return false; }
-        function hideAllItems() { const items = getCurrentItems(); items.forEach(item => item.classList.remove('visible')); currentItem = 0; }
-        function goToSlide(index) { if (index < 0 || index >= totalSlides) return; slides[currentSlide].classList.remove('active'); document.querySelectorAll('.dot')[currentSlide].classList.remove('active'); currentSlide = index; slides[currentSlide].classList.add('active'); document.querySelectorAll('.dot')[currentSlide].classList.add('active'); hideAllItems(); updateProgress(); }
-        function nextSlide() { if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1); }
-        function prevSlide() { if (currentSlide > 0) goToSlide(currentSlide - 1); }
-        function updateProgress() { document.getElementById('progress').style.width = ((currentSlide + 1) / totalSlides * 100) + '%'; }
-        document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); if (!showNextItem()) nextSlide(); } else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); } });
-        document.addEventListener('click', (e) => { if (e.target.closest('.dot')) return; if (!showNextItem()) nextSlide(); });
-        updateProgress();
+        let currentSlide = 1;
+        const totalSlides = 18;
+        let learningState = { score: 0, streak: 0, maxStreak: 0, correctCount: 0, totalAttempts: 0 };
+
+        function init() {
+            createDots();
+            updateProgress();
+            initDragDrop();
+        }
+
+        function createDots() {
+            const container = document.getElementById('progressDots');
+            for (let i = 1; i <= totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot' + (i === 1 ? ' active' : '');
+                dot.addEventListener('click', () => showSlide(i));
+                container.appendChild(dot);
+            }
+        }
+
+        function showSlide(n) {
+            if (n < 1 || n > totalSlides) return;
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.dot').forEach((d, i) => {
+                d.classList.toggle('active', i + 1 === n);
+            });
+            document.querySelectorAll('.slide')[n - 1].classList.add('active');
+            currentSlide = n;
+            updateProgress();
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) showSlide(currentSlide - 1);
+        }
+
+        function updateProgress() {
+            const bar = document.getElementById('progressBar');
+            bar.style.width = ((currentSlide / totalSlides) * 100) + '%';
+        }
+
+        function updateScore(points) {
+            learningState.score += points;
+            learningState.correctCount++;
+            learningState.totalAttempts++;
+            document.getElementById('scoreValue').textContent = learningState.score;
+        }
+
+        function updateStreak() {
+            learningState.streak++;
+            if (learningState.streak > learningState.maxStreak) {
+                learningState.maxStreak = learningState.streak;
+            }
+            document.getElementById('streakValue').textContent = learningState.streak;
+        }
+
+        function resetStreak() {
+            learningState.streak = 0;
+            document.getElementById('streakValue').textContent = 0;
+        }
+
+        function showFeedback(text, type) {
+            const fb = document.getElementById('feedback');
+            fb.textContent = text;
+            fb.className = 'feedback show ' + type;
+            setTimeout(() => fb.classList.remove('show'), 1500);
+        }
+
+        function showParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const colors = ['#34d399', '#60a5fa', '#fbbf24', '#f472b6'];
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.cssText = `
+                    left: ${rect.left + rect.width / 2 + (Math.random() - 0.5) * 40}px;
+                    top: ${rect.top + rect.height / 2}px;
+                    width: 10px; height: 10px;
+                    background: ${colors[i % 4]};
+                `;
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 800);
+            }
+        }
+
+        function checkAnswer(element, isCorrect) {
+            if (element.classList.contains('correct') || element.classList.contains('wrong')) return;
+
+            if (isCorrect) {
+                element.classList.add('correct');
+                showParticles(element);
+                updateScore(10);
+                updateStreak();
+                showFeedback('正确！🎉', 'correct');
+            } else {
+                element.classList.add('wrong');
+                resetStreak();
+                showFeedback('再想想...', 'wrong');
+                setTimeout(() => element.classList.remove('wrong'), 500);
+            }
+        }
+
+        function initDragDrop() {
+            const dragItems = document.querySelectorAll('.drag-item');
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            dragItems.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', this.dataset.value);
+                    this.classList.add('dragging');
+                });
+                item.addEventListener('dragend', function() {
+                    this.classList.remove('dragging');
+                });
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('drag-over');
+                });
+                zone.addEventListener('dragleave', function() {
+                    this.classList.remove('drag-over');
+                });
+                zone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('drag-over');
+                    const value = e.dataTransfer.getData('text/plain');
+                    const answer = this.dataset.answer;
+
+                    if (value === answer) {
+                        this.textContent = value;
+                        this.classList.add('correct');
+                        showParticles(this);
+                        updateScore(10);
+                        updateStreak();
+                        showFeedback('正确！🎉', 'correct');
+                    } else {
+                        this.classList.add('wrong');
+                        resetStreak();
+                        showFeedback('再想想...', 'wrong');
+                        setTimeout(() => {
+                            this.classList.remove('wrong');
+                            this.textContent = '?';
+                        }, 500);
+                    }
+                });
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        init();
     </script>
 </body>
 </html>

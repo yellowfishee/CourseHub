@@ -3,602 +3,639 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>18-竞赛题目选讲 - 算法入门经典</title>
+    <title>第18课 竞赛题目选讲 - 函数与递归实战</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=HarmonyOS+Sans+SC:wght@300;400;500;700&display=swap');
-        
-        * { box-sizing: border-box; }
-        
-        body {
-            font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif;
-            background: #0a0a0a;
-            overflow: hidden;
-        }
-
-        .bg-blur {
-            position: fixed;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.25;
-            animation: float 8s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(50px, 50px); }
-        }
-
-        .slide {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 5rem 4rem 6rem 4rem;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-            overflow-y: auto;
-        }
-
-        .slide.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .animate-item {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-
-        .animate-item.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .progress-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            transition: width 0.3s ease;
-        }
-
-        .progress-dots {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #334155;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .dot.active {
-            background: #60a5fa;
-            transform: scale(1.3);
-        }
-
-        .code-block {
-            background: #1e1e2e;
-            border: 1px solid #3b82f6;
-            border-radius: 12px;
-            padding: 1.25rem;
-            font-family: 'JetBrains Mono', 'Fira Code', monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            overflow-x: auto;
-            max-width: 100%;
-        }
-
-        .code-block code {
-            color: #e2e8f0;
-        }
-
-        .code-comment { color: #6b7280; }
-        .code-keyword { color: #c084fc; }
-        .code-string { color: #34d399; }
-        .code-number { color: #fbbf24; }
-        .code-function { color: #60a5fa; }
-
-        .quiz-option {
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 1rem 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .quiz-option:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: rgba(96, 165, 250, 0.5);
-        }
-
-        .quiz-option.correct {
-            background: rgba(52, 211, 153, 0.2);
-            border-color: #34d399;
-            animation: correctPulse 0.5s ease;
-        }
-
-        .quiz-option.wrong {
-            background: rgba(248, 113, 113, 0.2);
-            border-color: #f87171;
-            animation: shake 0.3s ease;
-        }
-
-        .quiz-option .letter {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: #e5e7eb;
-        }
-
-        .quiz-option.correct .letter {
-            background: #34d399;
-            color: #0a0a0a;
-        }
-
-        .quiz-option.wrong .letter {
-            background: #f87171;
-            color: #0a0a0a;
-        }
-
-        @keyframes correctPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        .tip-box {
-            background: rgba(251, 191, 36, 0.1);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            border-radius: 12px;
-            padding: 1rem 1.25rem;
-            color: #fbbf24;
-        }
-
-        .particle {
-            position: fixed;
-            pointer-events: none;
-            animation: confetti 0.8s ease forwards;
-        }
-
-        @keyframes confetti {
-            0% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(2) translateY(-50px); }
-        }
-
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-            background: linear-gradient(to bottom, rgba(10,10,10,0.9), transparent);
-        }
-
-        .score-display {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #fbbf24;
-        }
-
-        .streak-display {
-            font-size: 1rem;
-            color: #f472b6;
-        }
-
-        .problem-box {
-            background: rgba(96, 165, 250, 0.1);
-            border: 2px solid rgba(96, 165, 250, 0.3);
-            border-radius: 16px;
-            padding: 1.5rem;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=HarmonyOS+Sans+SC:wght@300;400;700&display=swap');
+        body { font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif; background: #0a0a0a; overflow: hidden; }
+        .bg-blur { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); opacity: 0.25; animation: float 8s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(50px, 50px); } }
+        .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4rem; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        .slide.active { opacity: 1; pointer-events: auto; }
+        .animate-item { opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease; }
+        .animate-item.visible { opacity: 1; transform: translateY(0); }
+        .progress-bar { position: fixed; bottom: 0; left: 0; height: 4px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 0.3s ease; }
+        .progress-dots { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; cursor: pointer; transition: all 0.3s ease; }
+        .dot.active { background: #60a5fa; transform: scale(1.3); }
+        .code-block { background: #1e1e2e; border: 1px solid #3b82f6; border-radius: 12px; padding: 1.5rem 2rem; font-family: 'Monaco', 'Menlo', monospace; font-size: 1.1rem; color: #f0f0f0; margin: 1rem 0; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2); }
+        .code-block .keyword { color: #f472b6; }
+        .code-block .function { color: #34d399; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .string { color: #a78bfa; }
+        .code-block .comment { color: #6b7280; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 1.5rem; text-align: center; }
+        .quiz-option { background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 1rem 1.5rem; cursor: pointer; transition: all 0.3s ease; }
+        .quiz-option:hover { background: rgba(255,255,255,0.1); border-color: #60a5fa; }
+        .quiz-option.correct { animation: correctPulse 0.5s ease; border-color: #34d399 !important; background: rgba(52, 211, 153, 0.2); }
+        .quiz-option.wrong { animation: shake 0.3s ease; border-color: #f87171 !important; }
+        @keyframes correctPulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); background: rgba(52, 211, 153, 0.3); } 100% { transform: scale(1); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .drop-zone { min-width: 80px; min-height: 50px; border: 2px dashed #60a5fa; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+        .drop-zone.drag-over { background: rgba(96, 165, 250, 0.2); border-color: #34d399; }
+        .drop-zone.correct { border-color: #34d399; background: rgba(52, 211, 153, 0.2); }
+        .drop-zone.wrong { border-color: #f87171; }
+        .drag-item { background: rgba(96, 165, 250, 0.2); border: 1px solid #60a5fa; border-radius: 8px; padding: 0.5rem 1rem; cursor: grab; transition: all 0.3s ease; user-select: none; }
+        .drag-item:hover { background: rgba(96, 165, 250, 0.4); transform: scale(1.05); }
+        .drag-item.dragging { opacity: 0.5; }
+        .particle { position: fixed; pointer-events: none; border-radius: 50%; animation: confetti 0.8s ease forwards; }
+        @keyframes confetti { 0% { opacity: 1; transform: scale(1) translateY(0); } 100% { opacity: 0; transform: scale(2) translateY(-50px); } }
+        .score-display { position: fixed; top: 20px; left: 20px; background: rgba(59, 130, 246, 0.2); border: 1px solid #60a5fa; border-radius: 8px; padding: 0.5rem 1rem; color: #60a5fa; font-weight: bold; }
+        .streak-display { position: fixed; top: 20px; right: 20px; background: rgba(251, 191, 36, 0.2); border: 1px solid #fbbf24; border-radius: 8px; padding: 0.5rem 1rem; color: #fbbf24; font-weight: bold; }
     </style>
 </head>
-<body class="text-gray-200">
-    <div class="header">
-        <div class="score-display">得分: <span id="scoreValue">0</span></div>
-        <div class="streak-display">连胜: <span id="streakValue">0</span></div>
-    </div>
-
+<body>
     <div class="bg-blur" style="top: -200px; left: -200px; background: #3b82f6;"></div>
     <div class="bg-blur" style="bottom: -200px; right: -200px; background: #8b5cf6; animation-delay: -4s;"></div>
 
-    <!-- Slide 1: Title -->
-    <div class="slide active" data-slide="1">
-        <div class="max-w-4xl w-full">
-            <div class="text-center mb-12">
-                <div class="animate-item inline-block px-4 py-1 bg-yellow-500/20 rounded-full text-yellow-400 text-sm mb-4">第18课</div>
-                <h1 class="animate-item text-5xl font-bold mb-4 text-gray-100">竞赛题目选讲</h1>
-                <p class="animate-item text-xl text-gray-400">综合运用函数和递归</p>
+    <div class="score-display">得分: <span id="scoreValue">0</span></div>
+    <div class="streak-display">🔥 连胜: <span id="streakValue">0</span></div>
+
+    <div id="slides-container">
+        <!-- 第1页：封面 -->
+        <div class="slide active">
+            <h1 class="text-5xl font-bold text-gray-100 mb-8 animate-item">第18课：竞赛题目选讲</h1>
+            <p class="text-2xl text-yellow-400 mb-8 animate-item">函数与递归实战</p>
+            <div class="grid grid-cols-3 gap-6 w-full max-w-4xl mb-6">
+                <div class="card animate-item"><div class="text-5xl mb-3">🏆</div><p class="text-lg text-gray-100 font-bold">竞赛题目</p><p class="text-gray-400 text-sm">真实考验</p></div>
+                <div class="card animate-item"><div class="text-5xl mb-3">💡</div><p class="text-lg text-gray-100 font-bold">解题思路</p><p class="text-gray-400 text-sm">化繁为简</p></div>
+                <div class="card animate-item"><div class="text-5xl mb-3">🔧</div><p class="text-lg text-gray-100 font-bold">代码实现</p><p class="text-gray-400 text-sm">动手实践</p></div>
             </div>
-            
-            <div class="animate-item mt-12 text-center">
-                <div class="text-6xl mb-6">🏆</div>
-                <p class="text-xl text-gray-300">用知识解决问题</p>
-            </div>
+            <p class="text-gray-500 animate-item">C++ 语法篇 · 第 18 课</p>
         </div>
-    </div>
 
-    <!-- Slide 2: Problem 1 - Digit Sum -->
-    <div class="slide" data-slide="2">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📝 题目一：数字各位求和</h2>
-            
-            <div class="animate-item problem-box mb-6">
-                <h3 class="font-bold text-xl text-blue-400 mb-3">题目描述</h3>
-                <p class="text-gray-300">输入一个正整数，输出各位数字之和。</p>
-                
-                <div class="mt-4">
-                    <p class="text-gray-400 text-sm mb-2">示例输入：</p>
-                    <div class="code-block text-sm">
-                        <code>12345</code>
-                    </div>
+        <!-- 第2页：竞赛题的特点 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">竞赛题有什么特点？🤔</h2>
+            <div class="grid grid-cols-2 gap-8 w-full max-w-4xl">
+                <div class="card animate-item" style="border-color: #fbbf24;">
+                    <div class="text-3xl mb-4 text-yellow-400">📋 有明确输入输出</div>
+                    <p class="text-gray-300">告诉你数据怎么进来</p>
+                    <p class="text-gray-300 mt-2">告诉你结果怎么出去</p>
+                    <p class="text-gray-400 mt-4">你只需要写核心算法！</p>
                 </div>
-                <div class="mt-4">
-                    <p class="text-gray-400 text-sm mb-2">示例输出：</p>
-                    <div class="code-block text-sm">
-                        <code>15</code>
-                    </div>
-                </div>
-            </div>
-
-            <div class="animate-item tip-box">
-                <p class="font-bold mb-1">💡 思路：递归</p>
-                <p class="text-gray-300">sum(n) = n%10 + sum(n/10)</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 3: Problem 1 Solution -->
-    <div class="slide" data-slide="3">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📝 题目一：代码实现</h2>
-            
-            <div class="animate-item mb-6">
-                <div class="code-block">
-                    <code>
-<span class="code-keyword">#include</span> <span class="code-string">&lt;stdio.h&gt;</span><br><br>
-<span class="code-keyword">int</span> <span class="code-function">digitSum</span>(<span class="code-keyword">int</span> n) {<br>
-&nbsp;&nbsp;<span class="code-keyword">if</span> (n < <span class="code-number">10</span>) <span class="code-keyword">return</span> n;&nbsp;&nbsp;<span class="code-comment">// 终止条件：一位数</span><br>
-&nbsp;&nbsp;<span class="code-keyword">return</span> n % <span class="code-number">10</span> + <span class="code-function">digitSum</span>(n / <span class="code-number">10</span>);<br>
-}<br><br>
-<span class="code-keyword">int</span> main() {<br>
-&nbsp;&nbsp;<span class="code-keyword">int</span> n;<br>
-&nbsp;&nbsp;<span class="code-function">scanf</span>(<span class="code-string">"%d"</span>, &n);<br>
-&nbsp;&nbsp;<span class="code-function">printf</span>(<span class="code-string">"%d\n"</span>, <span class="code-function">digitSum</span>(n));<br>
-&nbsp;&nbsp;<span class="code-keyword">return</span> <span class="code-number">0</span>;<br>
-}
-                    </code>
-                </div>
-            </div>
-
-            <div class="animate-item bg-green-500/20 border border-green-500/50 rounded-lg p-4">
-                <p class="text-green-400 font-bold">digitSum(12345)</p>
-                <p class="text-gray-400 text-sm mt-1">= 5 + digitSum(1234) = 5 + 4 + 3 + 2 + 1 = 15</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 4: Problem 2 - Power -->
-    <div class="slide" data-slide="4">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📝 题目二：计算幂次</h2>
-            
-            <div class="animate-item problem-box mb-6">
-                <h3 class="font-bold text-xl text-blue-400 mb-3">题目描述</h3>
-                <p class="text-gray-300">计算 a 的 n 次方（a^n）。</p>
-                
-                <div class="mt-4">
-                    <p class="text-gray-400 text-sm mb-2">示例输入：</p>
-                    <div class="code-block text-sm">
-                        <code>2 10</code>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <p class="text-gray-400 text-sm mb-2">示例输出：</p>
-                    <div class="code-block text-sm">
-                        <code>1024</code>
-                    </div>
-                </div>
-            </div>
-
-            <div class="animate-item tip-box">
-                <p class="font-bold mb-1">💡 思路：递归</p>
-                <p class="text-gray-300">pow(a,n) = a × pow(a,n-1)，pow(a,0) = 1</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 5: Problem 2 Solution -->
-    <div class="slide" data-slide="5">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📝 题目二：代码实现</h2>
-            
-            <div class="animate-item mb-6">
-                <div class="code-block">
-                    <code>
-<span class="code-keyword">#include</span> <span class="code-string">&lt;stdio.h&gt;</span><br><br>
-<span class="code-keyword">double</span> <span class="code-function">power</span>(<span class="code-keyword">double</span> a, <span class="code-keyword">int</span> n) {<br>
-&nbsp;&nbsp;<span class="code-keyword">if</span> (n == <span class="code-number">0</span>) <span class="code-keyword">return</span> <span class="code-number">1</span>;&nbsp;&nbsp;<span class="code-comment">// 终止条件</span><br>
-&nbsp;&nbsp;<span class="code-keyword">return</span> a * <span class="code-function">power</span>(a, n - <span class="code-number">1</span>);<br>
-}<br><br>
-<span class="code-keyword">int</span> main() {<br>
-&nbsp;&nbsp;<span class="code-keyword">double</span> a; <span class="code-keyword">int</span> n;<br>
-&nbsp;&nbsp;<span class="code-function">scanf</span>(<span class="code-string">"%lf %d"</span>, &a, &n);<br>
-&nbsp;&nbsp;<span class="code-function">printf</span>(<span class="code-string">"%.0f\n"</span>, <span class="code-function">power</span>(a, n));<br>
-&nbsp;&nbsp;<span class="code-keyword">return</span> <span class="code-number">0</span>;<br>
-}
-                    </code>
-                </div>
-            </div>
-
-            <div class="animate-item bg-green-500/20 border border-green-500/50 rounded-lg p-4">
-                <p class="text-green-400 font-bold">power(2, 10)</p>
-                <p class="text-gray-400 text-sm mt-1">= 2 × power(2,9) = 2^10 = 1024</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 6: Problem 3 - Hanoi -->
-    <div class="slide" data-slide="6">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📝 题目三：汉诺塔</h2>
-            
-            <div class="animate-item problem-box mb-6">
-                <h3 class="font-bold text-xl text-blue-400 mb-3">题目描述</h3>
-                <p class="text-gray-300">将n个盘子从A柱移动到C柱，规则：每次移动一个盘子，大盘子不能放在小盘子上。</p>
-                
-                <div class="mt-4">
-                    <p class="text-gray-400 text-sm mb-2">示例输入：</p>
-                    <div class="code-block text-sm">
-                        <code>3</code>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <p class="text-gray-400 text-sm mb-2">示例输出：</p>
-                    <div class="code-block text-sm">
-                        <code>A->C A->B C->B A->C B->A B->C A->C</code>
-                    </div>
-                </div>
-            </div>
-
-            <div class="animate-item tip-box">
-                <p class="font-bold mb-1">💡 经典递归问题</p>
-                <p class="text-gray-300">汉诺塔的移动次数是 2^n - 1</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 7: Hanoi Solution -->
-    <div class="slide" data-slide="7">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📝 题目三：代码实现</h2>
-            
-            <div class="animate-item mb-6">
-                <div class="code-block">
-                    <code>
-<span class="code-keyword">#include</span> <span class="code-string">&lt;stdio.h&gt;</span><br><br>
-<span class="code-keyword">void</span> <span class="code-function">hanoi</span>(<span class="code-keyword">int</span> n, <span class="code-keyword">char</span> from, <span class="code-keyword">char</span> to, <span class="code-keyword">char</span> temp) {<br>
-&nbsp;&nbsp;<span class="code-keyword">if</span> (n == <span class="code-number">0</span>) <span class="code-keyword">return</span>;<br>
-&nbsp;&nbsp;<span class="code-function">hanoi</span>(n-<span class="code-number">1</span>, from, temp, to);<br>
-&nbsp;&nbsp;<span class="code-function">printf</span>(<span class="code-string">"%c->%c "</span>, from, to);<br>
-&nbsp;&nbsp;<span class="code-function">hanoi</span>(n-<span class="code-number">1</span>, temp, to, from);<br>
-}<br><br>
-<span class="code-keyword">int</span> main() {<br>
-&nbsp;&nbsp;<span class="code-keyword">int</span> n;<br>
-&nbsp;&nbsp;<span class="code-function">scanf</span>(<span class="code-string">"%d"</span>, &n);<br>
-&nbsp;&nbsp;<span class="code-function">hanoi</span>(n, <span class="code-string">'A'</span>, <span class="code-string">'C'</span>, <span class="code-string">'B'</span>);<br>
-&nbsp;&nbsp;<span class="code-function">printf</span>(<span class="code-string">"\n"</span>);<br>
-&nbsp;&nbsp;<span class="code-keyword">return</span> <span class="code-number">0</span>;<br>
-}
-                    </code>
+                <div class="card animate-item" style="border-color: #60a5fa;">
+                    <div class="text-3xl mb-4 text-blue-400">⏰ 有时间限制</div>
+                    <p class="text-gray-300">普通程序：慢慢算没关系</p>
+                    <p class="text-gray-300 mt-2">竞赛题：要在几秒内完成</p>
+                    <p class="text-blue-400 mt-4">需要高效的算法！</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Slide 8: Quiz -->
-    <div class="slide" data-slide="8">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验</h2>
-            
-            <div class="animate-item mb-8">
-                <p class="text-xl text-gray-300 mb-6">digitSum(456) 的返回值是多少？</p>
-                
-                <div class="space-y-4">
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">A</span>
-                        <span>4</span>
+        <!-- 第3页：生活类比 - 拆快递 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📦 解题第一步：拆解问题</h2>
+            <div class="card w-full max-w-3xl animate-item">
+                <p class="text-2xl text-blue-400 mb-6">想象你要拆一个超大的快递包裹</p>
+                <div class="text-lg text-gray-300 space-y-4 text-left">
+                    <p>🏠 收到一个大包裹</p>
+                    <p>→ 打开一看，里面有几个小包裹</p>
+                    <p>→ 每个小包裹打开，里面还有更小的</p>
+                    <p>→ ...</p>
+                    <p class="text-green-400 font-bold">→ 直到最小的包裹，里面是具体的东西！</p>
+                </div>
+            </div>
+            <div class="card mt-6 w-full max-w-2xl animate-item">
+                <p class="text-yellow-400 font-bold">这不就是递归思维吗！</p>
+                <p class="text-gray-300 mt-2">大问题 = 小问题 + 小问题 + ... + 具体操作</p>
+            </div>
+        </div>
+
+        <!-- 第4页：题目1 - 数字各位求和 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📝 题目一：数字各位求和</h2>
+            <div class="card w-full max-w-3xl animate-item" style="border-color: #60a5fa;">
+                <p class="text-xl text-blue-400 font-bold mb-4">📋 题目描述</p>
+                <p class="text-gray-200">输入一个正整数，输出各位数字之和。</p>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <p class="text-gray-400 text-sm">示例输入：</p>
+                        <div class="code-block text-sm text-center">12345</div>
                     </div>
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">B</span>
-                        <span>10</span>
-                    </div>
-                    <div class="quiz-option" data-correct="true">
-                        <span class="letter">C</span>
-                        <span>15</span>
-                    </div>
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">D</span>
-                        <span>6</span>
+                    <div>
+                        <p class="text-gray-400 text-sm">示例输出：</p>
+                        <div class="code-block text-sm text-center text-green-400">15</div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Slide 9: Summary -->
-    <div class="slide" data-slide="9">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📋 本课总结</h2>
-            
-            <div class="animate-item grid grid-cols-2 gap-6">
-                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <div class="text-3xl mb-3">🔢</div>
-                    <h3 class="font-bold mb-2 text-gray-100">数字各位求和</h3>
-                    <p class="text-gray-400 text-sm">n%10 + digitSum(n/10)</p>
+        <!-- 第5页：数字各位求和 - 思路分析 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🔍 数字各位求和 - 思路分析</h2>
+            <div class="card w-full max-w-3xl animate-item">
+                <p class="text-2xl text-yellow-400 mb-6">💡 生活类比：数钱</p>
+                <p class="text-gray-300 text-lg">有一堆零钱：1元、2元、5元、10元...</p>
+                <p class="text-gray-300 text-lg mt-2">要算总数？一个个数，加起来！</p>
+            </div>
+            <div class="card mt-6 w-full max-w-2xl animate-item">
+                <p class="text-blue-400 font-bold">对于数字 12345：</p>
+                <p class="text-gray-300 mt-2">最后一位 = 12345 % 10 = 5</p>
+                <p class="text-gray-300">前面的 = 12345 / 10 = 1234</p>
+                <p class="text-green-400 font-bold mt-4">digitSum(12345) = 5 + digitSum(1234)</p>
+            </div>
+        </div>
+
+        <!-- 第6页：数字各位求和 - 递归公式 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📐 数字各位求和 - 递归公式</h2>
+            <div class="card w-full max-w-2xl animate-item">
+                <p class="text-3xl text-green-400 font-bold mb-6">递归公式</p>
+                <p class="text-2xl text-gray-200">digitSum(n) = n%10 + digitSum(n/10)</p>
+            </div>
+            <div class="card mt-6 w-full max-w-2xl animate-item">
+                <p class="text-3xl text-yellow-400 font-bold mb-4">终止条件</p>
+                <p class="text-2xl text-gray-200">digitSum(n) = n（当 n < 10 时）</p>
+                <p class="text-gray-400 mt-2">因为一位数就是它自己！</p>
+            </div>
+        </div>
+
+        <!-- 第7页：数字各位求和 - 代码实现 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">💻 数字各位求和 - 代码实现</h2>
+            <div class="code-block animate-item">
+                <span class="keyword">int</span> <span class="function">digitSum</span>(<span class="keyword">int</span> n) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (n < <span class="number">10</span>) {  <span class="comment">// 终止条件：一位数</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> n;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> n % <span class="number">10</span> + <span class="function">digitSum</span>(n / <span class="number">10</span>);<br>
+                }
+            </div>
+            <div class="card mt-4 animate-item">
+                <p class="text-gray-300">验证：digitSum(12345)</p>
+                <p class="text-gray-400 text-sm">= 5 + digitSum(1234)</p>
+                <p class="text-gray-400 text-sm">= 5 + 4 + digitSum(123)</p>
+                <p class="text-gray-400 text-sm">= 5 + 4 + 3 + digitSum(12)</p>
+                <p class="text-gray-400 text-sm">= 5 + 4 + 3 + 2 + digitSum(1)</p>
+                <p class="text-green-400 font-bold">= 5 + 4 + 3 + 2 + 1 = 15 ✓</p>
+            </div>
+        </div>
+
+        <!-- 第8页：数字各位求和 - 练习 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🎯 练习：digitSum(789) = ?</h2>
+            <div class="card w-full max-w-2xl mb-6 animate-item">
+                <p class="text-gray-300">按照递归公式算一算：</p>
+                <p class="text-gray-400 text-sm mt-2">digitSum(789) = 9 + digitSum(78)</p>
+                <p class="text-gray-400 text-sm">= 9 + 8 + digitSum(7)</p>
+                <p class="text-gray-400 text-sm">= 9 + 8 + 7</p>
+            </div>
+            <div class="grid grid-cols-2 gap-6 w-full max-w-3xl">
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">A</span>
+                    <span class="text-xl">7</span>
                 </div>
-                
-                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <div class="text-3xl mb-3">⚡</div>
-                    <h3 class="font-bold mb-2 text-gray-100">幂次计算</h3>
-                    <p class="text-gray-400 text-sm">a × power(a, n-1)</p>
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">B</span>
+                    <span class="text-xl">20</span>
                 </div>
-                
-                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <div class="text-3xl mb-3">🗼</div>
-                    <h3 class="font-bold mb-2 text-gray-100">汉诺塔</h3>
-                    <p class="text-gray-400 text-sm">经典递归问题，2^n-1次移动</p>
+                <div class="quiz-option" data-correct="true" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">C</span>
+                    <span class="text-xl">24</span>
                 </div>
-                
-                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <div class="text-3xl mb-3">🔄</div>
-                    <h3 class="font-bold mb-2 text-gray-100">递归要点</h3>
-                    <p class="text-gray-400 text-sm">终止条件 + 递归公式</p>
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">D</span>
+                    <span class="text-xl">15</span>
+                </div>
+            </div>
+            <div class="card mt-6 w-full max-w-2xl animate-item" id="quiz-feedback"></div>
+        </div>
+
+        <!-- 第9页：题目2 - 幂次计算 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📝 题目二：计算幂次</h2>
+            <div class="card w-full max-w-3xl animate-item" style="border-color: #f472b6;">
+                <p class="text-xl text-pink-400 font-bold mb-4">📋 题目描述</p>
+                <p class="text-gray-200">计算 a 的 n 次方（aⁿ）。</p>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <p class="text-gray-400 text-sm">示例输入：</p>
+                        <div class="code-block text-sm text-center">2 10</div>
+                    </div>
+                    <div>
+                        <p class="text-gray-400 text-sm">示例输出：</p>
+                        <div class="code-block text-sm text-center text-green-400">1024</div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Slide 10: Next -->
-    <div class="slide" data-slide="10">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎓 下章预告</h2>
-            
-            <div class="animate-item text-center">
-                <div class="text-6xl mb-6">📝</div>
-                <h3 class="text-2xl font-bold mb-4 text-gray-100">第19章 注解与习题</h3>
-                <p class="text-gray-400 mb-8">巩固函数和递归！</p>
-                
-                <div class="tip-box inline-block">
-                    <p class="text-gray-300">多做练习，熟能生巧</p>
+        <!-- 第10页：幂次计算 - 生活类比 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📐 幂次计算 - 递归公式</h2>
+            <div class="card w-full max-w-2xl animate-item">
+                <p class="text-2xl text-yellow-400 mb-4">💡 生活类比：翻倍</p>
+                <p class="text-gray-300 text-lg">2⁴ = 2 × 2 × 2 × 2</p>
+                <p class="text-gray-300 text-lg mt-2">翻4次，每次都乘以2</p>
+            </div>
+            <div class="card mt-6 w-full max-w-2xl animate-item">
+                <p class="text-3xl text-green-400 font-bold mb-4">递归公式</p>
+                <p class="text-2xl text-gray-200">power(a, n) = a × power(a, n-1)</p>
+                <p class="text-3xl text-yellow-400 font-bold mt-4">终止条件</p>
+                <p class="text-2xl text-gray-200">power(a, 0) = 1</p>
+            </div>
+        </div>
+
+        <!-- 第11页：幂次计算 - 代码 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">💻 幂次计算 - 代码实现</h2>
+            <div class="code-block animate-item">
+                <span class="keyword">double</span> <span class="function">power</span>(<span class="keyword">double</span> a, <span class="keyword">int</span> n) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (n == <span class="number">0</span>) {  <span class="comment">// 终止条件</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="number">1</span>;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> a * <span class="function">power</span>(a, n - <span class="number">1</span>);<br>
+                }
+            </div>
+            <div class="card mt-4 animate-item">
+                <p class="text-gray-300">验证：power(2, 10)</p>
+                <p class="text-green-400 font-bold">= 2¹⁰ = 1024 ✓</p>
+            </div>
+        </div>
+
+        <!-- 第12页：幂次计算 - 练习 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🎯 练习：power(3, 4) = ?</h2>
+            <div class="card w-full max-w-2xl mb-6 animate-item">
+                <p class="text-gray-300">按照递归公式：</p>
+                <p class="text-gray-400 text-sm mt-2">power(3, 4) = 3 × power(3, 3)</p>
+                <p class="text-gray-400 text-sm">= 3 × 3 × power(3, 2)</p>
+                <p class="text-gray-400 text-sm">= 3 × 3 × 3 × power(3, 1)</p>
+                <p class="text-gray-400 text-sm">= 3 × 3 × 3 × 3 × power(3, 0)</p>
+                <p class="text-gray-400 text-sm">= 3 × 3 × 3 × 3 × 1</p>
+            </div>
+            <div class="grid grid-cols-2 gap-6 w-full max-w-3xl">
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">A</span>
+                    <span class="text-xl">64</span>
+                </div>
+                <div class="quiz-option" data-correct="true" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">B</span>
+                    <span class="text-xl">81</span>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">C</span>
+                    <span class="text-xl">27</span>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">D</span>
+                    <span class="text-xl">12</span>
+                </div>
+            </div>
+            <div class="card mt-6 w-full max-w-2xl animate-item" id="quiz-feedback2"></div>
+        </div>
+
+        <!-- 第13页：题目3 - 判断回文数 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📝 题目三：判断回文数</h2>
+            <div class="card w-full max-w-3xl animate-item" style="border-color: #34d399;">
+                <p class="text-xl text-green-400 font-bold mb-4">📋 题目描述</p>
+                <p class="text-gray-200">判断一个正整数是否是回文数（正读反读都一样）。</p>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <p class="text-gray-400 text-sm">示例输入：</p>
+                        <div class="code-block text-sm text-center">12321</div>
+                    </div>
+                    <div>
+                        <p class="text-gray-400 text-sm">示例输出：</p>
+                        <div class="code-block text-sm text-center text-green-400">YES</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <p class="text-gray-400 text-sm">示例输入：</p>
+                        <div class="code-block text-sm text-center">12345</div>
+                    </div>
+                    <div>
+                        <p class="text-gray-400 text-sm">示例输出：</p>
+                        <div class="code-block text-sm text-center text-red-400">NO</div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- 第14页：回文数 - 生活类比 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🔍 回文数 - 生活类比</h2>
+            <div class="card w-full max-w-2xl animate-item">
+                <p class="text-2xl text-yellow-400 mb-6">💡 什么是回文？</p>
+                <p class="text-gray-200 text-xl">上海自来水来自海上</p>
+                <p class="text-gray-200 text-xl mt-4">山西运煤运西山</p>
+                <p class="text-gray-200 text-xl mt-4">12321 正看反看都一样！</p>
+            </div>
+            <div class="card mt-6 w-full max-w-2xl animate-item">
+                <p class="text-blue-400 font-bold">判断方法：</p>
+                <p class="text-gray-300 mt-2">比较第一位和最后一位</p>
+                <p class="text-gray-300">如果相同，去掉这两位继续判断</p>
+                <p class="text-gray-400 text-sm mt-2">12321 → 比较 1 和 1 → 232 → 比较 2 和 2 → 3</p>
+            </div>
+        </div>
+
+        <!-- 第15页：回文数 - 代码 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">💻 回文数 - 代码实现</h2>
+            <div class="code-block animate-item">
+                <span class="keyword">int</span> <span class="function">getWidth</span>(<span class="keyword">int</span> n) {  <span class="comment">// 计算位数</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span> len = <span class="number">0</span>;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">do</span> { len++; n /= <span class="number">10</span>; } <span class="keyword">while</span> (n > <span class="number">0</span>);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> len;<br>
+                }<br><br>
+                <span class="keyword">bool</span> <span class="function">isPalindrome</span>(<span class="keyword">int</span> n) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span> w = <span class="function">getWidth</span>(n);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (w == <span class="number">1</span>) <span class="keyword">return</span> <span class="keyword">true</span>;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span> left = n / <span class="function">pow</span>(<span class="number">10</span>, w-<span class="number">1</span>);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span> right = n % <span class="number">10</span>;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (left != right) <span class="keyword">return</span> <span class="keyword">false</span>;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="function">isPalindrome</span>(n % <span class="function">pow</span>(<span class="number">10</span>, w-<span class="number">1</span>) / <span class="number">10</span>);<br>
+                }
+            </div>
+        </div>
+
+        <!-- 第16页：回文数 - 练习 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🎯 练习：哪些是回文数？</h2>
+            <p class="text-gray-300 mb-6 animate-item">把回文数拖到左边，非回文数拖到右边</p>
+            <div class="category-zones flex gap-8 justify-center mb-6 animate-item">
+                <div class="category text-center" data-type="回文" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <div class="category-label text-2xl text-green-400 mb-2">✓ 回文数</div>
+                    <div class="drop-zone min-w-32 min-h-20"></div>
+                </div>
+                <div class="category text-center" data-type="非回文" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <div class="category-label text-2xl text-red-400 mb-2">✗ 非回文</div>
+                    <div class="drop-zone min-w-32 min-h-20"></div>
+                </div>
+            </div>
+            <div class="drag-items flex gap-4 justify-center flex-wrap animate-item" id="dragContainer">
+                <div class="drag-item" draggable="true" data-type="回文">121</div>
+                <div class="drag-item" draggable="true" data-type="非回文">123</div>
+                <div class="drag-item" draggable="true" data-type="回文">12321</div>
+                <div class="drag-item" draggable="true" data-type="非回文">456</div>
+                <div class="drag-item" draggable="true" data-type="回文">5</div>
+                <div class="drag-item" draggable="true" data-type="非回文">789</div>
+            </div>
+        </div>
+
+        <!-- 第17页：题目4 - 最大公约数 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📝 题目四：最大公约数</h2>
+            <div class="card w-full max-w-3xl animate-item" style="border-color: #a78bfa;">
+                <p class="text-xl text-purple-400 font-bold mb-4">📋 题目描述</p>
+                <p class="text-gray-200">求两个正整数的最大公约数（GCD）。</p>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <p class="text-gray-400 text-sm">示例输入：</p>
+                        <div class="code-block text-sm text-center">12 18</div>
+                    </div>
+                    <div>
+                        <p class="text-gray-400 text-sm">示例输出：</p>
+                        <div class="code-block text-sm text-center text-green-400">6</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第18页：最大公约数 - 欧几里得算法 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📐 最大公约数 - 欧几里得算法</h2>
+            <div class="card w-full max-w-2xl animate-item">
+                <p class="text-2xl text-yellow-400 mb-4">💡 生活类比：找共同的朋友</p>
+                <p class="text-gray-300 text-lg">你和朋友有一堆糖果</p>
+                <p class="text-gray-300 text-lg mt-2">你的糖果能整除朋友的糖果吗？</p>
+                <p class="text-gray-300 text-lg mt-2">如果有剩余，继续这个过程！</p>
+            </div>
+            <div class="card mt-6 w-full max-w-2xl animate-item">
+                <p class="text-3xl text-green-400 font-bold mb-4">公式</p>
+                <p class="text-2xl text-gray-200">gcd(a, b) = gcd(b, a % b)</p>
+                <p class="text-3xl text-yellow-400 font-bold mt-4">终止条件</p>
+                <p class="text-2xl text-gray-200">gcd(a, 0) = a</p>
+            </div>
+        </div>
+
+        <!-- 第19页：最大公约数 - 代码 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">💻 最大公约数 - 代码实现</h2>
+            <div class="code-block animate-item">
+                <span class="keyword">int</span> <span class="function">gcd</span>(<span class="keyword">int</span> a, <span class="keyword">int</span> b) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (b == <span class="number">0</span>) {  <span class="comment">// 终止条件</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> a;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="function">gcd</span>(b, a % b);<br>
+                }
+            </div>
+            <div class="card mt-4 animate-item">
+                <p class="text-gray-300">验证：gcd(12, 18)</p>
+                <p class="text-gray-400 text-sm">= gcd(18, 12%18=12)</p>
+                <p class="text-gray-400 text-sm">= gcd(12, 18%12=6)</p>
+                <p class="text-gray-400 text-sm">= gcd(6, 12%6=0)</p>
+                <p class="text-green-400 font-bold">= 6 ✓</p>
+            </div>
+        </div>
+
+        <!-- 第20页：最大公约数 - 练习 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🎯 练习：gcd(24, 36) = ?</h2>
+            <div class="card w-full max-w-2xl mb-6 animate-item">
+                <p class="text-gray-300">按照欧几里得算法：</p>
+                <p class="text-gray-400 text-sm mt-2">gcd(24, 36) = gcd(36, 24)</p>
+                <p class="text-gray-400 text-sm">= gcd(36, 24) = gcd(24, 12)</p>
+                <p class="text-gray-400 text-sm">= gcd(24, 12) = gcd(12, 0)</p>
+            </div>
+            <div class="grid grid-cols-2 gap-6 w-full max-w-3xl">
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">A</span>
+                    <span class="text-xl">6</span>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">B</span>
+                    <span class="text-xl">8</span>
+                </div>
+                <div class="quiz-option" data-correct="true" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">C</span>
+                    <span class="text-xl">12</span>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">D</span>
+                    <span class="text-xl">18</span>
+                </div>
+            </div>
+            <div class="card mt-6 w-full max-w-2xl animate-item" id="quiz-feedback3"></div>
+        </div>
+
+        <!-- 第21页：汉诺塔巩固 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🏛️ 汉诺塔 - 再次挑战</h2>
+            <div class="card w-full max-w-2xl animate-item">
+                <p class="text-2xl text-yellow-400 mb-4">💡 三步曲</p>
+                <div class="text-lg text-gray-300 space-y-3">
+                    <p><span class="text-blue-400 font-bold">第1步：</span>把上面的 n-1 个盘子从 A 借助 C 移到 B</p>
+                    <p><span class="text-green-400 font-bold">第2步：</span>把最底下的大盘子从 A 直接移到 C</p>
+                    <p><span class="text-purple-400 font-bold">第3步：</span>把 B 上的 n-1 个盘子从 B 借助 A 移到 C</p>
+                </div>
+            </div>
+            <div class="card mt-6 w-full max-w-2xl animate-item">
+                <p class="text-yellow-400 font-bold">3个盘子需要 2³-1 = 7 步</p>
+                <p class="text-gray-400 text-sm mt-2">A→B, A→C, B→C, A→B, C→A, C→B, A→B</p>
+            </div>
+        </div>
+
+        <!-- 第22页：汉诺塔 - 代码 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">💻 汉诺塔 - 代码实现</h2>
+            <div class="code-block animate-item">
+                <span class="keyword">void</span> <span class="function">hanoi</span>(<span class="keyword">int</span> n, <span class="keyword">char</span> from, <span class="keyword">char</span> to, <span class="keyword">char</span> temp) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (n == <span class="number">0</span>) <span class="keyword">return</span>;  <span class="comment">// 终止条件</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">hanoi</span>(n-<span class="number">1</span>, from, temp, to);  <span class="comment">// 第1步</span><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"%c→%c "</span>, from, to);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">hanoi</span>(n-<span class="number">1</span>, temp, to, from);  <span class="comment">// 第3步</span><br>
+                }
+            </div>
+            <div class="card mt-4 animate-item">
+                <p class="text-gray-300">调用 hanoi(3, 'A', 'C', 'B') 输出：</p>
+                <p class="text-green-400 font-bold">A→B A→C B→C A→B C→A C→B A→B</p>
+            </div>
+        </div>
+
+        <!-- 第23页：汉诺塔 - 练习 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🎯 练习：4个盘子需要几步？</h2>
+            <div class="card w-full max-w-2xl mb-6 animate-item">
+                <p class="text-gray-300">回忆公式：2ⁿ - 1</p>
+                <p class="text-gray-400 mt-2">2⁴ = 16</p>
+            </div>
+            <div class="grid grid-cols-2 gap-6 w-full max-w-3xl">
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">A</span>
+                    <span class="text-xl">12</span>
+                </div>
+                <div class="quiz-option" data-correct="true" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">B</span>
+                    <span class="text-xl">15</span>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">C</span>
+                    <span class="text-xl">14</span>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">D</span>
+                    <span class="text-xl">16</span>
+                </div>
+            </div>
+            <div class="card mt-6 w-full max-w-2xl animate-item" id="quiz-feedback4"></div>
+        </div>
+
+        <!-- 第24页：递归 vs 循环总结 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🔄 递归 vs 循环 总结</h2>
+            <div class="grid grid-cols-2 gap-8 w-full max-w-4xl">
+                <div class="card animate-item" style="border-color: #60a5fa;">
+                    <div class="text-2xl mb-4 text-blue-400">🔁 循环</div>
+                    <p class="text-gray-300">适合简单重复</p>
+                    <p class="text-gray-300 mt-2">执行效率高</p>
+                    <p class="text-green-400 font-bold mt-4">digitSum 用循环简单</p>
+                </div>
+                <div class="card animate-item" style="border-color: #f472b6;">
+                    <div class="text-2xl mb-4 text-pink-400">🪆 递归</div>
+                    <p class="text-gray-300">适合分治问题</p>
+                    <p class="text-gray-300 mt-2">代码简洁优雅</p>
+                    <p class="text-yellow-400 font-bold mt-4">hanoi 非递归莫属</p>
+                </div>
+            </div>
+            <div class="card mt-6 w-full max-w-2xl animate-item">
+                <p class="text-gray-300">💡 选择技巧：能用循环的优先用循环，复杂问题再用递归</p>
+            </div>
+        </div>
+
+        <!-- 第25页：竞赛技巧 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🏆 竞赛小技巧</h2>
+            <div class="grid grid-cols-2 gap-4 w-full max-w-4xl">
+                <div class="card animate-item"><p class="text-yellow-400 font-bold">📖 读题三遍</p><p class="text-gray-300 text-sm mt-2">理解清楚再写代码</p></div>
+                <div class="card animate-item"><p class="text-blue-400 font-bold">🔢 先想递归公式</p><p class="text-gray-300 text-sm mt-2">再写终止条件</p></div>
+                <div class="card animate-item"><p class="text-green-400 font-bold">🧪 先用例子验证</p><p class="text-gray-300 text-sm mt-2">手动算一遍</p></div>
+                <div class="card animate-item"><p class="text-purple-400 font-bold">⏰ 注意时间限制</p><p class="text-gray-300 text-sm mt-2">递归可能太慢</p></div>
+            </div>
+        </div>
+
+        <!-- 第26页：总结 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📋 今天学到了什么？</h2>
+            <div class="grid grid-cols-2 gap-4 w-full max-w-3xl">
+                <div class="card animate-item"><p class="text-blue-400 font-bold">🔢 数字各位求和</p><p class="text-gray-300 text-sm mt-2">digitSum(n) = n%10 + digitSum(n/10)</p></div>
+                <div class="card animate-item"><p class="text-pink-400 font-bold">⚡ 幂次计算</p><p class="text-gray-300 text-sm mt-2">power(a,n) = a × power(a,n-1)</p></div>
+                <div class="card animate-item"><p class="text-green-400 font-bold">🔄 回文判断</p><p class="text-gray-300 text-sm mt-2">比较首尾，去掉后递归</p></div>
+                <div class="card animate-item"><p class="text-yellow-400 font-bold">÷ 最大公约数</p><p class="text-gray-300 text-sm mt-2">gcd(a,b) = gcd(b, a%b)</p></div>
+                <div class="card animate-item"><p class="text-purple-400 font-bold">🏛️ 汉诺塔</p><p class="text-gray-300 text-sm mt-2">经典三步递归</p></div>
+                <div class="card animate-item"><p class="text-orange-400 font-bold">💡 解题思路</p><p class="text-gray-300 text-sm mt-2">找递归公式和终止条件</p></div>
+            </div>
+        </div>
+
+        <!-- 第27页：下节预告 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">下节课预告</h2>
+            <div class="card animate-item"><div class="text-5xl mb-4">📝</div><p class="text-2xl text-gray-100 font-bold">注解与习题</p><p class="text-gray-400 mt-4">巩固函数和递归的知识！</p></div>
+            <p class="text-gray-500 mt-8 animate-item">C++ 语法篇 · 第 19 课</p>
+        </div>
     </div>
 
-    <div class="progress-bar" id="progressBar"></div>
-    <div class="progress-dots" id="progressDots"></div>
-
-    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-50">
-        <button id="prevBtn" class="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-gray-300 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
-            ← 上一页
-        </button>
-        <button id="nextBtn" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-white transition-all">
-            下一页 →
-        </button>
-    </div>
+    <div class="fixed top-4 right-4 text-gray-500 text-sm animate-item">点击空格/右箭头逐步显示</div>
+    <div class="progress-bar" id="progress"></div>
+    <div class="progress-dots" id="dots"></div>
 
     <script>
-        const totalSlides = 10;
-        let currentSlide = 1;
-        let score = 0;
-        let streak = 0;
+        let currentSlide = 0, currentItem = 0;
+        let learningState = { score: 0, streak: 0, maxStreak: 0 };
 
-        const progressBar = document.getElementById('progressBar');
-        const progressDots = document.getElementById('progressDots');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const scoreValue = document.getElementById('scoreValue');
-        const streakValue = document.getElementById('streakValue');
-
-        function updateProgress() {
-            const progress = (currentSlide / totalSlides) * 100;
-            progressBar.style.width = `${progress}%`;
-            
-            document.querySelectorAll('.dot').forEach((dot, i) => {
-                dot.classList.toggle('active', i + 1 === currentSlide);
-            });
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const dotsContainer = document.getElementById('dots');
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsContainer.appendChild(dot);
         }
 
-        function showSlide(n) {
-            if (n < 1 || n > totalSlides) return;
-            currentSlide = n;
-            
-            document.querySelectorAll('.slide').forEach((slide, i) => {
-                slide.classList.toggle('active', i + 1 === currentSlide);
-            });
-
+        function getCurrentItems() { return slides[currentSlide].querySelectorAll('.animate-item'); }
+        function showNextItem() {
+            const items = getCurrentItems();
+            if (currentItem < items.length) {
+                items[currentItem].classList.add('visible');
+                currentItem++;
+                return true;
+            }
+            return false;
+        }
+        function hideAllItems() {
+            const items = getCurrentItems();
+            items.forEach(item => item.classList.remove('visible'));
+            currentItem = 0;
+        }
+        function goToSlide(index) {
+            if (index < 0 || index >= totalSlides) return;
+            slides[currentSlide].classList.remove('active');
+            document.querySelectorAll('.dot')[currentSlide].classList.remove('active');
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+            document.querySelectorAll('.dot')[currentSlide].classList.add('active');
+            hideAllItems();
             updateProgress();
-            prevBtn.disabled = currentSlide === 1;
-            nextBtn.textContent = currentSlide === totalSlides ? '完成！' : '下一页 →';
-            
-            animateSlide();
         }
-
-        function animateSlide() {
-            const activeSlide = document.querySelector('.slide.active');
-            if (!activeSlide) return;
-            
-            const items = activeSlide.querySelectorAll('.animate-item');
-            items.forEach((item, i) => {
-                setTimeout(() => {
-                    item.classList.add('visible');
-                }, i * 100);
-            });
-        }
+        function nextSlide() { if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1); }
+        function prevSlide() { if (currentSlide > 0) goToSlide(currentSlide - 1); }
+        function updateProgress() { document.getElementById('progress').style.width = ((currentSlide + 1) / totalSlides * 100) + '%'; }
 
         function updateScore(points) {
-            score += points;
-            scoreValue.textContent = score;
-            scoreValue.parentElement.classList.add('scale-125');
-            setTimeout(() => scoreValue.parentElement.classList.remove('scale-125'), 200);
+            learningState.score += points;
+            document.getElementById('scoreValue').textContent = learningState.score;
         }
-
         function updateStreak() {
-            streak++;
-            streakValue.textContent = streak;
-            if (streak >= 3) showBadge(`连胜 ${streak}！`);
+            learningState.streak++;
+            document.getElementById('streakValue').textContent = learningState.streak;
         }
-
         function resetStreak() {
-            streak = 0;
-            streakValue.textContent = '0';
-        }
-
-        function showBadge(text) {
-            const badge = document.createElement('div');
-            badge.className = 'particle';
-            badge.style.cssText = 'top:50%;left:50%;background:linear-gradient(135deg,#f472b6,#c084fc);color:white;padding:0.75rem 1.5rem;border-radius:2rem;font-weight:bold;font-size:1.25rem;';
-            badge.textContent = text;
-            document.body.appendChild(badge);
-            setTimeout(() => badge.remove(), 800);
+            learningState.streak = 0;
+            document.getElementById('streakValue').textContent = '0';
         }
 
         function showParticles(element) {
@@ -607,41 +644,83 @@
             for (let i = 0; i < 8; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
-                particle.style.cssText = `left:${rect.left + rect.width/2}px;top:${rect.top + rect.height/2}px;width:8px;height:8px;background:${colors[i%4]};border-radius:50%;`;
+                particle.style.cssText = `position: fixed; left: ${rect.left + rect.width/2 + (Math.random()-0.5)*40}px; top: ${rect.top + rect.height/2}px; width: 8px; height: 8px; background: ${colors[i % 4]}; border-radius: 50%; pointer-events: none; animation: confetti 0.8s ease forwards;`;
                 document.body.appendChild(particle);
                 setTimeout(() => particle.remove(), 800);
             }
         }
 
-        prevBtn.addEventListener('click', () => showSlide(currentSlide - 1));
-        nextBtn.addEventListener('click', () => {
-            if (currentSlide === totalSlides) { nextBtn.textContent = '🎉 已完成！'; return; }
-            showSlide(currentSlide + 1);
+        function checkAnswer(element) {
+            if (element.classList.contains('correct') || element.classList.contains('wrong')) return;
+            const isCorrect = element.dataset.correct === 'true';
+            const feedbackId = element.closest('.slide').querySelector('[id^="quiz-feedback"]')?.id || 'quiz-feedback';
+            if (isCorrect) {
+                element.classList.add('correct');
+                showParticles(element);
+                updateScore(10);
+                updateStreak();
+                const fb = document.getElementById(feedbackId);
+                if (fb) fb.innerHTML = '<p class="text-green-400 font-bold text-xl">🎉 正确！太棒了！</p>';
+            } else {
+                element.classList.add('wrong');
+                resetStreak();
+                const fb = document.getElementById(feedbackId);
+                if (fb) fb.innerHTML = '<p class="text-red-400 font-bold text-xl">❌ 不对哦，再想想！</p>';
+                setTimeout(() => element.classList.remove('wrong'), 300);
+            }
+        }
+
+        const dragContainer = document.getElementById('dragContainer');
+        if (dragContainer) {
+            dragContainer.querySelectorAll('.drag-item').forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', this.dataset.type);
+                    this.classList.add('dragging');
+                });
+                item.addEventListener('dragend', function() {
+                    this.classList.remove('dragging');
+                });
+            });
+        }
+
+        function handleDragOver(e) { e.preventDefault(); e.currentTarget.querySelector('.drop-zone').classList.add('drag-over'); }
+        function handleDragLeave(e) { e.currentTarget.querySelector('.drop-zone').classList.remove('drag-over'); }
+        function handleDrop(e) {
+            e.preventDefault();
+            const dropZone = e.currentTarget.querySelector('.drop-zone');
+            dropZone.classList.remove('drag-over');
+            const type = e.dataTransfer.getData('text/plain');
+            const expectedType = e.currentTarget.dataset.type;
+            const draggedItem = document.querySelector('.dragging');
+            if (type === expectedType) {
+                dropZone.classList.add('correct');
+                showParticles(dropZone);
+                updateScore(10);
+                updateStreak();
+                draggedItem.style.display = 'none';
+            } else {
+                dropZone.classList.add('wrong');
+                resetStreak();
+                setTimeout(() => dropZone.classList.remove('wrong'), 500);
+            }
+        }
+
+        document.querySelectorAll('.category').forEach(cat => {
+            cat.addEventListener('dragover', handleDragOver);
+            cat.addEventListener('dragleave', handleDragLeave);
+            cat.addEventListener('drop', handleDrop);
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); showSlide(currentSlide + 1); }
-            else if (e.key === 'ArrowLeft') { e.preventDefault(); showSlide(currentSlide - 1); }
+            if (e.target.tagName === 'INPUT') return;
+            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); if (!showNextItem()) nextSlide(); }
+            else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
         });
-
-        document.querySelectorAll('.quiz-option').forEach(option => {
-            option.addEventListener('click', function(e) {
-                if (e.target.closest('button')) return;
-                const isCorrect = this.dataset.correct === 'true';
-                if (isCorrect) { this.classList.add('correct'); showParticles(this); updateScore(10); updateStreak(); }
-                else { this.classList.add('wrong'); resetStreak(); setTimeout(() => this.classList.remove('wrong'), 300); }
-            });
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.dot')) return;
+            if (!showNextItem()) nextSlide();
         });
-
-        for (let i = 1; i <= totalSlides; i++) {
-            const dot = document.createElement('div');
-            dot.className = 'dot';
-            if (i === 1) dot.classList.add('active');
-            dot.addEventListener('click', () => showSlide(i));
-            progressDots.appendChild(dot);
-        }
-
-        showSlide(1);
+        updateProgress();
     </script>
 </body>
 </html>

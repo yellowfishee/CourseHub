@@ -3,959 +3,680 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>20-从C到C++ - 算法入门经典</title>
+    <title>第20课 从C到C++ - C++的增强特性</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=HarmonyOS+Sans+SC:wght@300;400;500;700&display=swap');
-        
-        * { box-sizing: border-box; }
-        
-        body {
-            font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif;
-            background: #0a0a0a;
-            overflow: hidden;
-        }
-
-        .bg-blur {
-            position: fixed;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.25;
-            animation: float 8s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(50px, 50px); }
-        }
-
-        .slide {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 5rem 4rem 6rem 4rem;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-            overflow-y: auto;
-        }
-
-        .slide.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .animate-item {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-
-        .animate-item.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .progress-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            transition: width 0.3s ease;
-        }
-
-        .progress-dots {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #334155;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .dot.active {
-            background: #60a5fa;
-            transform: scale(1.3);
-        }
-
-        .code-block {
-            background: #1e1e2e;
-            border: 1px solid #3b82f6;
-            border-radius: 12px;
-            padding: 1.25rem;
-            font-family: 'JetBrains Mono', 'Fira Code', monospace;
-            font-size: 0.85rem;
-            line-height: 1.5;
-            overflow-x: auto;
-            max-width: 100%;
-        }
-
-        .code-block code {
-            color: #e2e8f0;
-        }
-
-        .code-comment { color: #6b7280; }
-        .code-keyword { color: #c084fc; }
-        .code-string { color: #34d399; }
-        .code-number { color: #fbbf24; }
-        .code-function { color: #60a5fa; }
-
-        .quiz-option {
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 1rem 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .quiz-option:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: rgba(96, 165, 250, 0.5);
-        }
-
-        .quiz-option.correct {
-            background: rgba(52, 211, 153, 0.2);
-            border-color: #34d399;
-            animation: correctPulse 0.5s ease;
-        }
-
-        .quiz-option.wrong {
-            background: rgba(248, 113, 113, 0.2);
-            border-color: #f87171;
-            animation: shake 0.3s ease;
-        }
-
-        .quiz-option .letter {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: #e5e7eb;
-        }
-
-        .quiz-option.correct .letter {
-            background: #34d399;
-            color: #0a0a0a;
-        }
-
-        .quiz-option.wrong .letter {
-            background: #f87171;
-            color: #0a0a0a;
-        }
-
-        @keyframes correctPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        .tip-box {
-            background: rgba(251, 191, 36, 0.1);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            border-radius: 12px;
-            padding: 1rem 1.25rem;
-            color: #fbbf24;
-        }
-
-        .particle {
-            position: fixed;
-            pointer-events: none;
-            animation: confetti 0.8s ease forwards;
-        }
-
-        @keyframes confetti {
-            0% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(2) translateY(-50px); }
-        }
-
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-            background: linear-gradient(to bottom, rgba(10,10,10,0.9), transparent);
-        }
-
-        .score-display {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #fbbf24;
-        }
-
-        .streak-display {
-            font-size: 1rem;
-            color: #f472b6;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=HarmonyOS+Sans+SC:wght@300;400;700&display=swap');
+        body { font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif; background: #0a0a0a; overflow: hidden; }
+        .bg-blur { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); opacity: 0.25; animation: float 8s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(50px, 50px); } }
+        .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4rem; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        .slide.active { opacity: 1; pointer-events: auto; }
+        .animate-item { opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease; }
+        .animate-item.visible { opacity: 1; transform: translateY(0); }
+        .progress-bar { position: fixed; bottom: 0; left: 0; height: 4px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 0.3s ease; }
+        .progress-dots { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; cursor: pointer; transition: all 0.3s ease; }
+        .dot.active { background: #60a5fa; transform: scale(1.3); }
+        .code-block { background: #1e1e2e; border: 1px solid #3b82f6; border-radius: 12px; padding: 1.5rem 2rem; font-family: 'Monaco', 'Menlo', monospace; font-size: 1.1rem; color: #f0f0f0; margin: 1rem 0; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2); }
+        .code-block .keyword { color: #f472b6; }
+        .code-block .function { color: #34d399; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .string { color: #a78bfa; }
+        .code-block .comment { color: #6b7280; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 1.5rem; text-align: center; }
+        .quiz-option { background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 1rem 1.5rem; cursor: pointer; transition: all 0.3s ease; }
+        .quiz-option:hover { background: rgba(255,255,255,0.1); border-color: #60a5fa; }
+        .quiz-option.correct { animation: correctPulse 0.5s ease; border-color: #34d399 !important; background: rgba(52, 211, 153, 0.2); }
+        .quiz-option.wrong { animation: shake 0.3s ease; border-color: #f87171 !important; }
+        @keyframes correctPulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); background: rgba(52, 211, 153, 0.3); } 100% { transform: scale(1); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .drop-zone { min-width: 80px; min-height: 50px; border: 2px dashed #60a5fa; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+        .drop-zone.drag-over { background: rgba(96, 165, 250, 0.2); border-color: #34d399; }
+        .drop-zone.correct { border-color: #34d399; background: rgba(52, 211, 153, 0.2); }
+        .drop-zone.wrong { border-color: #f87171; }
+        .drag-item { background: rgba(96, 165, 250, 0.2); border: 1px solid #60a5fa; border-radius: 8px; padding: 0.5rem 1rem; cursor: grab; transition: all 0.3s ease; user-select: none; }
+        .drag-item:hover { background: rgba(96, 165, 250, 0.4); transform: scale(1.05); }
+        .drag-item.dragging { opacity: 0.5; }
+        .particle { position: fixed; pointer-events: none; border-radius: 50%; animation: confetti 0.8s ease forwards; }
+        @keyframes confetti { 0% { opacity: 1; transform: scale(1) translateY(0); } 100% { opacity: 0; transform: scale(2) translateY(-50px); } }
+        .score-display { position: fixed; top: 20px; left: 20px; background: rgba(59, 130, 246, 0.2); border: 1px solid #60a5fa; border-radius: 8px; padding: 0.5rem 1rem; color: #60a5fa; font-weight: bold; }
+        .streak-display { position: fixed; top: 20px; right: 20px; background: rgba(251, 191, 36, 0.2); border: 1px solid #fbbf24; border-radius: 8px; padding: 0.5rem 1rem; color: #fbbf24; font-weight: bold; }
     </style>
 </head>
-<body class="text-gray-200">
-    <div class="header">
-        <div class="score-display">得分: <span id="scoreValue">0</span></div>
-        <div class="streak-display">连胜: <span id="streakValue">0</span></div>
-    </div>
-
+<body>
     <div class="bg-blur" style="top: -200px; left: -200px; background: #3b82f6;"></div>
     <div class="bg-blur" style="bottom: -200px; right: -200px; background: #8b5cf6; animation-delay: -4s;"></div>
 
-    <!-- Slide 1: Title -->
-    <div class="slide active" data-slide="1">
-        <div class="max-w-5xl w-full">
-            <div class="text-center mb-12">
-                <div class="animate-item inline-block px-4 py-1 bg-indigo-500/20 rounded-full text-indigo-400 text-sm mb-4">第20课</div>
-                <h1 class="animate-item text-5xl font-bold mb-4 text-gray-100">从C到C++</h1>
-                <p class="animate-item text-xl text-gray-400">C++的增强特性</p>
-            </div>
-            
-            <div class="animate-item mt-12 text-center">
-                <div class="text-6xl mb-6">🚀</div>
-                <p class="text-xl text-gray-300">C语言的进化，更强大的编程能力</p>
-            </div>
-        </div>
-    </div>
+    <div class="score-display">得分: <span id="scoreValue">0</span></div>
+    <div class="streak-display">🔥 连胜: <span id="streakValue">0</span></div>
 
-    <!-- Slide 2: C vs C++ Overview -->
-    <div class="slide" data-slide="2">
-        <div class="max-w-5xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🔄 C语言 vs C++</h2>
-            
-            <div class="animate-item mb-8">
-                <p class="text-gray-300 mb-6 text-lg">C++在C语言的基础上增加了许多新特性，让编程更方便、更安全</p>
-                
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                        <h3 class="font-bold text-blue-400 mb-4">C语言特点</h3>
-                        <ul class="text-gray-300 space-y-2 text-sm">
-                            <li>• 面向过程的编程</li>
-                            <li>• 需要手动管理内存</li>
-                            <li>• 使用malloc/free</li>
-                            <li>• 没有命名空间概念</li>
-                            <li>• printf/scanf输入输出</li>
-                        </ul>
-                    </div>
-                    <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                        <h3 class="font-bold text-green-400 mb-4">C++增强特性</h3>
-                        <ul class="text-gray-300 space-y-2 text-sm">
-                            <li>• 引用（Reference）</li>
-                            <li>• 命名空间（Namespace）</li>
-                            <li>• new/delete动态内存</li>
-                            <li>• cin/cout输入输出</li>
-                            <li>• STL标准模板库</li>
-                            <li>• 类和对象（后续课程）</li>
-                        </ul>
-                    </div>
+    <div id="slides-container">
+        <!-- 第1页：封面 -->
+        <div class="slide active">
+            <h1 class="text-5xl font-bold text-gray-100 mb-8 animate-item">第20课：从C到C++</h1>
+            <p class="text-2xl text-indigo-400 mb-8 animate-item">C++的增强特性</p>
+            <div class="grid grid-cols-4 gap-4 w-full max-w-4xl mb-6">
+                <div class="card animate-item"><div class="text-4xl mb-2">📍</div><p class="text-sm text-gray-100 font-bold">引用</p></div>
+                <div class="card animate-item"><div class="text-4xl mb-2">🏷️</div><p class="text-sm text-gray-100 font-bold">命名空间</p></div>
+                <div class="card animate-item"><div class="text-4xl mb-2">🗄️</div><p class="text-sm text-gray-100 font-bold">new/delete</p></div>
+                <div class="card animate-item"><div class="text-4xl mb-2">📥📤</div><p class="text-sm text-gray-100 font-bold">cin/cout</p></div>
+            </div>
+            <p class="text-gray-500 animate-item">C++ 语法篇 · 第 20 课</p>
+        </div>
+
+        <!-- 第2页：C vs C++ 概述 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🚀 C语言 vs C++</h2>
+            <div class="grid grid-cols-2 gap-8 w-full max-w-4xl">
+                <div class="card animate-item" style="border-color: #60a5fa;">
+                    <div class="text-2xl mb-4 text-blue-400">📝 C语言</div>
+                    <p class="text-gray-300">面向过程的编程</p>
+                    <p class="text-gray-300 mt-2">malloc/free 管理内存</p>
+                    <p class="text-gray-300 mt-2">printf/scanf 输入输出</p>
+                    <p class="text-gray-400 text-sm mt-4">基础但功能有限</p>
+                </div>
+                <div class="card animate-item" style="border-color: #a78bfa;">
+                    <div class="text-2xl mb-4 text-purple-400">✨ C++</div>
+                    <p class="text-gray-300">引用（更安全的指针）</p>
+                    <p class="text-gray-300 mt-2">命名空间（避免冲突）</p>
+                    <p class="text-gray-300 mt-2">new/delete 动态内存</p>
+                    <p class="text-gray-300 mt-2">cin/cout 输入输出</p>
+                    <p class="text-gray-400 text-sm mt-4">更强大、更安全</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Slide 3: Reference Concept -->
-    <div class="slide" data-slide="3">
-        <div class="max-w-5xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📍 引用是什么？</h2>
-            
-            <div class="animate-item mb-6">
-                <p class="text-gray-300 mb-4 text-lg">引用就是变量的"别名"，就像一个人的外号一样</p>
-                
-                <div class="flex items-center justify-center gap-8 mb-8">
-                    <div class="bg-white/10 rounded-xl p-6 border border-white/20 text-center">
-                        <div class="text-4xl mb-3">👤</div>
+        <!-- 第3页：引用 - 生活类比 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📍 引用是什么？</h2>
+            <div class="card w-full max-w-3xl animate-item">
+                <p class="text-2xl text-yellow-400 mb-6">💡 生活类比：外号</p>
+                <div class="flex items-center justify-center gap-8 mb-6">
+                    <div class="text-center">
+                        <div class="text-5xl mb-2">👤</div>
                         <p class="text-blue-400 font-bold">原名：张三</p>
                         <p class="text-gray-400 text-sm">变量名：a</p>
                     </div>
-                    <div class="text-4xl text-gray-500">=</div>
-                    <div class="bg-white/10 rounded-xl p-6 border border-white/20 text-center">
-                        <div class="text-4xl mb-3">📛</div>
+                    <div class="text-3xl text-gray-500">=</div>
+                    <div class="text-center">
+                        <div class="text-5xl mb-2">📛</div>
                         <p class="text-green-400 font-bold">外号：小张</p>
                         <p class="text-gray-400 text-sm">引用名：r</p>
                     </div>
-                    <div class="text-4xl text-gray-500">=</div>
-                    <div class="bg-white/10 rounded-xl p-6 border border-white/20 text-center">
-                        <div class="text-4xl mb-3">👤📛</div>
+                    <div class="text-3xl text-gray-500">=</div>
+                    <div class="text-center">
+                        <div class="text-5xl mb-2">👤📛</div>
                         <p class="text-purple-400 font-bold">都是同一个人！</p>
                         <p class="text-gray-400 text-sm">修改r就是修改a</p>
                     </div>
                 </div>
             </div>
-
-            <div class="animate-item tip-box">
-                <p class="font-bold mb-1">💡 关键点</p>
-                <p class="text-gray-300">引用不是复制，而是<strong class="text-green-400">同一个变量的另一个名字</strong>！</p>
+            <div class="card mt-4 w-full max-w-2xl animate-item">
+                <p class="text-green-400 font-bold">引用 = 变量的"别名"，同一个东西的两个名字！</p>
             </div>
         </div>
-    </div>
 
-    <!-- Slide 4: Reference Syntax -->
-    <div class="slide" data-slide="4">
-        <div class="max-w-5xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📝 引用的定义和使用</h2>
-            
-            <div class="animate-item mb-6">
-                <div class="code-block mb-6">
-                    <code>
-<span class="code-comment">// 引用的定义语法：类型 & 引用名 = 原变量名;</span><br><br>
-<span class="code-keyword">int</span> a = <span class="code-number">10</span>;&nbsp;&nbsp;<span class="code-comment">// 定义整型变量 a</span><br>
-<span class="code-keyword">int</span> &r = a;&nbsp;&nbsp;<span class="code-comment">// 定义引用 r，它是变量 a 的别名</span><br><br>
-<span class="code-function">printf</span>(<span class="code-string">"a = %d, r = %d\n"</span>, a, r);&nbsp;&nbsp;<span class="code-comment">// 输出：a = 10, r = 10</span><br>
-r = <span class="code-number">20</span>;&nbsp;&nbsp;<span class="code-comment">// 修改 r，就是修改 a</span><br>
-<span class="code-function">printf</span>(<span class="code-string">"a = %d, r = %d\n"</span>, a, r);&nbsp;&nbsp;<span class="code-comment">// 输出：a = 20, r = 20</span>
-                    </code>
-                </div>
+        <!-- 第4页：引用语法 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">📝 引用的定义和使用</h2>
+            <div class="code-block animate-item">
+                <span class="comment">// 定义语法：类型 & 引用名 = 原变量;</span><br><br>
+                <span class="keyword">int</span> a = <span class="number">10</span>;  <span class="comment">// 定义变量 a</span><br>
+                <span class="keyword">int</span> &r = a;  <span class="comment">// 定义引用 r，它是 a 的别名</span><br><br>
+                <span class="function">printf</span>(<span class="string">"a=%d, r=%d\n"</span>, a, r);  <span class="comment">// a=10, r=10</span><br>
+                r = <span class="number">20</span>;  <span class="comment">// 修改 r，就是修改 a！</span><br>
+                <span class="function">printf</span>(<span class="string">"a=%d, r=%d\n"</span>, a, r);  <span class="comment">// a=20, r=20</span>
             </div>
+        </div>
 
-            <div class="animate-item grid grid-cols-2 gap-4">
-                <div class="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <h4 class="text-blue-400 font-bold mb-2">✓ 正确写法</h4>
+        <!-- 第5页：引用的规则 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📋 引用的规则</h2>
+            <div class="grid grid-cols-2 gap-8 w-full max-w-4xl">
+                <div class="card animate-item" style="border-color: #34d399;">
+                    <div class="text-2xl mb-4 text-green-400">✅ 正确写法</div>
                     <div class="code-block text-sm">
-                        <code>
-<span class="code-keyword">int</span> a = <span class="code-number">10</span>;<br>
-<span class="code-keyword">int</span> &r = a;
-                        </code>
+                        <span class="keyword">int</span> a = <span class="number">10</span>;<br>
+                        <span class="keyword">int</span> &r = a;  <span class="comment">// 正确：初始化为已有变量</span>
                     </div>
                 </div>
-                <div class="bg-red-500/20 rounded-lg p-4 border border-red-500/50">
-                    <h4 class="text-red-400 font-bold mb-2">✗ 错误写法</h4>
+                <div class="card animate-item" style="border-color: #f87171;">
+                    <div class="text-2xl mb-4 text-red-400">❌ 错误写法</div>
                     <div class="code-block text-sm">
-                        <code>
-<span class="code-keyword">int</span> &r;&nbsp;&nbsp;<span class="code-comment">// 错误：引用必须初始化！</span><br>
-<span class="code-keyword">int</span> &r = <span class="code-number">100</span>;&nbsp;&nbsp;<span class="code-comment">// 错误：不能直接绑定数字！</span>
-                        </code>
+                        <span class="keyword">int</span> &r;  <span class="comment">// 错误！引用必须初始化</span><br>
+                        <span class="keyword">int</span> &r = <span class="number">100</span>;  <span class="comment">// 错误！不能绑定数字</span>
                     </div>
+                </div>
+            </div>
+            <div class="card mt-6 w-full max-w-2xl animate-item">
+                <p class="text-yellow-400 font-bold">⚠️ 引用必须在定义时初始化，且之后不能改变！</p>
+            </div>
+        </div>
+
+        <!-- 第6页：引用 vs 指针 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">⚖️ 引用 vs 指针</h2>
+            <div class="grid grid-cols-2 gap-8 w-full max-w-4xl">
+                <div class="card animate-item" style="border-color: #60a5fa;">
+                    <div class="text-2xl mb-4 text-blue-400">📍 引用</div>
+                    <p class="text-gray-300">定义时必须初始化</p>
+                    <p class="text-gray-300 mt-2">初始化后不能改变</p>
+                    <p class="text-gray-300 mt-2">使用不需要 * 解引用</p>
+                    <p class="text-green-400 font-bold mt-4">更安全！</p>
+                </div>
+                <div class="card animate-item" style="border-color: #a78bfa;">
+                    <div class="text-2xl mb-4 text-purple-400">�🔍 指针</div>
+                    <p class="text-gray-300">不需要初始化</p>
+                    <p class="text-gray-300 mt-2">可以随时改变指向</p>
+                    <p class="text-gray-300 mt-2">使用需要 * 解引用</p>
+                    <p class="text-yellow-400 font-bold mt-4">更灵活但更危险！</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Slide 5: Reference vs Pointer -->
-    <div class="slide" data-slide="5">
-        <div class="max-w-5xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">⚖️ 引用 vs 指针</h2>
-            
-            <div class="animate-item mb-6">
-                <div class="grid grid-cols-2 gap-8">
-                    <div class="bg-blue-500/20 border border-blue-500/50 rounded-xl p-6">
-                        <h3 class="font-bold text-blue-400 mb-4 text-lg">引用（Reference）</h3>
-                        <ul class="text-gray-300 space-y-2 text-sm">
-                            <li>• 定义时必须初始化</li>
-                            <li>• 初始化后不能改变（不能重新绑定）</li>
-                            <li>• 使用时不需要 * 解引用</li>
-                            <li>• 语法更简洁、更直观</li>
-                            <li>• 更安全（不可能是空值）</li>
-                        </ul>
-                        <div class="code-block text-sm mt-4">
-                            <code>
-<span class="code-keyword">int</span> &r = a;<br>
-r = <span class="code-number">20</span>;&nbsp;&nbsp;<span class="code-comment">// 直接使用</span>
-                            </code>
-                        </div>
-                    </div>
-                    <div class="bg-purple-500/20 border border-purple-500/50 rounded-xl p-6">
-                        <h3 class="font-bold text-purple-400 mb-4 text-lg">指针（Pointer）</h3>
-                        <ul class="text-gray-300 space-y-2 text-sm">
-                            <li>• 定义时不需要初始化</li>
-                            <li>• 可以随时改变指向</li>
-                            <li>• 使用时需要 * 解引用</li>
-                            <li>• 可以是NULL（空指针）</li>
-                            <li>• 更灵活但也更危险</li>
-                        </ul>
-                        <div class="code-block text-sm mt-4">
-                            <code>
-<span class="code-keyword">int</span> *p = &a;<br>
-*p = <span class="code-number">20</span>;&nbsp;&nbsp;<span class="code-comment">// 需要解引用</span>
-                            </code>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="animate-item tip-box">
-                <p class="font-bold mb-1">💡 建议</p>
-                <p class="text-gray-300">能用引用解决的问题优先用引用，指针更灵活但也更危险。C++中<strong class="text-yellow-400">引用是首选</strong>！</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 6: Reference in Function -->
-    <div class="slide" data-slide="6">
-        <div class="max-w-5xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📞 引用作为函数参数</h2>
-            
-            <div class="animate-item mb-6">
-                <p class="text-gray-300 mb-4 text-lg">使用引用作为函数参数，可以实现类似指针的效果，但语法更简洁！</p>
-                
-                <div class="grid grid-cols-2 gap-8">
-                    <div>
-                        <h4 class="text-blue-400 font-bold mb-3">使用指针（可以，但语法复杂）</h4>
-                        <div class="code-block">
-                            <code>
-<span class="code-keyword">void</span> <span class="code-function">swap</span>(<span class="code-keyword">int</span> *p, <span class="code-keyword">int</span> *q) {<br>
-&nbsp;&nbsp;<span class="code-keyword">int</span> temp = *p;<br>
-&nbsp;&nbsp;*p = *q;<br>
-&nbsp;&nbsp;*q = temp;<br>
-}<br><br>
-<span class="code-comment">// 调用</span><br>
-<span class="code-function">swap</span>(&x, &y);
-                            </code>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 class="text-green-400 font-bold mb-3">使用引用（推荐！）</h4>
-                        <div class="code-block">
-                            <code>
-<span class="code-keyword">void</span> <span class="code-function">swap</span>(<span class="code-keyword">int</span> &a, <span class="code-keyword">int</span> &b) {<br>
-&nbsp;&nbsp;<span class="code-keyword">int</span> temp = a;<br>
-&nbsp;&nbsp;a = b;<br>
-&nbsp;&nbsp;b = temp;<br>
-}<br><br>
-<span class="code-comment">// 调用</span><br>
-<span class="code-function">swap</span>(x, y);
-                            </code>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="animate-item bg-green-500/20 border border-green-500/50 rounded-lg p-4">
-                <p class="text-green-400 font-bold">✓ 引用版本的 swap 调用更直观，不需要取地址！</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 7: Namespace -->
-    <div class="slide" data-slide="7">
-        <div class="max-w-5xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🏷️ 命名空间是什么？</h2>
-            
-            <div class="animate-item mb-6">
-                <p class="text-gray-300 mb-4 text-lg">命名空间就像图书馆的书架，用于<strong class="text-yellow-400">避免名字冲突</strong></p>
-                
-                <div class="flex items-center justify-center gap-8 mb-8">
-                    <div class="bg-white/10 rounded-xl p-6 border border-white/20 text-center">
-                        <div class="text-4xl mb-3">📚</div>
-                        <p class="text-blue-400 font-bold">图书馆</p>
-                        <p class="text-gray-400 text-sm">同一本书不能放在两个地方</p>
-                    </div>
-                    <div class="text-4xl text-gray-500">→</div>
-                    <div class="bg-white/10 rounded-xl p-6 border border-white/20 text-center">
-                        <div class="text-4xl mb-3">🏷️</div>
-                        <p class="text-green-400 font-bold">命名空间</p>
-                        <p class="text-gray-400 text-sm">相同名字可以共存</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="animate-item tip-box">
-                <p class="font-bold mb-1">💡 生活类比</p>
-                <p class="text-gray-300">就像一个学校有两个叫"张三"的学生，学校用"一年级张三"和"二年级张三"来区分他们。命名空间就是给名字加上了"年级"前缀！</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 8: Namespace Syntax -->
-    <div class="slide" data-slide="8">
-        <div class="max-w-5xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📝 命名空间的定义和使用</h2>
-            
-            <div class="animate-item mb-6">
-                <div class="code-block mb-6">
-                    <code>
-<span class="code-comment">// 定义命名空间</span><br>
-<span class="code-keyword">namespace</span> <span class="code-function">Math</span> {<br>
-&nbsp;&nbsp;<span class="code-keyword">int</span> add(<span class="code-keyword">int</span> a, <span class="code-keyword">int</span> b) { <span class="code-keyword">return</span> a + b; }<br>
-&nbsp;&nbsp;<span class="code-keyword">int</span> sub(<span class="code-keyword">int</span> a, <span class="code-keyword">int</span> b) { <span class="code-keyword">return</span> a - b; }<br>
-}<br><br>
-<span class="code-comment">// 使用命名空间中的函数</span><br>
-<span class="code-keyword">int</span> result = <span class="code-function">Math</span>::add(<span class="code-number">10</span>, <span class="code-number">20</span>);&nbsp;&nbsp;<span class="code-comment">// 使用 :: 作用域运算符</span>
-                    </code>
-                </div>
-            </div>
-
-            <div class="animate-item grid grid-cols-3 gap-4">
-                <div class="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <h4 class="text-blue-400 font-bold mb-2">方法1：直接使用</h4>
+        <!-- 第7页：引用作为函数参数 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📞 引用作为函数参数 - swap例子</h2>
+            <div class="grid grid-cols-2 gap-8 w-full max-w-4xl">
+                <div class="card animate-item" style="border-color: #f87171;">
+                    <div class="text-xl mb-4 text-red-400">❌ 用指针（麻烦）</div>
                     <div class="code-block text-sm">
-                        <code>
-<span class="code-function">Math</span>::add(<span class="code-number">1</span>, <span class="code-number">2</span>);
-                        </code>
+                        <span class="keyword">void</span> <span class="function">swap</span>(<span class="keyword">int</span> *a, <span class="keyword">int</span> *b) {<br>
+                        &nbsp;&nbsp;<span class="keyword">int</span> temp = *a;<br>
+                        &nbsp;&nbsp;*a = *b; *b = temp;<br>
+                        }<br><br>
+                        <span class="comment">// 调用要取地址</span><br>
+                        <span class="function">swap</span>(&x, &y);
                     </div>
                 </div>
-                <div class="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <h4 class="text-green-400 font-bold mb-2">方法2：using声明</h4>
+                <div class="card animate-item" style="border-color: #34d399;">
+                    <div class="text-xl mb-4 text-green-400">✅ 用引用（简单！）</div>
                     <div class="code-block text-sm">
-                        <code>
-<span class="code-keyword">using</span> <span class="code-function">Math</span>::add;<br>
-add(<span class="code-number">1</span>, <span class="code-number">2</span>);
-                        </code>
+                        <span class="keyword">void</span> <span class="function">swap</span>(<span class="keyword">int</span> &a, <span class="keyword">int</span> &b) {<br>
+                        &nbsp;&nbsp;<span class="keyword">int</span> temp = a;<br>
+                        &nbsp;&nbsp;a = b; b = temp;<br>
+                        }<br><br>
+                        <span class="comment">// 调用直接传变量</span><br>
+                        <span class="function">swap</span>(x, y);
                     </div>
                 </div>
-                <div class="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <h4 class="text-purple-400 font-bold mb-2">方法3：using编译指令</h4>
+            </div>
+        </div>
+
+        <!-- 第8页：练习 - 引用判断 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🎯 练习：哪个是正确的引用定义？</h2>
+            <div class="grid grid-cols-2 gap-6 w-full max-w-3xl">
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">A</span>
+                    <span class="text-xl">int &r;</span>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">B</span>
+                    <span class="text-xl">int &r = 100;</span>
+                </div>
+                <div class="quiz-option" data-correct="true" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">C</span>
+                    <span class="text-xl">int a=5; int &r=a;</span>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">D</span>
+                    <span class="text-xl">int &r = &a;</span>
+                </div>
+            </div>
+            <div class="card mt-6 w-full max-w-2xl animate-item" id="quiz-feedback"></div>
+        </div>
+
+        <!-- 第9页：命名空间 - 生活类比 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🏷️ 命名空间是什么？</h2>
+            <div class="card w-full max-w-3xl animate-item">
+                <p class="text-2xl text-yellow-400 mb-6">💡 生活类比：学校里的重名问题</p>
+                <p class="text-gray-300 text-lg mb-4">一个学校有两个叫"张三"的学生！</p>
+                <div class="flex items-center justify-center gap-8 mb-6">
+                    <div class="text-center bg-blue-500/20 rounded-xl p-4 border border-blue-500">
+                        <div class="text-3xl mb-2">👦</div>
+                        <p class="text-blue-400 font-bold">一年级张三</p>
+                        <p class="text-gray-400 text-sm">在一年级教室</p>
+                    </div>
+                    <div class="text-3xl text-gray-500">≠</div>
+                    <div class="text-center bg-purple-500/20 rounded-xl p-4 border border-purple-500">
+                        <div class="text-3xl mb-2">👧</div>
+                        <p class="text-purple-400 font-bold">二年级张三</p>
+                        <p class="text-gray-400 text-sm">在二年级教室</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-4 w-full max-w-2xl animate-item">
+                <p class="text-green-400 font-bold">命名空间 = 给名字加"前缀"，避免冲突！</p>
+            </div>
+        </div>
+
+        <!-- 第10页：命名空间语法 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">📝 命名空间的定义和使用</h2>
+            <div class="code-block animate-item">
+                <span class="comment">// 定义命名空间</span><br>
+                <span class="keyword">namespace</span> <span class="function">Math</span> {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span> <span class="function">add</span>(<span class="keyword">int</span> a, <span class="keyword">int</span> b) { <span class="keyword">return</span> a + b; }<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span> <span class="function">sub</span>(<span class="keyword">int</span> a, <span class="keyword">int</span> b) { <span class="keyword">return</span> a - b; }<br>
+                }<br><br>
+                <span class="comment">// 使用：命名空间名::成员</span><br>
+                <span class="keyword">int</span> result = <span class="function">Math</span>::<span class="function">add</span>(<span class="number">10</span>, <span class="number">20</span>);
+            </div>
+            <div class="card mt-4 w-full max-w-2xl animate-item">
+                <p class="text-gray-300">:: 叫<span class="text-yellow-400 font-bold">作用域运算符</span>，表示"属于哪个空间"</p>
+            </div>
+        </div>
+
+        <!-- 第11页：using声明 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📋 三种使用命名空间的方式</h2>
+            <div class="grid grid-cols-3 gap-4 w-full max-w-4xl">
+                <div class="card animate-item">
+                    <p class="text-blue-400 font-bold mb-2">方式1：直接用::</p>
                     <div class="code-block text-sm">
-                        <code>
-<span class="code-keyword">using namespace</span> <span class="code-function">Math</span>;<br>
-add(<span class="code-number">1</span>, <span class="code-number">2</span>);
-                        </code>
+                        <span class="function">Math</span>::<span class="function">add</span>(<span class="number">1</span>, <span class="number">2</span>);
+                    </div>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-green-400 font-bold mb-2">方式2：using声明</p>
+                    <div class="code-block text-sm">
+                        <span class="keyword">using</span> <span class="function">Math</span>::add;<br>
+                        <span class="function">add</span>(<span class="number">1</span>, <span class="number">2</span>);
+                    </div>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-purple-400 font-bold mb-2">方式3：using namespace</p>
+                    <div class="code-block text-sm">
+                        <span class="keyword">using namespace</span> <span class="function">Math</span>;<br>
+                        <span class="function">add</span>(<span class="number">1</span>, <span class="number">2</span>);
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Slide 9: std Namespace -->
-    <div class="slide" data-slide="9">
-        <div class="max-w-5xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📦 常用的std命名空间</h2>
-            
-            <div class="animate-item mb-6">
-                <p class="text-gray-300 mb-4 text-lg">C++标准库的所有内容都在 <span class="text-yellow-400">std</span> 命名空间中</p>
-                
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                        <h3 class="font-bold text-blue-400 mb-4">C++标准输入输出</h3>
-                        <div class="code-block text-sm">
-                            <code>
-<span class="code-keyword">#include</span> <span class="code-string">&lt;iostream&gt;</span><br><br>
-<span class="code-comment">// 需要使用 std:: 或 using</span><br>
-<span class="code-keyword">std::</span>cout << <span class="code-string">"Hello"</span> << <span class="code-keyword">std::</span>endl;<br>
-<span class="code-keyword">std::</span>cin >> x;
-                            </code>
-                        </div>
-                    </div>
-                    <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                        <h3 class="font-bold text-green-400 mb-4">使用using简化</h3>
-                        <div class="code-block text-sm">
-                            <code>
-<span class="code-keyword">#include</span> <span class="code-string">&lt;iostream&gt;</span><br>
-<span class="code-keyword">using namespace</span> <span class="code-function">std</span>;<br><br>
-<span class="code-comment">// 直接使用</span><br>
-cout << <span class="code-string">"Hello"</span> << endl;<br>
-cin >> x;
-                            </code>
-                        </div>
+        <!-- 第12页：std命名空间 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📦 std 命名空间</h2>
+            <div class="card w-full max-w-3xl animate-item">
+                <p class="text-xl text-yellow-400 mb-4">C++标准库的所有内容都在 std 命名空间中！</p>
+                <p class="text-gray-300">cin, cout, endl, vector, string... 都属于 std</p>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mt-6 w-full max-w-3xl">
+                <div class="card animate-item">
+                    <p class="text-blue-400 font-bold mb-2">写全称</p>
+                    <div class="code-block text-sm">
+                        <span class="keyword">std</span>::cout << <span class="string">"你好"</span> << <span class="keyword">std</span>::endl;<br>
+                        <span class="keyword">std</span>::cin >> x;
                     </div>
                 </div>
-            </div>
-
-            <div class="animate-item tip-box">
-                <p class="font-bold mb-1">💡 建议</p>
-                <p class="text-gray-300">初学时可以使用 <span class="text-yellow-400">using namespace std;</span> 简化代码，但在大型项目中建议使用 <span class="text-yellow-400">std::</span> 前缀明确指出命名空间。</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 10: new and delete -->
-    <div class="slide" data-slide="10">
-        <div class="max-w-5xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🗄️ new和delete：动态内存管理</h2>
-            
-            <div class="animate-item mb-6">
-                <p class="text-gray-300 mb-4 text-lg">new和delete是C++特有的动态内存分配方式，比malloc/free更安全</p>
-                
-                <div class="grid grid-cols-2 gap-8">
-                    <div>
-                        <h4 class="text-red-400 font-bold mb-3">C语言方式（malloc/free）</h4>
-                        <div class="code-block">
-                            <code>
-<span class="code-keyword">int</span> *p = (<span class="code-keyword">int</span> *)<span class="code-function">malloc</span>(<span class="code-keyword">sizeof</span>(<span class="code-keyword">int</span>));<br>
-<span class="code-function">free</span>(p);
-                            </code>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 class="text-green-400 font-bold mb-3">C++方式（new/delete）</h4>
-                        <div class="code-block">
-                            <code>
-<span class="code-keyword">int</span> *p = <span class="code-keyword">new int</span>;<br>
-<span class="code-keyword">delete</span> p;<br><br>
-<span class="code-comment">// 分配数组</span><br>
-<span class="code-keyword">int</span> *arr = <span class="code-keyword">new int</span>[<span class="code-number">100</span>];<br>
-<span class="code-keyword">delete</span>[] arr;
-                            </code>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="animate-item bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4">
-                <p class="text-yellow-400 font-bold">⚠️ 重要规则</p>
-                <p class="text-gray-300 mt-1">malloc/free 和 new/delete 不能混用！用 new 分配的内存必须用 delete 释放，用 new[] 分配的必须用 delete[] 释放！</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 11: cin cout -->
-    <div class="slide" data-slide="11">
-        <div class="max-w-5xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📥 C++输入：cin</h2>
-            
-            <div class="animate-item mb-6">
-                <p class="text-gray-300 mb-4 text-lg">cin是C++的标准输入流对象，比scanf更简单直观</p>
-                
-                <div class="code-block mb-6">
-                    <code>
-<span class="code-keyword">#include</span> <span class="code-string">&lt;iostream&gt;</span><br>
-<span class="code-keyword">using namespace</span> <span class="code-function">std</span>;<br><br>
-<span class="code-keyword">int</span> a, b;<br>
-<span class="code-function">cin</span> >> a >> b;&nbsp;&nbsp;<span class="code-comment">// 输入两个整数</span><br><br>
-<span class="code-keyword">double</span> x;<br>
-<span class="code-function">cin</span> >> x;&nbsp;&nbsp;<span class="code-comment">// 输入浮点数</span><br><br>
-<span class="code-keyword">char</span> s[<span class="code-number">100</span>];<br>
-<span class="code-function">cin</span> >> s;&nbsp;&nbsp;<span class="code-comment">// 输入字符串（不含空格）</span>
-                    </code>
-                </div>
-            </div>
-
-            <div class="animate-item grid grid-cols-2 gap-4">
-                <div class="bg-green-500/20 rounded-lg p-4 border border-green-500/50">
-                    <p class="text-green-400 font-bold">✓ cin 的优点</p>
-                    <ul class="text-gray-300 text-sm mt-2">
-                        <li>• 自动识别变量类型</li>
-                        <li>• 不需要格式说明符</li>
-                        <li>• 语法更简单</li>
-                    </ul>
-                </div>
-                <div class="bg-red-500/20 rounded-lg p-4 border border-red-500/50">
-                    <p class="text-red-400 font-bold">✗ cin 的缺点</p>
-                    <ul class="text-gray-300 text-sm mt-2">
-                        <li>• 输入速度比scanf慢</li>
-                        <li>• 对空格处理不如scanf灵活</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 12: cout -->
-    <div class="slide" data-slide="12">
-        <div class="max-w-5xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📤 C++输出：cout</h2>
-            
-            <div class="animate-item mb-6">
-                <p class="text-gray-300 mb-4 text-lg">cout是C++的标准输出流对象，比printf更简单直观</p>
-                
-                <div class="code-block mb-6">
-                    <code>
-<span class="code-keyword">#include</span> <span class="code-string">&lt;iostream&gt;</span><br>
-<span class="code-keyword">using namespace</span> <span class="code-function">std</span>;<br><br>
-<span class="code-keyword">int</span> a = <span class="code-number">10</span>;<br>
-<span class="code-keyword">double</span> x = <span class="code-number">3.14</span>;<br><br>
-<span class="code-function">cout</span> << <span class="code-string">"Hello World"</span> << endl;<br>
-<span class="code-function">cout</span> << <span class="code-string">"a = "</span> << a << endl;<br>
-<span class="code-function">cout</span> << <span class="code-string">"x = "</span> << x << endl;<br>
-<span class="code-function">cout</span> << a << <span class="code-string">" + "</span> << x << <span class="code-string">" = "</span> << a + x << endl;
-                    </code>
-                </div>
-            </div>
-
-            <div class="animate-item bg-white/5 rounded-lg p-4 border border-white/10">
-                <p class="text-gray-400 mb-2">endl 是什么？</p>
-                <p class="text-gray-300"><span class="text-yellow-400">endl</span> 表示换行（end of line），相当于 printf 中的 <span class="text-yellow-400">\n</span></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 13: cin cout Example -->
-    <div class="slide" data-slide="13">
-        <div class="max-w-5xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📝 cin/cout 完整示例</h2>
-            
-            <div class="animate-item mb-6">
-                <div class="code-block mb-6">
-                    <code>
-<span class="code-comment">// C++风格的 Hello World</span><br>
-<span class="code-keyword">#include</span> <span class="code-string">&lt;iostream&gt;</span><br>
-<span class="code-keyword">using namespace</span> <span class="code-function">std</span>;<br><br>
-<span class="code-keyword">int</span> main() {<br>
-&nbsp;&nbsp;<span class="code-comment">// 输入两个数</span><br>
-&nbsp;&nbsp;<span class="code-keyword">int</span> a, b;<br>
-&nbsp;&nbsp;cout << <span class="code-string">"请输入两个整数："</span>;<br>
-&nbsp;&nbsp;cin >> a >> b;<br><br>
-&nbsp;&nbsp;<span class="code-comment">// 输出运算结果</span><br>
-&nbsp;&nbsp;cout << a << <span class="code-string">" + "</span> << b << <span class="code-string">" = "</span> << a + b << endl;<br>
-&nbsp;&nbsp;cout << a << <span class="code-string">" - "</span> << b << <span class="code-string">" = "</span> << a - b << endl;<br>
-&nbsp;&nbsp;cout << a << <span class="code-string">" * "</span> << b << <span class="code-string">" = "</span> << a * b << endl;<br>
-&nbsp;&nbsp;cout << a << <span class="code-string">" / "</span> << b << <span class="code-string">" = "</span> << a / b << endl;<br><br>
-&nbsp;&nbsp;<span class="code-keyword">return</span> <span class="code-number">0</span>;<br>
-}
-                    </code>
-                </div>
-                
-                <div class="bg-white/5 rounded-lg p-4 border border-white/10">
-                    <p class="text-gray-400 mb-2">运行效果：</p>
-                    <p class="text-gray-300">请输入两个整数：10 20</p>
-                    <p class="text-green-400">10 + 20 = 30</p>
-                    <p class="text-green-400">10 - 20 = -10</p>
-                    <p class="text-green-400">10 * 20 = 200</p>
-                    <p class="text-green-400">10 / 20 = 0</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 14: Quiz 1 -->
-    <div class="slide" data-slide="14">
-        <div class="max-w-5xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验1</h2>
-            
-            <div class="animate-item mb-8">
-                <p class="text-xl text-gray-300 mb-6">引用和指针的主要区别是什么？</p>
-                
-                <div class="space-y-4">
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">A</span>
-                        <span>没有区别</span>
-                    </div>
-                    <div class="quiz-option" data-correct="true">
-                        <span class="letter">B</span>
-                        <span>引用必须初始化且不能改变，指针可以改变指向</span>
-                    </div>
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">C</span>
-                        <span>指针必须初始化，引用不需要</span>
-                    </div>
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">D</span>
-                        <span>引用比指针更危险</span>
+                <div class="card animate-item">
+                    <p class="text-green-400 font-bold mb-2">用 using（推荐入门）</p>
+                    <div class="code-block text-sm">
+                        <span class="keyword">using namespace</span> <span class="keyword">std</span>;<br>
+                        cout << <span class="string">"你好"</span> << endl;<br>
+                        cin >> x;
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Slide 15: Quiz 2 -->
-    <div class="slide" data-slide="15">
-        <div class="max-w-5xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验2</h2>
-            
-            <div class="animate-item mb-8">
-                <p class="text-xl text-gray-300 mb-6">以下哪个是引用正确的定义？</p>
-                
-                <div class="space-y-4">
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">A</span>
-                        <span>int &r;</span>
+        <!-- 第13页：new和delete - 生活类比 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🗄️ new和delete是什么？</h2>
+            <div class="card w-full max-w-3xl animate-item">
+                <p class="text-2xl text-yellow-400 mb-6">💡 生活类比：租房</p>
+                <div class="flex items-center justify-center gap-8 mb-6">
+                    <div class="text-center">
+                        <div class="text-5xl mb-2">🏠</div>
+                        <p class="text-gray-300">租房子</p>
+                        <p class="text-green-400 text-sm">new（申请内存）</p>
                     </div>
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">B</span>
-                        <span>int &r = 100;</span>
+                    <div class="text-3xl text-gray-500">→</div>
+                    <div class="text-center">
+                        <div class="text-5xl mb-2">🏃‍♂️</div>
+                        <p class="text-gray-300">住进去</p>
+                        <p class="text-blue-400 text-sm">使用内存</p>
                     </div>
-                    <div class="quiz-option" data-correct="true">
-                        <span class="letter">C</span>
-                        <span>int a = 10; int &r = a;</span>
+                    <div class="text-3xl text-gray-500">→</div>
+                    <div class="text-center">
+                        <div class="text-5xl mb-2">🏠❌</div>
+                        <p class="text-gray-300">退房子</p>
+                        <p class="text-red-400 text-sm">delete（释放内存）</p>
                     </div>
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">D</span>
-                        <span>int &r = &a;</span>
+                </div>
+            </div>
+            <div class="card mt-4 w-full max-w-2xl animate-item">
+                <p class="text-red-400 font-bold">⚠️ 用完必须还回去！不然就是"内存泄漏"！</p>
+            </div>
+        </div>
+
+        <!-- 第14页：new和delete语法 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">📝 new和delete语法</h2>
+            <div class="grid grid-cols-2 gap-8 w-full max-w-4xl">
+                <div class="card animate-item" style="border-color: #f87171;">
+                    <p class="text-red-400 font-bold mb-4">❌ C语言方式</p>
+                    <div class="code-block text-sm">
+                        <span class="keyword">int</span> *p = (<span class="keyword">int</span>*)<span class="function">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">int</span>));<br>
+                        ...<br>
+                        <span class="function">free</span>(p);
+                    </div>
+                </div>
+                <div class="card animate-item" style="border-color: #34d399;">
+                    <p class="text-green-400 font-bold mb-4">✅ C++方式</p>
+                    <div class="code-block text-sm">
+                        <span class="keyword">int</span> *p = <span class="keyword">new int</span>;<br>
+                        ...<br>
+                        <span class="keyword">delete</span> p;<br><br>
+                        <span class="comment">// 数组用 new[]</span><br>
+                        <span class="keyword">int</span> *arr = <span class="keyword">new int</span>[<span class="number">100</span>];<br>
+                        <span class="keyword">delete</span>[] arr;
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Slide 16: Quiz 3 -->
-    <div class="slide" data-slide="16">
-        <div class="max-w-5xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验3</h2>
-            
-            <div class="animate-item mb-8">
-                <p class="text-xl text-gray-300 mb-6">new int[10] 分配的内存应该用什么释放？</p>
-                
-                <div class="space-y-4">
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">A</span>
-                        <span>delete p;</span>
+        <!-- 第15页：new和delete规则 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📋 new/delete 重要规则</h2>
+            <div class="space-y-4 w-full max-w-3xl">
+                <div class="card animate-item" style="border-color: #fbbf24;">
+                    <p class="text-yellow-400 font-bold text-xl">⚠️ 配对使用！</p>
+                    <p class="text-gray-300 mt-2">new → delete</p>
+                    <p class="text-gray-300">new[] → delete[]</p>
+                </div>
+                <div class="card animate-item" style="border-color: #f87171;">
+                    <p class="text-red-400 font-bold text-xl">❌ 不能混用！</p>
+                    <p class="text-gray-300 mt-2">用 new 分配的不能用 free 释放</p>
+                    <p class="text-gray-300">用 malloc 分配的不能用 delete 释放</p>
+                </div>
+                <div class="card animate-item" style="border-color: #34d399;">
+                    <p class="text-green-400 font-bold text-xl">✅ 推荐</p>
+                    <p class="text-gray-300 mt-2">在C++中尽量用 new/delete</p>
+                    <p class="text-gray-300">更安全、更现代</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第16页：cin/cout 引入 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📥📤 cin和cout是什么？</h2>
+            <div class="grid grid-cols-2 gap-8 w-full max-w-4xl">
+                <div class="card animate-item" style="border-color: #60a5fa;">
+                    <div class="text-3xl mb-4 text-blue-400">📥 cin</div>
+                    <p class="text-gray-300 text-lg">C++的标准输入</p>
+                    <p class="text-gray-400 mt-4">相当于C的 scanf</p>
+                    <div class="code-block text-sm mt-4">
+                        cin >> a >> b;
                     </div>
-                    <div class="quiz-option" data-correct="true">
-                        <span class="letter">B</span>
-                        <span>delete[] p;</span>
-                    </div>
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">C</span>
-                        <span>free(p);</span>
-                    </div>
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">D</span>
-                        <span>不需要释放</span>
+                </div>
+                <div class="card animate-item" style="border-color: #34d399;">
+                    <div class="text-3xl mb-4 text-green-400">📤 cout</div>
+                    <p class="text-gray-300 text-lg">C++的标准输出</p>
+                    <p class="text-gray-400 mt-4">相当于C的 printf</p>
+                    <div class="code-block text-sm mt-4">
+                        cout << "Hello" << endl;
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Slide 17: Summary -->
-    <div class="slide" data-slide="17">
-        <div class="max-w-5xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📋 本章总结</h2>
-            
-            <div class="animate-item grid grid-cols-3 gap-6">
-                <div class="bg-blue-500/20 border border-blue-500/50 rounded-xl p-6">
-                    <h3 class="font-bold text-blue-400 mb-4 text-lg">引用</h3>
-                    <ul class="text-gray-300 text-sm space-y-2">
-                        <li>• 变量的别名</li>
-                        <li>• 必须初始化</li>
-                        <li>• 不能重新绑定</li>
-                        <li>• 更安全、更简洁</li>
-                    </ul>
+        <!-- 第17页：cin详解 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">📥 cin 输入详解</h2>
+            <div class="code-block animate-item">
+                <span class="keyword">#include</span> <span class="string">&lt;iostream&gt;</span><br>
+                <span class="keyword">using namespace</span> <span class="keyword">std</span>;<br><br>
+                <span class="keyword">int</span> a, b;<br>
+                cin >> a >> b;  <span class="comment">// 输入两个整数</span><br><br>
+                <span class="keyword">double</span> x;<br>
+                cin >> x;  <span class="comment">// 输入浮点数</span><br><br>
+                <span class="keyword">char</span> s[<span class="number">100</span>];<br>
+                cin >> s;  <span class="comment">// 输入字符串（不含空格）</span>
+            </div>
+            <div class="card mt-4 w-full max-w-2xl animate-item">
+                <p class="text-gray-300">💡 cin 会<span class="text-yellow-400">自动识别变量类型</span>，不需要格式说明符！</p>
+            </div>
+        </div>
+
+        <!-- 第18页：cout详解 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">📤 cout 输出详解</h2>
+            <div class="code-block animate-item">
+                <span class="keyword">#include</span> <span class="string">&lt;iostream&gt;</span><br>
+                <span class="keyword">using namespace</span> <span class="keyword">std</span>;<br><br>
+                <span class="keyword">int</span> a = <span class="number">10</span>;<br>
+                <span class="keyword">double</span> x = <span class="number">3.14</span>;<br><br>
+                cout << <span class="string">"Hello World"</span> << endl;  <span class="comment">// 输出字符串并换行</span><br>
+                cout << <span class="string">"a = "</span> << a << endl;  <span class="comment">// a = 10</span><br>
+                cout << <span class="string">"x = "</span> << x << endl;  <span class="comment">// x = 3.14</span><br>
+                cout << a << <span class="string">" + "</span> << x << <span class="string">" = "</span> << a + x << endl;
+            </div>
+            <div class="card mt-4 w-full max-w-2xl animate-item">
+                <p class="text-gray-300">💡 <span class="text-yellow-400">endl</span> 表示"换行"，相当于 printf 的 \n</p>
+            </div>
+        </div>
+
+        <!-- 第19页：cin/cout完整示例 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">📝 cin/cout 完整示例</h2>
+            <div class="code-block animate-item">
+                <span class="comment">// C++风格的计算器</span><br>
+                <span class="keyword">#include</span> <span class="string">&lt;iostream&gt;</span><br>
+                <span class="keyword">using namespace</span> <span class="keyword">std</span>;<br><br>
+                <span class="keyword">int</span> main() {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span> a, b;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;cout << <span class="string">"输入两个数："</span>;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;cin >> a >> b;<br><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;cout << a << <span class="string">" + "</span> << b << <span class="string">" = "</span> << a+b << endl;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;cout << a << <span class="string">" - "</span> << b << <span class="string">" = "</span> << a-b << endl;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="number">0</span>;<br>
+                }
+            </div>
+        </div>
+
+        <!-- 第20页：cin vs scanf -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">⚖️ cin vs scanf 对比</h2>
+            <div class="grid grid-cols-2 gap-8 w-full max-w-4xl">
+                <div class="card animate-item" style="border-color: #60a5fa;">
+                    <div class="text-2xl mb-4 text-blue-400">📥 cin</div>
+                    <p class="text-green-400 font-bold">优点</p>
+                    <p class="text-gray-300 mt-2">自动识别类型</p>
+                    <p class="text-gray-300">语法简单直观</p>
+                    <p class="text-gray-300">不需要格式说明符</p>
+                    <p class="text-red-400 font-bold mt-4">缺点</p>
+                    <p class="text-gray-300">输入速度较慢</p>
+                    <p class="text-gray-300">空格处理不灵活</p>
                 </div>
-                <div class="bg-purple-500/20 border border-purple-500/50 rounded-xl p-6">
-                    <h3 class="font-bold text-purple-400 mb-4 text-lg">命名空间</h3>
-                    <ul class="text-gray-300 text-sm space-y-2">
-                        <li>• 避免名字冲突</li>
-                        <li>• 使用 :: 作用域运算符</li>
-                        <li>• std 是标准库命名空间</li>
-                        <li>• 可以用 using 简化</li>
-                    </ul>
-                </div>
-                <div class="bg-green-500/20 border border-green-500/50 rounded-xl p-6">
-                    <h3 class="font-bold text-green-400 mb-4 text-lg">动态内存</h3>
-                    <ul class="text-gray-300 text-sm space-y-2">
-                        <li>• new 分配内存</li>
-                        <li>• delete 释放内存</li>
-                        <li>• new[] 用 delete[] 释放</li>
-                        <li>• 比malloc/free更安全</li>
-                    </ul>
+                <div class="card animate-item" style="border-color: #a78bfa;">
+                    <div class="text-2xl mb-4 text-purple-400">📥 scanf</div>
+                    <p class="text-green-400 font-bold">优点</p>
+                    <p class="text-gray-300 mt-2">输入速度快</p>
+                    <p class="text-gray-300">空格处理灵活</p>
+                    <p class="text-red-400 font-bold mt-4">缺点</p>
+                    <p class="text-gray-300">需要格式说明符</p>
+                    <p class="text-gray-300">语法较复杂</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Slide 18: Next -->
-    <div class="slide" data-slide="18">
-        <div class="max-w-5xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎓 下章预告</h2>
-            
-            <div class="animate-item text-center">
-                <div class="text-6xl mb-6">📚</div>
-                <h3 class="text-2xl font-bold mb-4 text-gray-100">第21章 STL初步</h3>
-                <p class="text-gray-400 mb-8">C++标准模板库让编程更高效！</p>
-                
-                <div class="tip-box inline-block">
-                    <p class="text-gray-300">vector、string、algorithm...强大的工具箱</p>
+        <!-- 第21页：练习 - 判断对错 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🎯 练习：判断对错</h2>
+            <p class="text-gray-300 mb-6 animate-item">把正确的拖到左边，错误的拖到右边</p>
+            <div class="category-zones flex gap-8 justify-center mb-6 animate-item">
+                <div class="category text-center" data-type="正确" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <div class="category-label text-2xl text-green-400 mb-2">✓ 正确</div>
+                    <div class="drop-zone min-w-40 min-h-24"></div>
+                </div>
+                <div class="category text-center" data-type="错误" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <div class="category-label text-2xl text-red-400 mb-2">✗ 错误</div>
+                    <div class="drop-zone min-w-40 min-h-24"></div>
                 </div>
             </div>
+            <div class="drag-items flex gap-4 justify-center flex-wrap animate-item" id="dragContainer">
+                <div class="drag-item" draggable="true" data-type="正确">引用是变量的别名</div>
+                <div class="drag-item" draggable="true" data-type="正确">new配delete使用</div>
+                <div class="drag-item" draggable="true" data-type="错误">int &r; 是正确的</div>
+                <div class="drag-item" draggable="true" data-type="正确">std::cout</div>
+                <div class="drag-item" draggable="true" data-type="错误">new[]要用delete释放</div>
+                <div class="drag-item" draggable="true" data-type="正确">cin >> x 自动识别类型</div>
+            </div>
+        </div>
+
+        <!-- 第22页：测验1 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🎯 测验：引用和指针的主要区别？</h2>
+            <div class="grid grid-cols-2 gap-6 w-full max-w-3xl">
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">A</span>
+                    <span class="text-xl">没有区别</span>
+                </div>
+                <div class="quiz-option" data-correct="true" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">B</span>
+                    <span class="text-xl">引用必须初始化且不能改变</span>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">C</span>
+                    <span class="text-xl">指针必须初始化</span>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">D</span>
+                    <span class="text-xl">引用比指针更危险</span>
+                </div>
+            </div>
+            <div class="card mt-6 w-full max-w-2xl animate-item" id="quiz-feedback2"></div>
+        </div>
+
+        <!-- 第23页：测验2 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🎯 测验：new int[10] 分配的内存怎么释放？</h2>
+            <div class="grid grid-cols-2 gap-6 w-full max-w-3xl">
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">A</span>
+                    <span class="text-xl">delete p;</span>
+                </div>
+                <div class="quiz-option" data-correct="true" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">B</span>
+                    <span class="text-xl">delete[] p;</span>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">C</span>
+                    <span class="text-xl">free(p);</span>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">D</span>
+                    <span class="text-xl">不需要释放</span>
+                </div>
+            </div>
+            <div class="card mt-6 w-full max-w-2xl animate-item" id="quiz-feedback3"></div>
+        </div>
+
+        <!-- 第24页：测验3 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🎯 测验：cout << endl 中的 endl 是什么意思？</h2>
+            <div class="grid grid-cols-2 gap-6 w-full max-w-3xl">
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">A</span>
+                    <span class="text-xl">输入</span>
+                </div>
+                <div class="quiz-option" data-correct="true" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">B</span>
+                    <span class="text-xl">换行（end of line）</span>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">C</span>
+                    <span class="text-xl">结束程序</span>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkAnswer(this)">
+                    <span class="letter text-2xl">D</span>
+                    <span class="text-xl">输出变量</span>
+                </div>
+            </div>
+            <div class="card mt-6 w-full max-w-2xl animate-item" id="quiz-feedback4"></div>
+        </div>
+
+        <!-- 第25页：总结 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📋 今天学到了什么？</h2>
+            <div class="grid grid-cols-2 gap-4 w-full max-w-4xl">
+                <div class="card animate-item"><p class="text-blue-400 font-bold">📍 引用</p><p class="text-gray-300 text-sm mt-2">变量的别名，更安全</p><p class="text-gray-400 text-sm">int &r = a;</p></div>
+                <div class="card animate-item"><p class="text-purple-400 font-bold">🏷️ 命名空间</p><p class="text-gray-300 text-sm mt-2">避免名字冲突</p><p class="text-gray-400 text-sm">std::cin</p></div>
+                <div class="card animate-item"><p class="text-green-400 font-bold">🗄️ new/delete</p><p class="text-gray-300 text-sm mt-2">动态内存管理</p><p class="text-gray-400 text-sm">配对使用！</p></div>
+                <div class="card animate-item"><p class="text-yellow-400 font-bold">📥📤 cin/cout</p><p class="text-gray-300 text-sm mt-2">输入输出</p><p class="text-gray-400 text-sm">自动识别类型</p></div>
+            </div>
+        </div>
+
+        <!-- 第26页：下节预告 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">下节课预告</h2>
+            <div class="card animate-item"><div class="text-5xl mb-4">📚</div><p class="text-2xl text-gray-100 font-bold">STL初步</p><p class="text-gray-400 mt-4">vector、string、algorithm...</p></div>
+            <p class="text-gray-500 mt-8 animate-item">C++ 语法篇 · 第 21 课</p>
         </div>
     </div>
 
-    <div class="progress-bar" id="progressBar"></div>
-    <div class="progress-dots" id="progressDots"></div>
-
-    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-50">
-        <button id="prevBtn" class="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-gray-300 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
-            ← 上一页
-        </button>
-        <button id="nextBtn" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-white transition-all">
-            下一页 →
-        </button>
-    </div>
+    <div class="fixed top-4 right-4 text-gray-500 text-sm animate-item">点击空格/右箭头逐步显示</div>
+    <div class="progress-bar" id="progress"></div>
+    <div class="progress-dots" id="dots"></div>
 
     <script>
-        const totalSlides = 18;
-        let currentSlide = 1;
-        let score = 0;
-        let streak = 0;
+        let currentSlide = 0, currentItem = 0;
+        let learningState = { score: 0, streak: 0, maxStreak: 0 };
 
-        const progressBar = document.getElementById('progressBar');
-        const progressDots = document.getElementById('progressDots');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const scoreValue = document.getElementById('scoreValue');
-        const streakValue = document.getElementById('streakValue');
-
-        function updateProgress() {
-            const progress = (currentSlide / totalSlides) * 100;
-            progressBar.style.width = `${progress}%`;
-            
-            document.querySelectorAll('.dot').forEach((dot, i) => {
-                dot.classList.toggle('active', i + 1 === currentSlide);
-            });
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const dotsContainer = document.getElementById('dots');
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsContainer.appendChild(dot);
         }
 
-        function showSlide(n) {
-            if (n < 1 || n > totalSlides) return;
-            currentSlide = n;
-            
-            document.querySelectorAll('.slide').forEach((slide, i) => {
-                slide.classList.toggle('active', i + 1 === currentSlide);
-            });
-
+        function getCurrentItems() { return slides[currentSlide].querySelectorAll('.animate-item'); }
+        function showNextItem() {
+            const items = getCurrentItems();
+            if (currentItem < items.length) {
+                items[currentItem].classList.add('visible');
+                currentItem++;
+                return true;
+            }
+            return false;
+        }
+        function hideAllItems() {
+            const items = getCurrentItems();
+            items.forEach(item => item.classList.remove('visible'));
+            currentItem = 0;
+        }
+        function goToSlide(index) {
+            if (index < 0 || index >= totalSlides) return;
+            slides[currentSlide].classList.remove('active');
+            document.querySelectorAll('.dot')[currentSlide].classList.remove('active');
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+            document.querySelectorAll('.dot')[currentSlide].classList.add('active');
+            hideAllItems();
             updateProgress();
-            prevBtn.disabled = currentSlide === 1;
-            nextBtn.textContent = currentSlide === totalSlides ? '完成！' : '下一页 →';
-            
-            animateSlide();
         }
-
-        function animateSlide() {
-            const activeSlide = document.querySelector('.slide.active');
-            if (!activeSlide) return;
-            
-            const items = activeSlide.querySelectorAll('.animate-item');
-            items.forEach((item, i) => {
-                setTimeout(() => {
-                    item.classList.add('visible');
-                }, i * 100);
-            });
-        }
+        function nextSlide() { if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1); }
+        function prevSlide() { if (currentSlide > 0) goToSlide(currentSlide - 1); }
+        function updateProgress() { document.getElementById('progress').style.width = ((currentSlide + 1) / totalSlides * 100) + '%'; }
 
         function updateScore(points) {
-            score += points;
-            scoreValue.textContent = score;
-            scoreValue.parentElement.classList.add('scale-125');
-            setTimeout(() => scoreValue.parentElement.classList.remove('scale-125'), 200);
+            learningState.score += points;
+            document.getElementById('scoreValue').textContent = learningState.score;
         }
-
         function updateStreak() {
-            streak++;
-            streakValue.textContent = streak;
-            if (streak >= 3) showBadge(`连胜 ${streak}！`);
+            learningState.streak++;
+            document.getElementById('streakValue').textContent = learningState.streak;
         }
-
         function resetStreak() {
-            streak = 0;
-            streakValue.textContent = '0';
-        }
-
-        function showBadge(text) {
-            const badge = document.createElement('div');
-            badge.className = 'particle';
-            badge.style.cssText = 'top:50%;left:50%;background:linear-gradient(135deg,#f472b6,#c084fc);color:white;padding:0.75rem 1.5rem;border-radius:2rem;font-weight:bold;font-size:1.25rem;';
-            badge.textContent = text;
-            document.body.appendChild(badge);
-            setTimeout(() => badge.remove(), 800);
+            learningState.streak = 0;
+            document.getElementById('streakValue').textContent = '0';
         }
 
         function showParticles(element) {
@@ -964,42 +685,83 @@ cin >> x;
             for (let i = 0; i < 8; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
-                particle.style.cssText = `left:${rect.left + rect.width/2}px;top:${rect.top + rect.height/2}px;width:8px;height:8px;background:${colors[i%4]};border-radius:50%;`;
+                particle.style.cssText = `position: fixed; left: ${rect.left + rect.width/2 + (Math.random()-0.5)*40}px; top: ${rect.top + rect.height/2}px; width: 8px; height: 8px; background: ${colors[i % 4]}; border-radius: 50%; pointer-events: none; animation: confetti 0.8s ease forwards;`;
                 document.body.appendChild(particle);
                 setTimeout(() => particle.remove(), 800);
             }
         }
 
-        prevBtn.addEventListener('click', () => showSlide(currentSlide - 1));
-        nextBtn.addEventListener('click', () => {
-            if (currentSlide === totalSlides) { nextBtn.textContent = '🎉 已完成！'; return; }
-            showSlide(currentSlide + 1);
+        function checkAnswer(element) {
+            if (element.classList.contains('correct') || element.classList.contains('wrong')) return;
+            const isCorrect = element.dataset.correct === 'true';
+            const feedbackId = element.closest('.slide').querySelector('[id^="quiz-feedback"]')?.id || 'quiz-feedback';
+            if (isCorrect) {
+                element.classList.add('correct');
+                showParticles(element);
+                updateScore(10);
+                updateStreak();
+                const fb = document.getElementById(feedbackId);
+                if (fb) fb.innerHTML = '<p class="text-green-400 font-bold text-xl">🎉 正确！太棒了！</p>';
+            } else {
+                element.classList.add('wrong');
+                resetStreak();
+                const fb = document.getElementById(feedbackId);
+                if (fb) fb.innerHTML = '<p class="text-red-400 font-bold text-xl">❌ 不对哦，再想想！</p>';
+                setTimeout(() => element.classList.remove('wrong'), 300);
+            }
+        }
+
+        const dragContainer = document.getElementById('dragContainer');
+        if (dragContainer) {
+            dragContainer.querySelectorAll('.drag-item').forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', this.dataset.type);
+                    this.classList.add('dragging');
+                });
+                item.addEventListener('dragend', function() {
+                    this.classList.remove('dragging');
+                });
+            });
+        }
+
+        function handleDragOver(e) { e.preventDefault(); e.currentTarget.querySelector('.drop-zone').classList.add('drag-over'); }
+        function handleDragLeave(e) { e.currentTarget.querySelector('.drop-zone').classList.remove('drag-over'); }
+        function handleDrop(e) {
+            e.preventDefault();
+            const dropZone = e.currentTarget.querySelector('.drop-zone');
+            dropZone.classList.remove('drag-over');
+            const type = e.dataTransfer.getData('text/plain');
+            const expectedType = e.currentTarget.dataset.type;
+            const draggedItem = document.querySelector('.dragging');
+            if (type === expectedType) {
+                dropZone.classList.add('correct');
+                showParticles(dropZone);
+                updateScore(10);
+                updateStreak();
+                draggedItem.style.display = 'none';
+            } else {
+                dropZone.classList.add('wrong');
+                resetStreak();
+                setTimeout(() => dropZone.classList.remove('wrong'), 500);
+            }
+        }
+
+        document.querySelectorAll('.category').forEach(cat => {
+            cat.addEventListener('dragover', handleDragOver);
+            cat.addEventListener('dragleave', handleDragLeave);
+            cat.addEventListener('drop', handleDrop);
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.target.closest('button')) return;
-            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); showSlide(currentSlide + 1); }
-            else if (e.key === 'ArrowLeft') { e.preventDefault(); showSlide(currentSlide - 1); }
+            if (e.target.tagName === 'INPUT') return;
+            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); if (!showNextItem()) nextSlide(); }
+            else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
         });
-
-        document.querySelectorAll('.quiz-option').forEach(option => {
-            option.addEventListener('click', function(e) {
-                if (e.target.closest('button')) return;
-                const isCorrect = this.dataset.correct === 'true';
-                if (isCorrect) { this.classList.add('correct'); showParticles(this); updateScore(10); updateStreak(); }
-                else { this.classList.add('wrong'); resetStreak(); setTimeout(() => this.classList.remove('wrong'), 300); }
-            });
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.dot')) return;
+            if (!showNextItem()) nextSlide();
         });
-
-        for (let i = 1; i <= totalSlides; i++) {
-            const dot = document.createElement('div');
-            dot.className = 'dot';
-            if (i === 1) dot.classList.add('active');
-            dot.addEventListener('click', () => showSlide(i));
-            progressDots.appendChild(dot);
-        }
-
-        showSlide(1);
+        updateProgress();
     </script>
 </body>
 </html>

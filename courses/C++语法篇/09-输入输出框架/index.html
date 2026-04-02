@@ -299,6 +299,30 @@
             font-weight: bold;
             margin-right: 0.75rem;
         }
+
+        .blank-input {
+            background: rgba(96, 165, 250, 0.1);
+            border: 2px dashed #60a5fa;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: #e2e8f0;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            width: 100px;
+        }
+
+        .blank-input:focus {
+            outline: none;
+            border-color: #34d399;
+            background: rgba(52, 211, 153, 0.1);
+        }
+
+        .fill-area {
+            display: inline-block;
+            min-width: 60px;
+            border-bottom: 2px dashed #60a5fa;
+            padding: 0 0.5rem;
+        }
     </style>
 </head>
 <body class="text-gray-200">
@@ -326,8 +350,41 @@
         </div>
     </div>
 
-    <!-- Slide 2: Problem Introduction -->
+    <!-- Slide 2: Life Analogy - Restaurant -->
     <div class="slide" data-slide="2">
+        <div class="max-w-4xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🍜 生活类比：餐厅点餐</h2>
+            
+            <div class="animate-item grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white/5 rounded-xl p-6 border border-white/10 text-center">
+                    <div class="text-5xl mb-4">👨‍🍳</div>
+                    <h3 class="font-bold mb-2">厨房</h3>
+                    <p class="text-gray-400 text-sm">处理数据</p>
+                    <p class="text-blue-400 mt-2">= CPU计算</p>
+                </div>
+                <div class="bg-white/5 rounded-xl p-6 border border-white/10 text-center">
+                    <div class="text-5xl mb-4">📋</div>
+                    <h3 class="font-bold mb-2">服务员</h3>
+                    <p class="text-gray-400 text-sm">传递信息</p>
+                    <p class="text-blue-400 mt-2">= 输入输出</p>
+                </div>
+                <div class="bg-white/5 rounded-xl p-6 border border-white/10 text-center">
+                    <div class="text-5xl mb-4">🚪</div>
+                    <h3 class="font-bold mb-2">门口</h3>
+                    <p class="text-gray-400 text-sm">知道多少人吃完了</p>
+                    <p class="text-blue-400 mt-2">= 文件结束判断</p>
+                </div>
+            </div>
+
+            <div class="animate-item tip-box mt-6">
+                <p class="font-bold mb-1">💡 关键问题</p>
+                <p class="text-gray-300">服务员怎么知道还有多少客人需要服务？什么时候可以关门？</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Problem Introduction -->
+    <div class="slide" data-slide="3">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🤔 问题来了</h2>
             
@@ -353,8 +410,8 @@
         </div>
     </div>
 
-    <!-- Slide 3: scanf return value -->
-    <div class="slide" data-slide="3">
+    <!-- Slide 4: scanf return value -->
+    <div class="slide" data-slide="4">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🔍 scanf 的秘密</h2>
             
@@ -372,15 +429,49 @@
             </div>
 
             <div class="animate-item tip-box">
-                <p class="font-bold mb-1">💡 提示2-19</p>
-                <p class="text-gray-300">Windows下输入完毕后按 <strong class="text-yellow-400">Ctrl+Z</strong>，再按 <strong class="text-yellow-400">Enter</strong> 结束。<br>
-                Linux下按 <strong class="text-yellow-400">Ctrl+D</strong> 结束。</p>
+                <p class="font-bold mb-1">💡 提示</p>
+                <p class="text-gray-300">Windows下按 <strong class="text-yellow-400">Ctrl+Z</strong>，Linux下按 <strong class="text-yellow-400">Ctrl+D</strong> 结束输入</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 4: While loop pattern -->
-    <div class="slide" data-slide="4">
+    <!-- Slide 5: Interactive - Drag the return value -->
+    <div class="slide" data-slide="5">
+        <div class="max-w-4xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 拖拽练习：scanf返回值</h2>
+            
+            <div class="animate-item mb-8">
+                <p class="text-xl text-gray-300 mb-6">把正确的返回值拖到对应的情况：</p>
+                
+                <div class="bg-white/5 rounded-xl p-6 border border-white/10 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div class="text-center">
+                            <p class="text-gray-400 mb-2">成功读取一个整数</p>
+                            <div class="drop-zone h-16" data-answer="1"></div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-400 mb-2">输入类型不匹配</p>
+                            <div class="drop-zone h-16" data-answer="0"></div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-400 mb-2">输入结束</p>
+                            <div class="drop-zone h-16" data-answer="EOF"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-4 justify-center">
+                    <div class="drag-item" draggable="true" data-value="1">1</div>
+                    <div class="drag-item" draggable="true" data-value="0">0</div>
+                    <div class="drag-item" draggable="true" data-value="EOF">EOF</div>
+                    <div class="drag-item" draggable="true" data-value="-1">-1</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: While loop pattern -->
+    <div class="slide" data-slide="6">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">✅ 标准写法</h2>
             
@@ -409,8 +500,8 @@
         </div>
     </div>
 
-    <!-- Slide 5: Quiz -->
-    <div class="slide" data-slide="5">
+    <!-- Slide 7: Quiz -->
+    <div class="slide" data-slide="7">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验</h2>
             
@@ -439,31 +530,41 @@
         </div>
     </div>
 
-    <!-- Slide 6: File I/O intro -->
-    <div class="slide" data-slide="6">
+    <!-- Slide 8: Life Analogy - File I/O -->
+    <div class="slide" data-slide="8">
         <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📁 为什么需要文件读写？</h2>
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🏠 生活类比：文件柜</h2>
             
-            <div class="animate-item grid grid-cols-1 gap-6 mb-8">
+            <div class="animate-item grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <h3 class="font-bold mb-3 text-gray-100">🤖 算法竞赛的规则</h3>
-                    <ul class="text-gray-400 text-sm space-y-2">
-                        <li>• 有的比赛：程序从键盘读入，输出到屏幕（标准I/O）</li>
-                        <li>• 有的比赛：程序从文件读入，输出到文件</li>
-                        <li>• 有的比赛：禁止用重定向方式访问文件</li>
+                    <div class="text-5xl mb-4">📁</div>
+                    <h3 class="font-bold mb-2">纸质文件</h3>
+                    <ul class="text-gray-400 text-sm space-y-2 mt-4">
+                        <li>• 文件名写在标签上</li>
+                        <li>• 放在文件柜里</li>
+                        <li>• 需要时打开柜子取</li>
+                    </ul>
+                </div>
+                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                    <div class="text-5xl mb-4">💻</div>
+                    <h3 class="font-bold mb-2">电脑文件</h3>
+                    <ul class="text-gray-400 text-sm space-y-2 mt-4">
+                        <li>• 文件名：data.in, data.out</li>
+                        <li>• 放在硬盘里</li>
+                        <li>• 程序用函数读写</li>
                     </ul>
                 </div>
             </div>
 
             <div class="animate-item tip-box">
-                <p class="font-bold mb-1">⚠️ 提示2-21</p>
-                <p class="text-gray-300">请在比赛之前了解文件读写的相关规定！</p>
+                <p class="font-bold mb-1">💡 类比</p>
+                <p class="text-gray-300">文件柜 = 硬盘，标签 = 文件名，打开柜子 = fopen</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 7: File naming conventions -->
-    <div class="slide" data-slide="7">
+    <!-- Slide 9: File naming conventions -->
+    <div class="slide" data-slide="9">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📝 文件命名规定</h2>
             
@@ -487,14 +588,14 @@
             </div>
 
             <div class="animate-item tip-box">
-                <p class="font-bold mb-1">⚠️ 提示2-22</p>
-                <p class="text-gray-300">不要弄错大小写，不要拼错文件名，不要使用绝对路径或相对路径！</p>
+                <p class="font-bold mb-1">⚠️ 注意</p>
+                <p class="text-gray-300">不要弄错大小写，不要拼错文件名！</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 8: Method 1 - freopen -->
-    <div class="slide" data-slide="8">
+    <!-- Slide 10: Method 1 - freopen -->
+    <div class="slide" data-slide="10">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🔗 方法1：重定向（简单）</h2>
             
@@ -515,8 +616,43 @@
         </div>
     </div>
 
-    <!-- Slide 9: Method 2 - fopen -->
-    <div class="slide" data-slide="9">
+    <!-- Slide 11: Interactive - Drag freopen -->
+    <div class="slide" data-slide="11">
+        <div class="max-w-4xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 拖拽练习：freopen填空</h2>
+            
+            <div class="animate-item mb-8">
+                <p class="text-xl text-gray-300 mb-6">把正确的选项拖到空格里：</p>
+                
+                <div class="code-block mb-6">
+                    <code>
+                        <span class="code-function">freopen</span>(<span class="code-string">"____"</span>, <span class="code-string">"____"</span>, stdin);
+                    </code>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="text-center">
+                        <p class="text-gray-400 mb-2">第一个空（文件名）</p>
+                        <div class="drop-zone" data-answer="data.in"></div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-gray-400 mb-2">第二个空（模式）</p>
+                        <div class="drop-zone" data-answer="r"></div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-4 justify-center">
+                    <div class="drag-item" draggable="true" data-value="data.in">"data.in"</div>
+                    <div class="drag-item" draggable="true" data-value="data.out">"data.out"</div>
+                    <div class="drag-item" draggable="true" data-value="r">"r"</div>
+                    <div class="drag-item" draggable="true" data-value="w">"w"</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: Method 2 - fopen -->
+    <div class="slide" data-slide="12">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🔗 方法2：fopen（灵活）</h2>
             
@@ -534,14 +670,44 @@
             </div>
 
             <div class="animate-item tip-box">
-                <p class="font-bold mb-1">💡 提示2-24</p>
-                <p class="text-gray-300">如果不允许用重定向，就用 fopen 和 fscanf/fprintf</p>
+                <p class="font-bold mb-1">💡 区别</p>
+                <p class="text-gray-300">fscanf/fprintf 比 scanf/printf 多一个文件指针参数</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 10: Conditional compilation -->
-    <div class="slide" data-slide="10">
+    <!-- Slide 13: Quiz - freopen vs fopen -->
+    <div class="slide" data-slide="13">
+        <div class="max-w-4xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验：freopen vs fopen</h2>
+            
+            <div class="animate-item mb-8">
+                <p class="text-xl text-gray-300 mb-6">哪种方法更简单，代码不用改？</p>
+                
+                <div class="space-y-4">
+                    <div class="quiz-option" data-correct="true">
+                        <span class="letter">A</span>
+                        <span>freopen - 重定向到文件，代码不用改</span>
+                    </div>
+                    <div class="quiz-option" data-correct="false">
+                        <span class="letter">B</span>
+                        <span>fopen - 需要用fscanf/fprintf</span>
+                    </div>
+                    <div class="quiz-option" data-correct="false">
+                        <span class="letter">C</span>
+                        <span>两者一样复杂</span>
+                    </div>
+                    <div class="quiz-option" data-correct="false">
+                        <span class="letter">D</span>
+                        <span>都不简单</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 14: Conditional compilation -->
+    <div class="slide" data-slide="14">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🔧 条件编译（推荐）</h2>
             
@@ -568,8 +734,8 @@
         </div>
     </div>
 
-    <!-- Slide 11: Multi-data handling intro -->
-    <div class="slide" data-slide="11">
+    <!-- Slide 15: Multi-data handling intro -->
+    <div class="slide" data-slide="15">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📋 多组数据处理</h2>
             
@@ -596,8 +762,35 @@
         </div>
     </div>
 
-    <!-- Slide 12: Case output example -->
-    <div class="slide" data-slide="12">
+    <!-- Slide 16: Interactive - Fill in the blank -->
+    <div class="slide" data-slide="16">
+        <div class="max-w-4xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 填空练习</h2>
+            
+            <div class="animate-item mb-8">
+                <p class="text-xl text-gray-300 mb-6">在空格中填入正确的数字：</p>
+                
+                <div class="code-block mb-6">
+                    <code>
+                        <span class="code-keyword">int</span> n, x;<br>
+                        <span class="code-keyword">while</span>(<span class="code-function">scanf</span>(<span class="code-string">"%d"</span>, &n) == <span class="code-number">1</span> && n != <span class="fill-area" data-answer="0">___</span>) {<br>
+                        &nbsp;&nbsp;<span class="code-keyword">for</span>(<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < n; i++) {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-function">scanf</span>(<span class="code-string">"%d"</span>, &x);<br>
+                        &nbsp;&nbsp;}<br>
+                        }
+                    </code>
+                </div>
+
+                <div class="flex items-center gap-4 justify-center">
+                    <label class="text-gray-300">填入的数字：</label>
+                    <input type="text" class="blank-input" placeholder="?" data-target="0">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 17: Case output example -->
+    <div class="slide" data-slide="17">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📝 Case 输出示例</h2>
             
@@ -624,8 +817,8 @@
         </div>
     </div>
 
-    <!-- Slide 13: Variable initialization bug -->
-    <div class="slide" data-slide="13">
+    <!-- Slide 18: Variable initialization bug -->
+    <div class="slide" data-slide="18">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🐛 常见Bug：变量未初始化</h2>
             
@@ -647,14 +840,49 @@
             </div>
 
             <div class="animate-item tip-box mt-4">
-                <p class="font-bold mb-1">⚠️ 提示2-20</p>
+                <p class="font-bold mb-1">⚠️ 重要</p>
                 <p class="text-gray-300">变量在未赋值之前的值是不确定的。特别地，它不一定等于0。</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 14: Solution - initialize -->
-    <div class="slide" data-slide="14">
+    <!-- Slide 19: Life Analogy - Uninitialized Variable -->
+    <div class="slide" data-slide="19">
+        <div class="max-w-4xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎲 生活类比：摸彩票</h2>
+            
+            <div class="animate-item grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                    <div class="text-5xl mb-4">❓</div>
+                    <h3 class="font-bold mb-2">未初始化的变量</h3>
+                    <p class="text-gray-400 text-sm mt-4">就像摸彩票：</p>
+                    <ul class="text-gray-500 text-sm space-y-1 mt-2">
+                        <li>• 箱子里有什么不知道</li>
+                        <li>• 可能是0，可能是任意数</li>
+                        <li>• 可能每次都不一样！</li>
+                    </ul>
+                </div>
+                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                    <div class="text-5xl mb-4">✅</div>
+                    <h3 class="font-bold mb-2">初始化的变量</h3>
+                    <p class="text-gray-400 text-sm mt-4">就像明码标价：</p>
+                    <ul class="text-gray-500 text-sm space-y-1 mt-2">
+                        <li>• min = 1000000000</li>
+                        <li>• max = -1000000000</li>
+                        <li>• 第一次比较一定成功</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="animate-item tip-box">
+                <p class="font-bold mb-1">💡 建议</p>
+                <p class="text-gray-300">养成习惯：变量声明时就给一个合理的初始值</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 20: Solution - initialize -->
+    <div class="slide" data-slide="20">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">✅ 解决方法</h2>
             
@@ -678,8 +906,8 @@
         </div>
     </div>
 
-    <!-- Slide 15: Multi-data variable reset -->
-    <div class="slide" data-slide="15">
+    <!-- Slide 21: Multi-data variable reset -->
+    <div class="slide" data-slide="21">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🐛 多组数据变量重置</h2>
             
@@ -703,14 +931,43 @@
             </div>
 
             <div class="animate-item tip-box">
-                <p class="font-bold mb-1">⚠️ 提示2-26</p>
+                <p class="font-bold mb-1">⚠️ 提示</p>
                 <p class="text-gray-300">在多数据题目中，一个常见的错误是计算完一组数据后某些变量没有重置</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 16: Quiz -->
-    <div class="slide" data-slide="16">
+    <!-- Slide 22: Interactive - Drag the bugs -->
+    <div class="slide" data-slide="22">
+        <div class="max-w-4xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 拖拽分类：找出Bug</h2>
+            
+            <div class="animate-item mb-8">
+                <p class="text-xl text-gray-300 mb-6">把有问题的代码拖到左边，正确代码拖到右边：</p>
+                
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+                        <div class="text-red-400 font-bold mb-3">🐛 有Bug的代码</div>
+                        <div class="drop-zone min-h-32" data-type="bug"></div>
+                    </div>
+                    <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
+                        <div class="text-green-400 font-bold mb-3">✅ 正确代码</div>
+                        <div class="drop-zone min-h-32" data-type="correct"></div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-4 justify-center">
+                    <div class="drag-item" draggable="true" data-type="bug">int a; if(a > 0)...</div>
+                    <div class="drag-item" draggable="true" data-type="correct">int a = 0; if(a > 0)...</div>
+                    <div class="drag-item" draggable="true" data-type="bug">int min, max; ...</div>
+                    <div class="drag-item" draggable="true" data-type="correct">int min = INF, max = -INF;</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 23: Quiz -->
+    <div class="slide" data-slide="23">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 综合测验</h2>
             
@@ -739,8 +996,8 @@
         </div>
     </div>
 
-    <!-- Slide 17: Summary -->
-    <div class="slide" data-slide="17">
+    <!-- Slide 24: Summary -->
+    <div class="slide" data-slide="24">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📋 本课总结</h2>
             
@@ -772,8 +1029,8 @@
         </div>
     </div>
 
-    <!-- Slide 18: Next lesson preview -->
-    <div class="slide" data-slide="18">
+    <!-- Slide 25: Next lesson preview -->
+    <div class="slide" data-slide="25">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎓 下节预告</h2>
             
@@ -783,7 +1040,7 @@
                 <p class="text-gray-400 mb-8">存储大量数据的神器！</p>
                 
                 <div class="tip-box inline-block">
-                    <p class="text-gray-300">提示3-1: int a[maxn] 声明了一个包含maxn个整型变量的数组</p>
+                    <p class="text-gray-300">预告：int a[maxn] 声明了一个包含maxn个整型变量的数组</p>
                 </div>
             </div>
         </div>
@@ -802,7 +1059,7 @@
     </div>
 
     <script>
-        const totalSlides = 18;
+        const totalSlides = 25;
         let currentSlide = 1;
         let score = 0;
         let streak = 0;
@@ -876,6 +1133,7 @@
             badge.style.cssText = `
                 top: 50%;
                 left: 50%;
+                transform: translate(-50%, -50%);
                 background: linear-gradient(135deg, #f472b6, #c084fc);
                 color: white;
                 padding: 0.75rem 1.5rem;
@@ -885,7 +1143,7 @@
             `;
             badge.textContent = text;
             document.body.appendChild(badge);
-            setTimeout(() => badge.remove(), 800);
+            setTimeout(() => badge.remove(), 1000);
         }
 
         function showParticles(element) {
@@ -918,6 +1176,7 @@
         });
 
         document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
             if (e.key === 'ArrowRight' || e.key === ' ') {
                 e.preventDefault();
                 showSlide(currentSlide + 1);
@@ -942,6 +1201,73 @@
                     this.classList.add('wrong');
                     resetStreak();
                     setTimeout(() => this.classList.remove('wrong'), 300);
+                }
+            });
+        });
+
+        const dragItems = document.querySelectorAll('.drag-item');
+        const dropZones = document.querySelectorAll('.drop-zone');
+
+        dragItems.forEach(item => {
+            item.addEventListener('dragstart', function(e) {
+                e.dataTransfer.setData('text/plain', this.dataset.value || this.dataset.type);
+                this.classList.add('dragging');
+            });
+            item.addEventListener('dragend', function() {
+                this.classList.remove('dragging');
+            });
+        });
+
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('highlight');
+            });
+            zone.addEventListener('dragleave', function() {
+                this.classList.remove('highlight');
+            });
+            zone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('highlight');
+                const value = e.dataTransfer.getData('text/plain');
+                const answer = this.dataset.answer;
+                const type = this.dataset.type;
+                
+                if (answer) {
+                    if (value === answer) {
+                        this.textContent = value;
+                        this.classList.add('filled');
+                        showParticles(this);
+                        updateScore(10);
+                        updateStreak();
+                    } else {
+                        this.classList.add('wrong');
+                        resetStreak();
+                        setTimeout(() => this.classList.remove('wrong'), 300);
+                    }
+                } else if (type) {
+                    if (value === type) {
+                        this.append(item.cloneNode(true));
+                        item.style.display = 'none';
+                        showParticles(this);
+                        updateScore(10);
+                        updateStreak();
+                    } else {
+                        this.classList.add('wrong');
+                        resetStreak();
+                        setTimeout(() => this.classList.remove('wrong'), 300);
+                    }
+                }
+            });
+        });
+
+        document.querySelectorAll('.blank-input').forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value === this.dataset.target) {
+                    this.classList.remove('border-blue-500');
+                    this.classList.add('border-green-500', 'bg-green-500/20');
+                    updateScore(10);
+                    updateStreak();
                 }
             });
         });

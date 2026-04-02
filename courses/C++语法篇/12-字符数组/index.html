@@ -27,10 +27,7 @@
             pointer-events: none;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(50px, 50px); }
-        }
+        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(50px, 50px); } }
 
         .slide {
             position: absolute;
@@ -46,10 +43,7 @@
             overflow-y: auto;
         }
 
-        .slide.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .slide.active { opacity: 1; pointer-events: auto; }
 
         .animate-item {
             opacity: 0;
@@ -57,10 +51,7 @@
             transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
-        .animate-item.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .animate-item.visible { opacity: 1; transform: translateY(0); }
 
         .progress-bar {
             position: fixed;
@@ -89,10 +80,7 @@
             transition: all 0.3s ease;
         }
 
-        .dot.active {
-            background: #60a5fa;
-            transform: scale(1.3);
-        }
+        .dot.active { background: #60a5fa; transform: scale(1.3); }
 
         .code-block {
             background: #1e1e2e;
@@ -106,9 +94,13 @@
             max-width: 100%;
         }
 
-        .code-block code {
-            color: #e2e8f0;
-        }
+        .code-block code { color: #e2e8f0; }
+        .code-comment { color: #6b7280; }
+        .code-keyword { color: #c084fc; }
+        .code-function { color: #60a5fa; }
+        .code-string { color: #34d399; }
+        .code-number { color: #fbbf24; }
+        .code-operator { color: #f472b6; }
 
         .quiz-option {
             background: rgba(255,255,255,0.05);
@@ -122,22 +114,9 @@
             gap: 1rem;
         }
 
-        .quiz-option:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: rgba(96, 165, 250, 0.5);
-        }
-
-        .quiz-option.correct {
-            background: rgba(52, 211, 153, 0.2);
-            border-color: #34d399;
-            animation: correctPulse 0.5s ease;
-        }
-
-        .quiz-option.wrong {
-            background: rgba(248, 113, 113, 0.2);
-            border-color: #f87171;
-            animation: shake 0.3s ease;
-        }
+        .quiz-option:hover { background: rgba(255,255,255,0.1); border-color: rgba(96, 165, 250, 0.5); transform: translateY(-2px); }
+        .quiz-option.correct { background: rgba(52, 211, 153, 0.2); border-color: #34d399; animation: correctPulse 0.5s ease; }
+        .quiz-option.wrong { background: rgba(248, 113, 113, 0.2); border-color: #f87171; animation: shake 0.3s ease; }
 
         .quiz-option .letter {
             width: 32px;
@@ -151,27 +130,42 @@
             color: #e5e7eb;
         }
 
-        .quiz-option.correct .letter {
-            background: #34d399;
-            color: #0a0a0a;
+        .quiz-option.correct .letter { background: #34d399; color: #0a0a0a; }
+        .quiz-option.wrong .letter { background: #f87171; color: #0a0a0a; }
+
+        @keyframes correctPulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+        .drag-item {
+            background: rgba(96, 165, 250, 0.2);
+            border: 2px solid #60a5fa;
+            border-radius: 10px;
+            padding: 0.75rem 1.25rem;
+            cursor: grab;
+            transition: all 0.2s ease;
+            user-select: none;
+            color: #e2e8f0;
+            font-weight: 500;
         }
 
-        .quiz-option.wrong .letter {
-            background: #f87171;
-            color: #0a0a0a;
+        .drag-item:hover { background: rgba(96, 165, 250, 0.3); transform: scale(1.05); }
+        .drag-item.dragging { opacity: 0.5; transform: scale(0.95); }
+
+        .drop-zone {
+            min-width: 80px;
+            min-height: 50px;
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: #6b7280;
         }
 
-        @keyframes correctPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
+        .drop-zone.highlight { border-color: #60a5fa; background: rgba(96, 165, 250, 0.1); }
+        .drop-zone.filled { border-style: solid; border-color: #34d399; background: rgba(52, 211, 153, 0.1); color: #e2e8f0; }
+        .drop-zone.wrong { border-color: #f87171; background: rgba(248, 113, 113, 0.1); }
 
         .tip-box {
             background: rgba(251, 191, 36, 0.1);
@@ -187,10 +181,7 @@
             animation: confetti 0.8s ease forwards;
         }
 
-        @keyframes confetti {
-            0% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(2) translateY(-50px); }
-        }
+        @keyframes confetti { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(2) translateY(-50px); } }
 
         .header {
             position: fixed;
@@ -205,22 +196,10 @@
             background: linear-gradient(to bottom, rgba(10,10,10,0.9), transparent);
         }
 
-        .score-display {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #fbbf24;
-        }
+        .score-display { font-size: 1.25rem; font-weight: 600; color: #fbbf24; }
+        .streak-display { font-size: 1rem; color: #f472b6; }
 
-        .streak-display {
-            font-size: 1rem;
-            color: #f472b6;
-        }
-
-        .char-display {
-            display: flex;
-            gap: 2px;
-            font-family: monospace;
-        }
+        .char-display { display: flex; gap: 2px; font-family: monospace; }
 
         .char-cell {
             padding: 8px 12px;
@@ -230,10 +209,21 @@
             color: #e2e8f0;
         }
 
-        .char-cell.last {
-            background: rgba(52, 211, 153, 0.2);
-            border-color: #34d399;
+        .char-cell.last { background: rgba(52, 211, 153, 0.2); border-color: #34d399; }
+        .char-cell.null-char { background: rgba(248, 113, 113, 0.2); border-color: #f87171; }
+
+        .blank-input {
+            background: rgba(96, 165, 250, 0.1);
+            border: 2px dashed #60a5fa;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: #e2e8f0;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            width: 100px;
         }
+
+        .blank-input:focus { outline: none; border-color: #34d399; background: rgba(52, 211, 153, 0.1); }
     </style>
 </head>
 <body class="text-gray-200">
@@ -253,7 +243,6 @@
                 <h1 class="animate-item text-5xl font-bold mb-4 text-gray-100">字符数组</h1>
                 <p class="animate-item text-xl text-gray-400">字符串处理基础</p>
             </div>
-            
             <div class="animate-item mt-12 text-center">
                 <div class="text-6xl mb-6">🔤</div>
                 <p class="text-xl text-gray-300">char s[100] · gets · fgets</p>
@@ -261,14 +250,41 @@
         </div>
     </div>
 
-    <!-- Slide 2: What is String -->
+    <!-- Slide 2: Life Analogy - Train -->
     <div class="slide" data-slide="2">
         <div class="max-w-4xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🚂 生活类比：火车车厢</h2>
+            <div class="animate-item mb-8">
+                <p class="text-gray-300 mb-4 text-center">字符串就像一列火车：</p>
+                <div class="flex justify-center mb-6">
+                    <div class="flex gap-1">
+                        <div class="char-cell text-lg font-bold">H</div>
+                        <div class="char-cell text-lg font-bold">e</div>
+                        <div class="char-cell text-lg font-bold">l</div>
+                        <div class="char-cell text-lg font-bold">l</div>
+                        <div class="char-cell text-lg font-bold">o</div>
+                        <div class="char-cell null-char text-lg font-bold">\0</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="bg-white/5 rounded-lg p-4"><p class="text-2xl mb-2">🚃</p><p class="text-gray-400 text-sm">车厢 = 字符</p></div>
+                    <div class="bg-white/5 rounded-lg p-4"><p class="text-2xl mb-2">🚃</p><p class="text-gray-400 text-sm">车厢 = 字符</p></div>
+                    <div class="bg-white/5 rounded-lg p-4"><p class="text-2xl mb-2">🚃</p><p class="text-gray-400 text-sm">车尾标记 = \0</p></div>
+                </div>
+            </div>
+            <div class="animate-item tip-box">
+                <p class="font-bold mb-1">💡 类比</p>
+                <p class="text-gray-300">'\0'（空字符）就像火车车尾的标志灯，告诉大家"字符串到这里结束了"</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: What is String -->
+    <div class="slide" data-slide="3">
+        <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🔤 字符串是什么？</h2>
-            
             <div class="animate-item mb-8">
                 <p class="text-gray-300 mb-4">字符串就是"一串字符"，在C语言中用<strong class="text-yellow-400">字符数组</strong>存储：</p>
-                
                 <div class="char-display mb-4 justify-center">
                     <div class="char-cell">H</div>
                     <div class="char-cell">e</div>
@@ -277,9 +293,7 @@
                     <div class="char-cell">o</div>
                     <div class="char-cell last">\0</div>
                 </div>
-
                 <p class="text-gray-400 text-sm text-center mb-4">"Hello" 在内存中</p>
-
                 <div class="code-block">
                     <code>
 <span class="code-comment">// '\0' 是空字符，表示字符串结束</span><br>
@@ -287,7 +301,6 @@
                     </code>
                 </div>
             </div>
-
             <div class="animate-item tip-box">
                 <p class="font-bold mb-1">💡 重要</p>
                 <p class="text-gray-300">字符串以 <strong class="text-yellow-400">'\0'</strong>（空字符）结尾，所以数组大小要 = 字符串长度 + 1</p>
@@ -295,11 +308,10 @@
         </div>
     </div>
 
-    <!-- Slide 3: String Declaration -->
-    <div class="slide" data-slide="3">
+    <!-- Slide 4: String Declaration -->
+    <div class="slide" data-slide="4">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📝 字符串声明</h2>
-            
             <div class="animate-item mb-8">
                 <div class="code-block mb-6">
                     <code>
@@ -315,11 +327,37 @@
         </div>
     </div>
 
-    <!-- Slide 4: gets vs fgets -->
-    <div class="slide" data-slide="4">
+    <!-- Slide 5: Interactive - Drag char -->
+    <div class="slide" data-slide="5">
+        <div class="max-w-4xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 拖拽练习：字符串组成</h2>
+            <div class="animate-item mb-8">
+                <p class="text-xl text-gray-300 mb-6">把字符拖到正确位置，组成 "Hi"：</p>
+                <div class="bg-white/5 rounded-xl p-6 border border-white/10 mb-6">
+                    <div class="char-display mb-4 justify-center">
+                        <div class="char-cell text-lg font-bold border-2 border-dashed border-gray-500">?</div>
+                        <div class="char-cell text-lg font-bold border-2 border-dashed border-gray-500">?</div>
+                        <div class="char-cell last text-lg font-bold">\0</div>
+                    </div>
+                    <div class="drop-zone inline-block" data-answer="H"></div>
+                    <span class="text-gray-400 mx-4">和</span>
+                    <div class="drop-zone inline-block" data-answer="i"></div>
+                </div>
+                <div class="flex flex-wrap gap-4 justify-center">
+                    <div class="drag-item" draggable="true" data-value="H">H</div>
+                    <div class="drag-item" draggable="true" data-value="i">i</div>
+                    <div class="drag-item" draggable="true" data-value="e">e</div>
+                    <div class="drag-item" draggable="true" data-value="l">l</div>
+                    <div class="drag-item" draggable="true" data-value="o">o</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: gets vs fgets -->
+    <div class="slide" data-slide="6">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">⚠️ gets 的危险</h2>
-            
             <div class="animate-item mb-8">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div class="bg-red-500/20 border border-red-500/50 rounded-xl p-6">
@@ -344,7 +382,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="animate-item tip-box">
                 <p class="font-bold mb-1">💡 提示3-8/3-9</p>
                 <p class="text-gray-300">gets 存在"缓冲区溢出"漏洞，<strong class="text-red-400">永远不要使用gets</strong>，应该用 fgets 代替。</p>
@@ -352,14 +389,12 @@
         </div>
     </div>
 
-    <!-- Slide 5: Buffer Overflow -->
-    <div class="slide" data-slide="5">
+    <!-- Slide 7: Buffer Overflow -->
+    <div class="slide" data-slide="7">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">💥 缓冲区溢出</h2>
-            
             <div class="animate-item mb-8">
                 <p class="text-gray-300 mb-4">当输入超过数组大小时，多余的字符会覆盖其他内存：</p>
-                
                 <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-6 mb-6">
                     <div class="code-block">
                         <code>
@@ -373,75 +408,152 @@
                     </div>
                 </div>
             </div>
-
             <div class="animate-item bg-yellow-500/20 border border-yellow-500/50 rounded-lg p-4">
                 <p class="text-yellow-400 font-bold">⚠️ 缓冲区溢出是很多安全漏洞的根源！</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 6: String Functions -->
-    <div class="slide" data-slide="6">
+    <!-- Slide 8: fgets Details -->
+    <div class="slide" data-slide="8">
         <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🔧 字符串函数</h2>
-            
-            <div class="animate-item overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="border-b border-white/10">
-                            <th class="py-3 px-4 text-gray-400">函数</th>
-                            <th class="py-3 px-4 text-gray-400">作用</th>
-                            <th class="py-3 px-4 text-gray-400">示例</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="border-b border-white/5">
-                            <td class="py-3 px-4 text-blue-400">strlen</td>
-                            <td class="py-3 px-4">求长度</td>
-                            <td class="py-3 px-4 font-mono text-sm">strlen("Hello") = 5</td>
-                        </tr>
-                        <tr class="border-b border-white/5">
-                            <td class="py-3 px-4 text-blue-400">strcmp</td>
-                            <td class="py-3 px-4">比较</td>
-                            <td class="py-3 px-4 font-mono text-sm">strcmp(a,b) = 0表示相等</td>
-                        </tr>
-                        <tr class="border-b border-white/5">
-                            <td class="py-3 px-4 text-blue-400">strcpy</td>
-                            <td class="py-3 px-4">复制</td>
-                            <td class="py-3 px-4 font-mono text-sm">strcpy(a, "Hello")</td>
-                        </tr>
-                        <tr class="border-b border-white/5">
-                            <td class="py-3 px-4 text-blue-400">strcat</td>
-                            <td class="py-3 px-4">连接</td>
-                            <td class="py-3 px-4 font-mono text-sm">strcat(a, "World")</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">✅ fgets 详解</h2>
+            <div class="animate-item mb-8">
+                <div class="code-block mb-6">
+                    <code>
+<span class="code-keyword">char</span> s[<span class="code-number">100</span>];<br>
+<span class="code-function">fgets</span>(s, <span class="code-keyword">sizeof</span>(s), stdin);
+                    </code>
+                </div>
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="bg-white/5 rounded-lg p-4 text-center">
+                        <p class="text-blue-400 font-bold mb-2">参数1</p>
+                        <p class="text-gray-400 text-sm">数组名</p>
+                        <p class="text-gray-500 text-xs">s</p>
+                    </div>
+                    <div class="bg-white/5 rounded-lg p-4 text-center">
+                        <p class="text-blue-400 font-bold mb-2">参数2</p>
+                        <p class="text-gray-400 text-sm">最大字符数</p>
+                        <p class="text-gray-500 text-xs">sizeof(s)</p>
+                    </div>
+                    <div class="bg-white/5 rounded-lg p-4 text-center">
+                        <p class="text-blue-400 font-bold mb-2">参数3</p>
+                        <p class="text-gray-400 text-sm">输入来源</p>
+                        <p class="text-gray-500 text-xs">stdin</p>
+                    </div>
+                </div>
             </div>
-
-            <div class="animate-item tip-box mt-6">
+            <div class="animate-item tip-box">
                 <p class="font-bold mb-1">💡 注意</p>
-                <p class="text-gray-300">这些函数都在 <string.h> 头文件中声明</p>
+                <p class="text-gray-300">fgets 会保留输入中的换行符 '\n'，如果不想保留，可以用 s[strlen(s)-1] = '\0' 去掉</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 7: strcmp Example -->
-    <div class="slide" data-slide="7">
+    <!-- Slide 9: Quiz - gets vs fgets -->
+    <div class="slide" data-slide="9">
+        <div class="max-w-4xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验</h2>
+            <div class="animate-item mb-8">
+                <p class="text-xl text-gray-300 mb-6">为什么不要使用gets？</p>
+                <div class="space-y-4">
+                    <div class="quiz-option" data-correct="false"><span class="letter">A</span><span>gets速度慢</span></div>
+                    <div class="quiz-option" data-correct="true"><span class="letter">B</span><span>gets不检查边界，可能导致缓冲区溢出</span></div>
+                    <div class="quiz-option" data-correct="false"><span class="letter">C</span><span>gets已经过时了</span></div>
+                    <div class="quiz-option" data-correct="false"><span class="letter">D</span><span>gets不能处理中文字符</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: String Functions Intro -->
+    <div class="slide" data-slide="10">
+        <div class="max-w-4xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🔧 字符串函数</h2>
+            <div class="animate-item mb-8">
+                <p class="text-gray-300 mb-4">这些函数都在 <string.h> 头文件中：</p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b border-white/10">
+                                <th class="py-3 px-4 text-gray-400">函数</th>
+                                <th class="py-3 px-4 text-gray-400">作用</th>
+                                <th class="py-3 px-4 text-gray-400">示例</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-white/5">
+                                <td class="py-3 px-4 text-blue-400 font-mono">strlen</td>
+                                <td class="py-3 px-4">求长度</td>
+                                <td class="py-3 px-4 font-mono text-sm text-green-400">strlen("Hi") = 2</td>
+                            </tr>
+                            <tr class="border-b border-white/5">
+                                <td class="py-3 px-4 text-blue-400 font-mono">strcmp</td>
+                                <td class="py-3 px-4">比较</td>
+                                <td class="py-3 px-4 font-mono text-sm text-green-400">strcmp(a,b)=0表示相等</td>
+                            </tr>
+                            <tr class="border-b border-white/5">
+                                <td class="py-3 px-4 text-blue-400 font-mono">strcpy</td>
+                                <td class="py-3 px-4">复制</td>
+                                <td class="py-3 px-4 font-mono text-sm text-green-400">strcpy(a, "Hi")</td>
+                            </tr>
+                            <tr class="border-b border-white/5">
+                                <td class="py-3 px-4 text-blue-400 font-mono">strcat</td>
+                                <td class="py-3 px-4">连接</td>
+                                <td class="py-3 px-4 font-mono text-sm text-green-400">strcat(a, "World")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: strlen -->
+    <div class="slide" data-slide="11">
+        <div class="max-w-4xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📏 strlen 求长度</h2>
+            <div class="animate-item mb-8">
+                <div class="code-block mb-6">
+                    <code>
+<span class="code-keyword">char</span> s[] = <span class="code-string">"Hello"</span>;<br>
+<span class="code-keyword">int</span> len = <span class="code-function">strlen</span>(s);&nbsp;&nbsp;<span class="code-comment">// len = 5</span><br><br>
+<span class="code-comment">// 注意：strlen不计算'\0'</span><br>
+<span class="code-function">printf</span>(<span class="code-string">"%d"</span>, <span class="code-keyword">sizeof</span>(s));&nbsp;&nbsp;<span class="code-comment">// 6（包含'\0'）</span>
+                    </code>
+                </div>
+            </div>
+            <div class="animate-item flex gap-4 justify-center mb-6">
+                <div class="bg-blue-500/20 border border-blue-500/50 rounded-lg p-4 text-center">
+                    <p class="text-blue-400 font-bold">strlen</p>
+                    <p class="text-blue-300 text-sm">= 5 个字符</p>
+                </div>
+                <div class="bg-green-500/20 border border-green-500/50 rounded-lg p-4 text-center">
+                    <p class="text-green-400 font-bold">sizeof</p>
+                    <p class="text-green-300 text-sm">= 6 字节（包含\0）</p>
+                </div>
+            </div>
+            <div class="animate-item tip-box">
+                <p class="font-bold mb-1">💡 区别</p>
+                <p class="text-gray-300"><strong>strlen</strong> = 字符数（不算'\0'）<br><strong>sizeof</strong> = 数组大小（算'\0'）</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: strcmp -->
+    <div class="slide" data-slide="12">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🔍 strcmp 比较字符串</h2>
-            
             <div class="animate-item mb-8">
                 <div class="code-block mb-6">
                     <code>
 <span class="code-keyword">int</span> <span class="code-function">strcmp</span>(<span class="code-keyword">const char</span> *s1, <span class="code-keyword">const char</span> *s2);<br><br>
 <span class="code-comment">// 返回值：</span><br>
 <span class="code-comment">//  = 0  两个字符串相等</span><br>
-<span class="code-comment">//  < 0  s1 < s2</span><br>
-<span class="code-comment">//  > 0  s1 > s2</span>
+<span class="code-comment">//  < 0  s1 < s2（字典序）</span><br>
+<span class="code-comment">//  > 0  s1 > s2（字典序）</span>
                     </code>
                 </div>
-
                 <div class="bg-white/5 rounded-xl p-6 border border-white/10">
                     <p class="text-gray-300 mb-4">比较示例：</p>
                     <div class="code-block">
@@ -456,83 +568,178 @@
         </div>
     </div>
 
-    <!-- Slide 8: Quiz -->
-    <div class="slide" data-slide="8">
+    <!-- Slide 13: strcpy and strcat -->
+    <div class="slide" data-slide="13">
         <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验</h2>
-            
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📋 strcpy 和 strcat</h2>
             <div class="animate-item mb-8">
-                <p class="text-xl text-gray-300 mb-6">为什么不要使用gets？</p>
-                
-                <div class="space-y-4">
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">A</span>
-                        <span>gets速度慢</span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                        <h3 class="font-bold text-blue-400 mb-4">strcpy - 复制</h3>
+                        <div class="code-block text-sm">
+                            <code>
+<span class="code-keyword">char</span> a[<span class="code-number">20</span>];<br>
+<span class="code-function">strcpy</span>(a, <span class="code-string">"Hello"</span>);<br>
+<span class="code-comment">// a 变成了 "Hello"</span>
+                            </code>
+                        </div>
                     </div>
-                    <div class="quiz-option" data-correct="true">
-                        <span class="letter">B</span>
-                        <span>gets不检查边界，可能导致缓冲区溢出</span>
+                    <div class="bg-white/5 rounded-xl p-6 border border-white/10">
+                        <h3 class="font-bold text-green-400 mb-4">strcat - 连接</h3>
+                        <div class="code-block text-sm">
+                            <code>
+<span class="code-keyword">char</span> a[<span class="code-number">20</span>] = <span class="code-string">"Hello"</span>;<br>
+<span class="code-function">strcat</span>(a, <span class="code-string">"World"</span>);<br>
+<span class="code-comment">// a 变成了 "HelloWorld"</span>
+                            </code>
+                        </div>
                     </div>
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">C</span>
-                        <span>gets已经过时了</span>
+                </div>
+            </div>
+            <div class="animate-item tip-box">
+                <p class="font-bold mb-1">⚠️ 注意</p>
+                <p class="text-gray-300">strcpy 和 strcat 不会检查目标数组是否够大，使用时要确保数组足够大！</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 14: Interactive - Fill blank -->
+    <div class="slide" data-slide="14">
+        <div class="max-w-4xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 填空练习</h2>
+            <div class="animate-item mb-8">
+                <p class="text-xl text-gray-300 mb-6">在空格中填入正确的数字：</p>
+                <div class="code-block mb-6">
+                    <code>
+<span class="code-keyword">char</span> s[] = <span class="code-string">"Hi"</span>;<br>
+<span class="code-function">printf</span>(<span class="code-string">"%d"</span>, <span class="code-function">strlen</span>(s));&nbsp;&nbsp;<span class="code-comment">// 输出</span><input type="text" class="blank-input inline-block w-12" data-target="2"><br>
+<span class="code-function">printf</span>(<span class="code-string">"%d"</span>, <span class="code-keyword">sizeof</span>(s));&nbsp;&nbsp;<span class="code-comment">// 输出</span><input type="text" class="blank-input inline-block w-12" data-target="3">
+                    </code>
+                </div>
+                <p class="text-gray-400 text-sm text-center">提示：strlen不计算\0，sizeof计算\0</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 15: Common Bug -->
+    <div class="slide" data-slide="15">
+        <div class="max-w-4xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🐛 常见Bug</h2>
+            <div class="animate-item mb-8">
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="bg-red-500/20 border border-red-500/50 rounded-xl p-4">
+                        <p class="text-red-400 font-bold mb-2">❌ Bug 1: 忘记加 &</p>
+                        <div class="code-block text-sm">
+                            <code>
+<span class="code-keyword">char</span> s[<span class="code-number">100</span>];<br>
+<span class="code-function">scanf</span>(<span class="code-string">"%s"</span>, s);&nbsp;&nbsp;<span class="code-comment">// 正确！s已经是数组名</span>
+                            </code>
+                        </div>
                     </div>
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">D</span>
-                        <span>gets不能处理中文字符</span>
+                    <div class="bg-red-500/20 border border-red-500/50 rounded-xl p-4">
+                        <p class="text-red-400 font-bold mb-2">❌ Bug 2: 越界</p>
+                        <div class="code-block text-sm">
+                            <code>
+<span class="code-keyword">char</span> s[<span class="code-number">5</span>];<br>
+<span class="code-function">strcpy</span>(s, <span class="code-string">"Hello"</span>);&nbsp;&nbsp;<span class="code-comment">// 危险！需要6个字节</span>
+                            </code>
+                        </div>
+                    </div>
+                    <div class="bg-red-500/20 border border-red-500/50 rounded-xl p-4">
+                        <p class="text-red-400 font-bold mb-2">❌ Bug 3: 用 == 比较字符串</p>
+                        <div class="code-block text-sm">
+                            <code>
+<span class="code-keyword">char</span> a[<span class="code-number">10</span>], b[<span class="code-number">10</span>];<br>
+<span class="code-keyword">if</span>(a == b)&nbsp;&nbsp;<span class="code-comment">// 错误！比较的是地址，不是内容</span><br>
+<span class="code-keyword">if</span>(<span class="code-function">strcmp</span>(a, b) == <span class="code-number">0</span>)&nbsp;&nbsp;<span class="code-comment">// 正确！</span>
+                            </code>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Slide 9: strlen -->
-    <div class="slide" data-slide="9">
+    <!-- Slide 16: Quiz - String functions -->
+    <div class="slide" data-slide="16">
         <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📏 strlen 求长度</h2>
-            
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验</h2>
             <div class="animate-item mb-8">
-                <div class="code-block mb-6">
+                <p class="text-xl text-gray-300 mb-6">char s[10] = "Hi"; printf("%d", strlen(s)); 输出什么？</p>
+                <div class="space-y-4">
+                    <div class="quiz-option" data-correct="true"><span class="letter">A</span><span>2</span></div>
+                    <div class="quiz-option" data-correct="false"><span class="letter">B</span><span>3</span></div>
+                    <div class="quiz-option" data-correct="false"><span class="letter">C</span><span>10</span></div>
+                    <div class="quiz-option" data-correct="false"><span class="letter">D</span><span>编译错误</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 17: Another Quiz -->
+    <div class="slide" data-slide="17">
+        <div class="max-w-4xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验</h2>
+            <div class="animate-item mb-8">
+                <p class="text-xl text-gray-300 mb-6">如何安全地读取字符串？</p>
+                <div class="space-y-4">
+                    <div class="quiz-option" data-correct="false"><span class="letter">A</span><span>gets(s)</span></div>
+                    <div class="quiz-option" data-correct="true"><span class="letter">B</span><span>fgets(s, sizeof(s), stdin)</span></div>
+                    <div class="quiz-option" data-correct="false"><span class="letter">C</span><span>scanf("%s", s)</span></div>
+                    <div class="quiz-option" data-correct="false"><span class="letter">D</span><span>以上都不安全</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 18: Practice - Palindrome -->
+    <div class="slide" data-slide="18">
+        <div class="max-w-4xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📝 例题：回文串</h2>
+            <div class="animate-item mb-8">
+                <p class="text-gray-300 mb-4">判断一个字符串是否是回文（正读反读都一样）：</p>
+                <div class="code-block">
                     <code>
-<span class="code-keyword">char</span> s[] = <span class="code-string">"Hello"</span>;<br>
-<span class="code-keyword">int</span> len = <span class="code-function">strlen</span>(s);&nbsp;&nbsp;<span class="code-comment">// len = 5</span><br><br>
-<span class="code-comment">// 注意：strlen不计算'\0'</span><br>
-<span class="code-keyword">printf</span>(<span class="code-string">"%d"</span>, <span class="code-keyword">sizeof</span>(s));&nbsp;&nbsp;<span class="code-comment">// 6（包含'\0'）</span>
+<span class="code-keyword">char</span> s[<span class="code-number">100</span>];<br>
+<span class="code-function">fgets</span>(s, <span class="code-keyword">sizeof</span>(s), stdin);<br>
+<span class="code-keyword">int</span> len = <span class="code-function">strlen</span>(s) - <span class="code-number">1</span>;&nbsp;&nbsp;<span class="code-comment">// 去掉\n</span><br>
+<span class="code-keyword">int</span> is_pal = <span class="code-number">1</span>;<br>
+<span class="code-keyword">for</span>(<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < len/<span class="code-number">2</span>; i++) {<br>
+&nbsp;&nbsp;<span class="code-keyword">if</span>(s[i] != s[len-<span class="code-number">1</span>-i]) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;is_pal = <span class="code-number">0</span>;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">break</span>;<br>
+&nbsp;&nbsp;}<br>
+}
                     </code>
                 </div>
             </div>
-
             <div class="animate-item tip-box">
-                <p class="font-bold mb-1">💡 区别</p>
-                <p class="text-gray-300"><strong>strlen</strong> = 字符数（不算'\0'）<br><strong>sizeof</strong> = 数组大小（算'\0'）</p>
+                <p class="font-bold mb-1">💡 提示</p>
+                <p class="text-gray-300">回文：abcba, level, radar</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 10: Summary -->
-    <div class="slide" data-slide="10">
+    <!-- Slide 19: Summary -->
+    <div class="slide" data-slide="19">
         <div class="max-w-4xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📋 本课总结</h2>
-            
             <div class="animate-item grid grid-cols-2 gap-6">
                 <div class="bg-white/5 rounded-xl p-6 border border-white/10">
                     <div class="text-3xl mb-3">🔤</div>
                     <h3 class="font-bold mb-2 text-gray-100">字符串</h3>
                     <p class="text-gray-400 text-sm">以'\0'结尾的字符数组</p>
                 </div>
-                
                 <div class="bg-white/5 rounded-xl p-6 border border-white/10">
                     <div class="text-3xl mb-3">⚠️</div>
                     <h3 class="font-bold mb-2 text-gray-100">安全提示</h3>
                     <p class="text-gray-400 text-sm">永远不要用gets，用fgets</p>
                 </div>
-                
                 <div class="bg-white/5 rounded-xl p-6 border border-white/10">
                     <div class="text-3xl mb-3">🔧</div>
                     <h3 class="font-bold mb-2 text-gray-100">字符串函数</h3>
                     <p class="text-gray-400 text-sm">strlen, strcmp, strcpy, strcat</p>
                 </div>
-                
                 <div class="bg-white/5 rounded-xl p-6 border border-white/10">
                     <div class="text-3xl mb-3">💾</div>
                     <h3 class="font-bold mb-2 text-gray-100">头文件</h3>
@@ -542,15 +749,17 @@
         </div>
     </div>
 
-    <!-- Slide 11: Next -->
-    <div class="slide" data-slide="11">
+    <!-- Slide 20: Next -->
+    <div class="slide" data-slide="20">
         <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎓 下章预告</h2>
-            
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎓 下节预告</h2>
             <div class="animate-item text-center">
                 <div class="text-6xl mb-6">📚</div>
-                <h3 class="text-2xl font-bold mb-4 text-gray-100">第13章 竞赛题目选讲</h3>
+                <h3 class="text-2xl font-bold mb-4 text-gray-100">竞赛题目选讲</h3>
                 <p class="text-gray-400 mb-8">用数组和字符串解决实际问题！</p>
+                <div class="tip-box inline-block">
+                    <p class="text-gray-300">预告：综合运用数组和字符串的知识解决问题</p>
+                </div>
             </div>
         </div>
     </div>
@@ -559,16 +768,12 @@
     <div class="progress-dots" id="progressDots"></div>
 
     <div class="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-4 z-50">
-        <button id="prevBtn" class="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-gray-300 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
-            ← 上一页
-        </button>
-        <button id="nextBtn" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-white transition-all">
-            下一页 →
-        </button>
+        <button id="prevBtn" class="px-6 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-gray-300 transition-all disabled:opacity-30 disabled:cursor-not-allowed">← 上一页</button>
+        <button id="nextBtn" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-white transition-all">下一页 →</button>
     </div>
 
     <script>
-        const totalSlides = 11;
+        const totalSlides = 20;
         let currentSlide = 1;
         let score = 0;
         let streak = 0;
@@ -583,7 +788,6 @@
         function updateProgress() {
             const progress = (currentSlide / totalSlides) * 100;
             progressBar.style.width = `${progress}%`;
-            
             document.querySelectorAll('.dot').forEach((dot, i) => {
                 dot.classList.toggle('active', i + 1 === currentSlide);
             });
@@ -592,27 +796,21 @@
         function showSlide(n) {
             if (n < 1 || n > totalSlides) return;
             currentSlide = n;
-            
             document.querySelectorAll('.slide').forEach((slide, i) => {
                 slide.classList.toggle('active', i + 1 === currentSlide);
             });
-
             updateProgress();
             prevBtn.disabled = currentSlide === 1;
             nextBtn.textContent = currentSlide === totalSlides ? '完成！' : '下一页 →';
-            
             animateSlide();
         }
 
         function animateSlide() {
             const activeSlide = document.querySelector('.slide.active');
             if (!activeSlide) return;
-            
             const items = activeSlide.querySelectorAll('.animate-item');
             items.forEach((item, i) => {
-                setTimeout(() => {
-                    item.classList.add('visible');
-                }, i * 100);
+                setTimeout(() => item.classList.add('visible'), i * 100);
             });
         }
 
@@ -629,18 +827,15 @@
             if (streak >= 3) showBadge(`连胜 ${streak}！`);
         }
 
-        function resetStreak() {
-            streak = 0;
-            streakValue.textContent = '0';
-        }
+        function resetStreak() { streak = 0; streakValue.textContent = '0'; }
 
         function showBadge(text) {
             const badge = document.createElement('div');
             badge.className = 'particle';
-            badge.style.cssText = 'top:50%;left:50%;background:linear-gradient(135deg,#f472b6,#c084fc);color:white;padding:0.75rem 1.5rem;border-radius:2rem;font-weight:bold;font-size:1.25rem;';
+            badge.style.cssText = 'top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#f472b6,#c084fc);color:white;padding:0.75rem 1.5rem;border-radius:2rem;font-weight:bold;font-size:1.25rem;';
             badge.textContent = text;
             document.body.appendChild(badge);
-            setTimeout(() => badge.remove(), 800);
+            setTimeout(() => badge.remove(), 1000);
         }
 
         function showParticles(element) {
@@ -662,16 +857,63 @@
         });
 
         document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
             if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); showSlide(currentSlide + 1); }
             else if (e.key === 'ArrowLeft') { e.preventDefault(); showSlide(currentSlide - 1); }
         });
 
         document.querySelectorAll('.quiz-option').forEach(option => {
             option.addEventListener('click', function(e) {
-                if (e.target.closest('button')) return;
+                if (e.target.closest('.drag-item, .drop-zone, button, input')) return;
                 const isCorrect = this.dataset.correct === 'true';
                 if (isCorrect) { this.classList.add('correct'); showParticles(this); updateScore(10); updateStreak(); }
                 else { this.classList.add('wrong'); resetStreak(); setTimeout(() => this.classList.remove('wrong'), 300); }
+            });
+        });
+
+        const dragItems = document.querySelectorAll('.drag-item');
+        const dropZones = document.querySelectorAll('.drop-zone');
+
+        dragItems.forEach(item => {
+            item.addEventListener('dragstart', function(e) {
+                e.dataTransfer.setData('text/plain', this.dataset.value);
+                this.classList.add('dragging');
+            });
+            item.addEventListener('dragend', function() { this.classList.remove('dragging'); });
+        });
+
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', function(e) { e.preventDefault(); this.classList.add('highlight'); });
+            zone.addEventListener('dragleave', function() { this.classList.remove('highlight'); });
+            zone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('highlight');
+                const value = e.dataTransfer.getData('text/plain');
+                const answer = this.dataset.answer;
+                if (answer) {
+                    if (value === answer) {
+                        this.textContent = value;
+                        this.classList.add('filled');
+                        showParticles(this);
+                        updateScore(10);
+                        updateStreak();
+                    } else {
+                        this.classList.add('wrong');
+                        resetStreak();
+                        setTimeout(() => this.classList.remove('wrong'), 300);
+                    }
+                }
+            });
+        });
+
+        document.querySelectorAll('.blank-input').forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value === this.dataset.target) {
+                    this.classList.remove('border-blue-500');
+                    this.classList.add('border-green-500', 'bg-green-500/20');
+                    updateScore(10);
+                    updateStreak();
+                }
             });
         });
 
