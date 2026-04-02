@@ -29,7 +29,7 @@ function renderCourseList() {
             </div>
             <p class="card-description">${escapeHTML(course.description) || '暂无描述'}</p>
             <div class="card-footer">
-                <span class="card-meta">${course.lessons || ''}</span>
+                <span class="card-meta">${course.lessons?.length || 0} 课时</span>
                 <span class="card-arrow">→</span>
             </div>
         </a>

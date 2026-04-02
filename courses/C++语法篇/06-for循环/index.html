@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>for循环 - 让计算机重复做事情</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=HarmonyOS+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif;
+            background: #0a0a0a;
+            overflow: hidden;
+        }
+
+        .bg-blur {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.25;
+            animation: float 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(50px, 50px); }
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+            padding-bottom: 6rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .animate-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .animate-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            transition: width 0.3s ease;
+        }
+
+        .progress-dots {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #334155;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #60a5fa;
+            transform: scale(1.3);
+        }
+
+        .code-block {
+            background: #1e1e2e;
+            border: 1px solid #3b82f6;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 1.1rem;
+            color: #f0f0f0;
+            margin: 1rem 0;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+        }
+
+        .code-block .keyword { color: #f472b6; }
+        .code-block .function { color: #34d399; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .string { color: #a78bfa; }
+        .code-block .comment { color: #6b7280; }
+        .code-block .operator { color: #f87171; }
+
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        /* 拖拽区域样式 */
+        .drag-item {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            background: rgba(96, 165, 250, 0.15);
+            border: 2px solid rgba(96, 165, 250, 0.4);
+            border-radius: 8px;
+            color: #60a5fa;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: grab;
+            transition: all 0.2s;
+            user-select: none;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+
+        .drag-item:hover {
+            background: rgba(96, 165, 250, 0.25);
+            transform: scale(1.05);
+        }
+
+        .drag-item:active {
+            cursor: grabbing;
+        }
+
+        .drag-item.dragging {
+            opacity: 0.5;
+        }
+
+        .drag-item.completed {
+            background: rgba(52, 211, 153, 0.2);
+            border-color: #34d399;
+            color: #34d399;
+            cursor: default;
+        }
+
+        .drag-item.selected {
+            background: rgba(168, 85, 247, 0.3);
+            border-color: #a855f7;
+            color: #a855f7;
+        }
+
+        .drop-zone {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 100px;
+            min-height: 44px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: #9ca3af;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.2s;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+
+        .drop-zone.highlight {
+            border-color: #60a5fa;
+            background: rgba(96, 165, 250, 0.1);
+            border-style: solid;
+        }
+
+        .drop-zone.correct {
+            border-color: #34d399;
+            background: rgba(52, 211, 153, 0.2);
+            color: #34d399;
+            border-style: solid;
+        }
+
+        .drop-zone.wrong {
+            border-color: #f87171;
+            background: rgba(248, 113, 113, 0.2);
+            animation: shake 0.3s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* 循环可视化 */
+        .loop-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .loop-counter {
+            width: 80px;
+            height: 80px;
+            background: rgba(96, 165, 250, 0.2);
+            border: 3px solid #3b82f6;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .loop-counter.active {
+            background: rgba(52, 211, 153, 0.3);
+            border-color: #34d399;
+            transform: scale(1.1);
+        }
+
+        .loop-counter .label {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .loop-counter .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #60a5fa;
+        }
+
+        .loop-counter.active .value {
+            color: #34d399;
+        }
+
+        /* 迭代动画 */
+        @keyframes iterate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .loop-step {
+            animation: iterate 0.5s ease;
+        }
+
+        /* 测验选项样式 */
+        .quiz-option {
+            padding: 1rem 1.5rem;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 0.5rem 0;
+            background: rgba(255,255,255,0.03);
+            color: #e5e7eb;
+        }
+        
+        .quiz-option span {
+            color: #e5e7eb;
+        }
+        
+        .quiz-option p {
+            color: #e5e7eb;
+        }
+
+        .quiz-option:hover:not(.correct):not(.wrong) {
+            border-color: #3b82f6;
+            background: rgba(59,130,246,0.1);
+        }
+
+        .quiz-option.correct {
+            border-color: #22c55e;
+            background: rgba(34,197,94,0.2);
+            animation: correctPulse 0.5s ease;
+        }
+
+        .quiz-option.wrong {
+            border-color: #ef4444;
+            background: rgba(239,68,68,0.2);
+        }
+
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .quiz-option .letter {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .quiz-option.correct .letter {
+            background: #22c55e;
+            color: white;
+        }
+
+        .quiz-option.wrong .letter {
+            background: #ef4444;
+            color: white;
+        }
+
+        /* 粒子效果 */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.5rem;
+            animation: confetti 0.8s ease forwards;
+            z-index: 9999;
+        }
+
+        @keyframes confetti {
+            0% { opacity: 1; transform: scale(1) translateY(0); }
+            100% { opacity: 0; transform: scale(1.5) translateY(-60px); }
+        }
+
+        /* 反馈提示 */
+        .feedback-toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            animation: fadeIn 0.3s ease;
+            z-index: 9999;
+            text-align: center;
+        }
+
+        .feedback-toast.success {
+            background: rgba(52, 211, 153, 0.95);
+            color: white;
+        }
+
+        .feedback-toast.error {
+            background: rgba(248, 113, 113, 0.95);
+            color: white;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* 流程图 */
+        .flow-chart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .flow-box {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-align: center;
+            min-width: 140px;
+        }
+
+        .flow-box.start {
+            background: rgba(96, 165, 250, 0.2);
+            border: 2px solid #3b82f6;
+            color: #60a5fa;
+        }
+
+        .flow-box.process {
+            background: rgba(52, 211, 153, 0.2);
+            border: 2px solid #34d399;
+            color: #34d399;
+        }
+
+        .flow-box.condition {
+            background: rgba(251, 191, 36, 0.2);
+            border: 2px solid #fbbf24;
+            color: #fbbf24;
+        }
+
+        .flow-arrow {
+            color: #6b7280;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景光斑 -->
+    <div class="bg-blur" style="top: -200px; left: -200px; background: #3b82f6;"></div>
+    <div class="bg-blur" style="bottom: -200px; right: -200px; background: #8b5cf6; animation-delay: -4s;"></div>
+
+    <!-- 顶部栏：得分和连胜 -->
+    <header class="fixed top-0 left-0 right-0 flex justify-between items-center px-6 py-3 bg-black/30 backdrop-blur border-b border-white/10 z-50">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl">📚</span>
+            <div>
+                <h1 class="text-sm font-bold text-white">for循环</h1>
+                <p class="text-xs text-gray-200">C++ 语法篇 · 第 6 课</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/20 border border-yellow-500/40">
+                <span class="text-yellow-400 text-lg">⭐</span>
+                <span id="scoreDisplay" class="font-bold text-yellow-400">0</span>
+            </div>
+            <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-pink-500/20 border border-pink-500/40">
+                <span class="text-pink-400 text-lg">🔥</span>
+                <span id="streakDisplay" class="font-bold text-pink-400">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 页面内容 -->
+    <div id="slides-container">
+
+        <!-- 第1页：封面 -->
+        <div class="slide active">
+            <h1 class="text-5xl font-bold text-gray-100 mb-6 animate-item">for循环</h1>
+            <p class="text-2xl text-blue-400 mb-8 animate-item">让计算机重复做事情</p>
+            <div class="grid grid-cols-3 gap-6 w-full max-w-4xl mb-6">
+                <div class="card animate-item">
+                    <div class="text-4xl mb-3">🔄</div>
+                    <p class="text-lg text-gray-100 font-bold">重复执行</p>
+                    <p class="text-gray-200 text-sm">让代码循环运行</p>
+                </div>
+                <div class="card animate-item">
+                    <div class="text-4xl mb-3">🔢</div>
+                    <p class="text-lg text-gray-100 font-bold">计数器</p>
+                    <p class="text-gray-200 text-sm">循环变量 i</p>
+                </div>
+                <div class="card animate-item">
+                    <div class="text-4xl mb-3">📝</div>
+                    <p class="text-lg text-gray-100 font-bold">求和</p>
+                    <p class="text-gray-200 text-sm">1+2+3+...+100</p>
+                </div>
+            </div>
+            <div class="flex gap-4 mt-4 animate-item">
+                <div class="px-4 py-2 rounded-full bg-blue-500/20 text-blue-400 text-sm">for</div>
+                <div class="px-4 py-2 rounded-full bg-yellow-500/20 text-yellow-400 text-sm">i++</div>
+                <div class="px-4 py-2 rounded-full bg-green-500/20 text-green-400 text-sm">i <= 10</div>
+            </div>
+        </div>
+
+        <!-- 第2页：生活例子 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">生活中的循环</h2>
+            <div class="card w-full max-w-2xl animate-item">
+                <div class="text-6xl mb-4">🏃</div>
+                <p class="text-xl text-gray-100 mb-4">运动员跑操场</p>
+            </div>
+            <div class="flex gap-4 mt-6 animate-item">
+                <div class="card px-6">
+                    <p class="text-2xl text-blue-400 font-bold">1</p>
+                    <p class="text-gray-200 text-sm">跑第1圈</p>
+                </div>
+                <div class="text-2xl text-gray-200 self-center">→</div>
+                <div class="card px-6">
+                    <p class="text-2xl text-blue-400 font-bold">2</p>
+                    <p class="text-gray-200 text-sm">跑第2圈</p>
+                </div>
+                <div class="text-2xl text-gray-200 self-center">→</div>
+                <div class="card px-6">
+                    <p class="text-2xl text-blue-400 font-bold">3</p>
+                    <p class="text-gray-200 text-sm">跑第3圈</p>
+                </div>
+                <div class="text-2xl text-gray-200 self-center">→</div>
+                <div class="card px-6">
+                    <p class="text-2xl text-green-400 font-bold">...</p>
+                    <p class="text-gray-200 text-sm">继续跑</p>
+                </div>
+            </div>
+            <p class="text-gray-200 mt-6 animate-item">跑了一圈又一圈，直到跑完 10 圈为止</p>
+        </div>
+
+        <!-- 第3页：for循环结构 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">for 循环的结构</h2>
+            <div class="code-block animate-item">
+                <span class="keyword">for</span> (<span class="number">初始化</span>; <span class="number">条件</span>; <span class="number">更新</span>) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">循环体（要重复执行的代码）</span><br>
+                }
+            </div>
+            <div class="grid grid-cols-3 gap-4 mt-6 w-full max-w-3xl animate-item">
+                <div class="card">
+                    <p class="text-blue-400 font-bold text-lg">初始化</p>
+                    <p class="text-gray-200 text-sm mt-2">int i = 1</p>
+                    <p class="text-gray-200 text-xs mt-1">从哪里开始</p>
+                </div>
+                <div class="card">
+                    <p class="text-yellow-400 font-bold text-lg">条件</p>
+                    <p class="text-gray-200 text-sm mt-2">i <= 10</p>
+                    <p class="text-gray-200 text-xs mt-1">到什么为止</p>
+                </div>
+                <div class="card">
+                    <p class="text-green-400 font-bold text-lg">更新</p>
+                    <p class="text-gray-200 text-sm mt-2">i++</p>
+                    <p class="text-gray-200 text-xs mt-1">怎么变化</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第4页：完整例子 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">第一个 for 循环</h2>
+            <div class="code-block animate-item">
+                <span class="keyword">#include</span> <span class="string">&lt;stdio.h&gt;</span><br><br>
+                <span class="keyword">int</span> main() {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i <= <span class="number">3</span>; i++) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"第 %d 次\n"</span>, i);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="number">0</span>;<br>
+                }
+            </div>
+            <div class="mt-6 animate-item">
+                <p class="text-gray-200 mb-3">输出结果：</p>
+                <div class="card inline-block">
+                    <p class="text-green-400">第 1 次</p>
+                    <p class="text-green-400">第 2 次</p>
+                    <p class="text-green-400">第 3 次</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第5页：循环可视化 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">循环执行过程</h2>
+            <div class="loop-visual animate-item">
+                <div class="loop-counter" id="counter-display">
+                    <span class="label">i =</span>
+                    <span class="value" id="counter-value">1</span>
+                </div>
+            </div>
+            <div class="code-block text-center mt-6 animate-item">
+                <span class="function">printf</span>(<span class="string">"第 %d 次\n"</span>, i);
+            </div>
+            <div class="flex gap-4 mt-6 animate-item">
+                <button class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg" onclick="startLoopDemo()">
+                    ▶ 开始演示
+                </button>
+                <button class="px-6 py-3 bg-gray-600 hover:bg-gray-500 text-white font-bold rounded-lg" onclick="resetLoopDemo()">
+                    🔄 重置
+                </button>
+            </div>
+        </div>
+
+        <!-- 第6页：i++ 是什么 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">i++ 是什么意思？</h2>
+            <div class="card w-full max-w-2xl animate-item">
+                <p class="text-2xl text-yellow-400 font-bold mb-4">i++ 等价于 i = i + 1</p>
+                <p class="text-gray-200">每次循环结束后，i 的值增加 1</p>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mt-6 w-full max-w-2xl animate-item">
+                <div class="card">
+                    <p class="text-blue-400 font-bold mb-2">i++</p>
+                    <p class="text-gray-200">i 的值 +1</p>
+                </div>
+                <div class="card">
+                    <p class="text-pink-400 font-bold mb-2">i--</p>
+                    <p class="text-gray-200">i 的值 -1</p>
+                </div>
+            </div>
+            <p class="text-gray-200 mt-6 animate-item">就像跑完一圈后，圈数计数器 +1</p>
+        </div>
+
+        <!-- 第7页：测验1 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">测验：循环执行几次？</h2>
+            <p class="text-xl text-gray-200 mb-6 animate-item">这个循环会输出几次 "Hello"？</p>
+            <div class="code-block animate-item">
+                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i <span class="operator"><=</span> <span class="number">5</span>; i++) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"Hello\n"</span>);<br>
+                }
+            </div>
+            <div class="space-y-3 w-full max-w-md mt-6 animate-item" id="quiz-1">
+                <div class="quiz-option" data-correct="true" onclick="checkQuiz(this, true, 1)">
+                    <span class="letter">A</span>
+                    <span>5 次</span>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkQuiz(this, false, 1)">
+                    <span class="letter">B</span>
+                    <span>4 次</span>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkQuiz(this, false, 1)">
+                    <span class="letter">C</span>
+                    <span>6 次</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第7.5页：循环范围提示 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">循环范围：< 和 <= 的区别</h2>
+            <div class="card w-full max-w-2xl animate-item">
+                <p class="text-xl text-gray-100 mb-4">两种写法都能执行 10 次，但起始值不同：</p>
+            </div>
+            <div class="grid grid-cols-2 gap-6 mt-6 w-full max-w-3xl animate-item">
+                <div class="card">
+                    <p class="text-blue-400 font-bold mb-3">写法 1：i = 1 到 i <= 10</p>
+                    <div class="code-block text-sm text-center">
+                        i = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+                    </div>
+                    <p class="text-green-400 mt-3 text-center">共 10 次</p>
+                </div>
+                <div class="card">
+                    <p class="text-purple-400 font-bold mb-3">写法 2：i = 0 到 i < 10</p>
+                    <div class="code-block text-sm text-center">
+                        i = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+                    </div>
+                    <p class="text-green-400 mt-3 text-center">共 10 次</p>
+                </div>
+            </div>
+            <div class="mt-6 p-4 rounded-lg bg-yellow-500/20 border border-yellow-500/40 w-full max-w-3xl animate-item">
+                <p class="text-yellow-300 font-bold">💡 竞赛提示</p>
+                <p class="text-gray-200 text-sm mt-2">• 看清题目是从 0 开始还是从 1 开始</p>
+                <p class="text-gray-200 text-sm mt-1">• 注意是 < 还是 <=，边界条件很容易搞错</p>
+                <p class="text-gray-200 text-sm mt-1">• 建议在草稿纸上画出循环过程再写代码</p>
+            </div>
+        </div>
+
+        <!-- 第8页：拖拽填空 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">拖拽填空：完成循环</h2>
+            <p class="text-gray-200 mb-6 animate-item">把正确的代码拖到空格处</p>
+            
+            <div class="code-block animate-item">
+                <span class="keyword">for</span> (<span class="keyword">int</span> <span id="blank1" class="drop-zone" data-answer="i = 1" ondrop="handleDrop(event, 'i = 1')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">①</span>; i <span class="operator"><=</span> <span id="blank2" class="drop-zone" data-answer="10" ondrop="handleDrop(event, '10')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">②</span>; <span id="blank3" class="drop-zone" data-answer="i++" ondrop="handleDrop(event, 'i++')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">③</span>) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"%d\n"</span>, i);<br>
+                }
+            </div>
+
+            <div class="flex gap-4 mt-6 animate-item" id="drag-source">
+                <div class="drag-item" draggable="true" data-value="i = 0">i = 0</div>
+                <div class="drag-item" draggable="true" data-value="i = 1">i = 1</div>
+                <div class="drag-item" draggable="true" data-value="i++">i++</div>
+                <div class="drag-item" draggable="true" data-value="10">10</div>
+                <div class="drag-item" draggable="true" data-value="5">5</div>
+            </div>
+
+            <button id="check-btn" class="mt-6 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg hidden" onclick="checkDragExercise()">
+                检查答案
+            </button>
+        </div>
+
+        <!-- 第9页：例题求和 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">例题：求 1+2+3+...+100</h2>
+            <p class="text-gray-200 mb-6 animate-item">计算 1 到 100 的所有整数之和</p>
+            <div class="code-block animate-item">
+                <span class="keyword">#include</span> <span class="string">&lt;stdio.h&gt;</span><br><br>
+                <span class="keyword">int</span> main() {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span> sum = <span class="number">0</span>;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i <= <span class="number">100</span>; i++) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sum = sum + i;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"%d\n"</span>, sum);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="number">0</span>;<br>
+                }
+            </div>
+            <div class="mt-6 animate-item">
+                <p class="text-green-400 text-xl font-bold">结果：5050</p>
+            </div>
+        </div>
+
+        <!-- 第10页：求和可视化 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">求和过程演示</h2>
+            <div class="flex items-center gap-8 animate-item">
+                <div class="card px-6">
+                    <p class="text-gray-200 text-sm">当前 i</p>
+                    <p class="text-3xl text-blue-400 font-bold" id="sum-i">1</p>
+                </div>
+                <div class="text-2xl text-gray-200">+</div>
+                <div class="card px-6">
+                    <p class="text-gray-200 text-sm">当前 sum</p>
+                    <p class="text-3xl text-yellow-400 font-bold" id="sum-current">0</p>
+                </div>
+                <div class="text-2xl text-gray-200">=</div>
+                <div class="card px-6">
+                    <p class="text-gray-200 text-sm">新的 sum</p>
+                    <p class="text-3xl text-green-400 font-bold" id="sum-new">1</p>
+                </div>
+            </div>
+            <div class="flex gap-4 mt-8 animate-item">
+                <button class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg" onclick="startSumDemo()">
+                    ▶ 逐步执行
+                </button>
+                <button class="px-6 py-3 bg-gray-600 hover:bg-gray-500 text-white font-bold rounded-lg" onclick="resetSumDemo()">
+                    🔄 重置
+                </button>
+            </div>
+        </div>
+
+        <!-- 第11页：流程图 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">循环流程图</h2>
+            <div class="flow-chart animate-item">
+                <div class="flow-box start">i = 1</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-box condition">i <= 10 ?</div>
+                <div class="flow-arrow">↓ Yes</div>
+                <div class="flow-box process">执行循环体</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-box process">i++</div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-box condition">回到条件判断</div>
+                <div class="flow-arrow" style="color: #ef4444;">↓ No → 结束</div>
+            </div>
+        </div>
+
+        <!-- 第12页：常见错误 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">常见错误 ⚠️</h2>
+            <div class="space-y-4 w-full max-w-2xl">
+                <div class="card animate-item">
+                    <p class="text-red-400 font-bold">错误 1：忘了分号</p>
+                    <div class="code-block text-sm mt-2">
+                        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span> i <= <span class="number">10</span>; i++)  <span class="text-red-400">// 错！</span>
+                    </div>
+                    <div class="mt-3 p-3 rounded-lg bg-yellow-500/20 border border-yellow-500/40">
+                        <p class="text-yellow-300 text-sm font-bold">💡 提示：for 语句的三个部分之间必须用分号分隔！</p>
+                    </div>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-red-400 font-bold">错误 2：分号位置错误</p>
+                    <div class="code-block text-sm mt-2">
+                        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i <= <span class="number">10</span>; i++);  <span class="text-red-400">// 多了一个分号！</span>
+                    </div>
+                    <div class="mt-3 p-3 rounded-lg bg-yellow-500/20 border border-yellow-500/40">
+                        <p class="text-yellow-300 text-sm font-bold">💡 提示：循环体外面的大括号不需要分号，但 for 后面不能加分号！</p>
+                    </div>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-red-400 font-bold">错误 3：死循环</p>
+                    <div class="code-block text-sm mt-2">
+                        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i <= <span class="number">10</span>;)  <span class="text-red-400">// i 永远不会变！</span>
+                    </div>
+                    <div class="mt-3 p-3 rounded-lg bg-yellow-500/20 border border-yellow-500/40">
+                        <p class="text-yellow-300 text-sm font-bold">💡 提示：检查循环的三个部分：初始化、条件、更新。如果忘记更新，就会变成死循环！</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第13页：测验2 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">测验：找出死循环</h2>
+            <p class="text-xl text-gray-200 mb-6 animate-item">哪个循环会永远执行下去？</p>
+            <div class="space-y-3 w-full max-w-2xl animate-item" id="quiz-2">
+                <div class="quiz-option" data-correct="false" onclick="checkQuiz(this, false, 2)">
+                    <span class="letter">A</span>
+                    <div>
+                        <p class="font-mono text-sm">for (i=1; i<=10; i++)</p>
+                        <p class="text-gray-200 text-xs">正常循环</p>
+                    </div>
+                </div>
+                <div class="quiz-option" data-correct="true" onclick="checkQuiz(this, true, 2)">
+                    <span class="letter">B</span>
+                    <div>
+                        <p class="font-mono text-sm">for (i=1; i<=10;)</p>
+                        <p class="text-gray-200 text-xs">i 不会变化 → 死循环！</p>
+                    </div>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkQuiz(this, false, 2)">
+                    <span class="letter">C</span>
+                    <div>
+                        <p class="font-mono text-sm">for (i=10; i>=1; i--)</p>
+                        <p class="text-gray-200 text-xs">倒序循环</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第14页：总结 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">今天学了什么？</h2>
+            <div class="grid grid-cols-2 gap-4 w-full max-w-3xl">
+                <div class="card animate-item">
+                    <p class="text-blue-400 font-bold">for 循环</p>
+                    <p class="text-gray-200 text-sm">重复执行代码</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-yellow-400 font-bold">int i = 1</p>
+                    <p class="text-gray-200 text-sm">初始化：从 1 开始</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-green-400 font-bold">i <= 10</p>
+                    <p class="text-gray-200 text-sm">条件：到 10 为止</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-purple-400 font-bold">i++</p>
+                    <p class="text-gray-200 text-sm">更新：每次 +1</p>
+                </div>
+            </div>
+            <div class="mt-6 animate-item">
+                <p class="text-yellow-400">⭐ 本课得分：<span id="final-score">0</span></p>
+            </div>
+        </div>
+
+        <!-- 第15页：下节课预告 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">下节课预告</h2>
+            <div class="card animate-item">
+                <div class="text-4xl mb-4">🔄</div>
+                <p class="text-2xl text-gray-100 font-bold">while 循环</p>
+                <p class="text-gray-200 mt-4">当...的时候，一直做</p>
+                <p class="text-gray-200 text-sm mt-2">for vs while：什么时候用哪个？</p>
+            </div>
+            <p class="text-gray-200 mt-8 animate-item">C++ 语法篇 · 第 7 课</p>
+        </div>
+
+    </div>
+
+    <!-- 提示 -->
+    <div class="fixed top-20 right-4 text-gray-200 text-sm animate-item">点击空格/右箭头逐步显示</div>
+
+    <!-- 进度条 -->
+    <div class="progress-bar" id="progress"></div>
+    <div class="progress-dots" id="dots"></div>
+
+    <script>
+        // 学习数据
+        const learningData = {
+            score: 0,
+            streak: 0,
+            quizAnswered: {}
+        };
+
+        // 幻灯片控制
+        let currentSlide = 0;
+        let currentItem = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        // 创建进度点
+        const dotsContainer = document.getElementById('dots');
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsContainer.appendChild(dot);
+        }
+
+        function getCurrentItems() {
+            return slides[currentSlide].querySelectorAll('.animate-item');
+        }
+
+        function showNextItem() {
+            const items = getCurrentItems();
+            if (currentItem < items.length) {
+                items[currentItem].classList.add('visible');
+                currentItem++;
+                return true;
+            }
+            return false;
+        }
+
+        function hideAllItems() {
+            const items = getCurrentItems();
+            items.forEach(item => item.classList.remove('visible'));
+            currentItem = 0;
+        }
+
+        function goToSlide(index) {
+            if (index < 0 || index >= totalSlides) return;
+            slides[currentSlide].classList.remove('active');
+            document.querySelectorAll('.dot')[currentSlide].classList.remove('active');
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+            document.querySelectorAll('.dot')[currentSlide].classList.add('active');
+            hideAllItems();
+            updateProgress();
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+
+        function updateProgress() {
+            document.getElementById('progress').style.width =
+                ((currentSlide + 1) / totalSlides * 100) + '%';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                if (!showNextItem()) {
+                    nextSlide();
+                }
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.dot')) return;
+            if (e.target.closest('.quiz-option')) return;
+            if (e.target.closest('.drag-item')) return;
+            if (e.target.closest('.drop-zone')) return;
+            if (e.target.closest('button')) return;
+            if (!showNextItem()) {
+                nextSlide();
+            }
+        });
+
+        updateProgress();
+
+        // 得分更新
+        function updateScore(points) {
+            learningData.score += points;
+            document.getElementById('scoreDisplay').textContent = learningData.score;
+            document.getElementById('final-score').textContent = learningData.score;
+        }
+
+        function updateStreak() {
+            learningData.streak++;
+            document.getElementById('streakDisplay').textContent = learningData.streak;
+            if (learningData.streak >= 3) {
+                showFeedback('🔥 连胜 ' + learningData.streak + '！', 'success');
+            }
+        }
+
+        function resetStreak() {
+            learningData.streak = 0;
+            document.getElementById('streakDisplay').textContent = '0';
+        }
+
+        // 反馈提示
+        function showFeedback(text, type) {
+            const existing = document.querySelector('.feedback-toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'feedback-toast ' + type;
+            toast.textContent = text;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 1500);
+        }
+
+        // 粒子效果
+        function showParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const emojis = ['⭐', '✨', '🎉', '💯', '🎊'];
+            for (let i = 0; i < 6; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                particle.style.left = (rect.left + rect.width / 2 + (Math.random() - 0.5) * 60) + 'px';
+                particle.style.top = (rect.top + rect.height / 2) + 'px';
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 800);
+            }
+        }
+
+        // 测验
+        function checkQuiz(element, isCorrect, quizId) {
+            if (learningData.quizAnswered[quizId]) return;
+            learningData.quizAnswered[quizId] = true;
+
+            if (isCorrect) {
+                element.classList.add('correct');
+                updateScore(10);
+                updateStreak();
+                showFeedback('正确！+10分', 'success');
+                showParticles(element);
+            } else {
+                element.classList.add('wrong');
+                resetStreak();
+                showFeedback('错误', 'error');
+            }
+        }
+
+        // 循环演示
+        let loopInterval = null;
+        let loopCount = 1;
+
+        function startLoopDemo() {
+            if (loopInterval) clearInterval(loopInterval);
+            loopCount = 1;
+            document.getElementById('counter-value').textContent = loopCount;
+            document.getElementById('counter-display').classList.add('active');
+            
+            loopInterval = setInterval(() => {
+                loopCount++;
+                document.getElementById('counter-value').textContent = loopCount;
+                document.getElementById('counter-display').classList.add('loop-step');
+                setTimeout(() => {
+                    document.getElementById('counter-display').classList.remove('loop-step');
+                }, 500);
+                
+                if (loopCount >= 3) {
+                    clearInterval(loopInterval);
+                    loopInterval = null;
+                }
+            }, 1000);
+        }
+
+        function resetLoopDemo() {
+            if (loopInterval) clearInterval(loopInterval);
+            loopInterval = null;
+            loopCount = 1;
+            document.getElementById('counter-value').textContent = '1';
+            document.getElementById('counter-display').classList.remove('active');
+        }
+
+        // 求和演示
+        let sumInterval = null;
+        let sumI = 1;
+        let sumValue = 0;
+
+        function startSumDemo() {
+            if (sumInterval) clearInterval(sumInterval);
+            sumI = 1;
+            sumValue = 0;
+            updateSumDisplay();
+            
+            sumInterval = setInterval(() => {
+                sumValue += sumI;
+                document.getElementById('sum-current').textContent = sumValue - sumI;
+                document.getElementById('sum-new').textContent = sumValue;
+                document.getElementById('sum-i').textContent = sumI;
+                sumI++;
+                
+                if (sumI > 5) {
+                    clearInterval(sumInterval);
+                    sumInterval = null;
+                    document.getElementById('sum-new').textContent = '...';
+                }
+            }, 1000);
+        }
+
+        function updateSumDisplay() {
+            document.getElementById('sum-i').textContent = sumI;
+            document.getElementById('sum-current').textContent = sumValue;
+            document.getElementById('sum-new').textContent = sumValue + sumI;
+        }
+
+        function resetSumDemo() {
+            if (sumInterval) clearInterval(sumInterval);
+            sumInterval = null;
+            sumI = 1;
+            sumValue = 0;
+            document.getElementById('sum-i').textContent = '1';
+            document.getElementById('sum-current').textContent = '0';
+            document.getElementById('sum-new').textContent = '1';
+        }
+
+        // 拖拽练习
+        const dragAnswers = { blank1: null, blank2: null, blank3: null };
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.target.classList.add('highlight');
+        }
+
+        function handleDragLeave(e) {
+            e.target.classList.remove('highlight');
+        }
+
+        function handleDrop(e, value) {
+            e.preventDefault();
+            e.target.classList.remove('highlight');
+            e.target.classList.add('correct');
+            e.target.textContent = value;
+            dragAnswers[e.target.id] = value;
+            
+            if (dragAnswers.blank1 && dragAnswers.blank2 && dragAnswers.blank3) {
+                document.getElementById('check-btn').classList.remove('hidden');
+            }
+        }
+
+        // 初始化拖拽
+        document.querySelectorAll('#drag-source .drag-item').forEach(item => {
+            item.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('text/plain', item.dataset.value);
+                item.classList.add('dragging');
+            });
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+            });
+        });
+
+        function checkDragExercise() {
+            const correct = 
+                dragAnswers.blank1 === 'i = 1' &&
+                dragAnswers.blank2 === '10' &&
+                dragAnswers.blank3 === 'i++';
+            
+            if (correct) {
+                updateScore(20);
+                updateStreak();
+                showFeedback('太棒了！+20分', 'success');
+                showParticles(document.getElementById('check-btn'));
+            } else {
+                resetStreak();
+                showFeedback('还有错误，再想想', 'error');
+            }
+        }
+    </script>
+</body>
+</html>

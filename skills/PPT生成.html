@@ -1,0 +1,1164 @@
+CourseHub/skills/PPT生成.html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPT 生成规范 - CourseHub</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        /* 背景光斑 */
+        .bg-blur {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            animation: float 10s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(40px, 40px); }
+        }
+
+        /* 侧边导航 */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(15, 15, 20, 0.95);
+            border-right: 1px solid rgba(255,255,255,0.08);
+            overflow-y: auto;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #888;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .nav-item:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+        }
+        .nav-item.active {
+            color: #60a5fa;
+            background: rgba(96, 165, 250, 0.1);
+            border-left-color: #60a5fa;
+        }
+        .nav-section {
+            padding: 16px 20px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            padding: 40px 60px 80px;
+            max-width: 1000px;
+        }
+
+        /* 页面切换 */
+        .page-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .page-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 标题样式 */
+        h1.page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        h2.section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 48px 0 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #e0e0e0;
+            margin: 24px 0 12px;
+        }
+
+        /* 卡片 */
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 代码块 */
+        .code-block {
+            background: #111;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+        .code-block code {
+            font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+            font-size: 13px;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        .code-block .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 10px;
+            font-size: 11px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 4px;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .code-block .copy-btn:hover {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+
+        /* 表格 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+        th {
+            background: rgba(96, 165, 250, 0.15);
+            color: #60a5fa;
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: #aaa;
+        }
+        tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+
+        /* 颜色展示 */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .color-swatch {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 12px;
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+        .color-swatch:hover {
+            transform: scale(1.05);
+        }
+        .color-swatch .name { color: #fff; font-weight: 500; }
+        .color-swatch .hex { color: rgba(255,255,255,0.6); font-family: monospace; }
+
+        /* 预览框 */
+        .preview-box {
+            background: #000;
+            border-radius: 12px;
+            padding: 32px;
+            margin: 20px 0;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .preview-box .preview-label {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            font-size: 10px;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* PPT 演示区域 */
+        .ppt-demo-container {
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .ppt-demo-header {
+            background: rgba(255,255,255,0.03);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .ppt-demo-title {
+            font-size: 13px;
+            color: #666;
+        }
+        .ppt-demo-body {
+            position: relative;
+            aspect-ratio: 16/9;
+        }
+        .ppt-demo-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* 动画演示 */
+        .animation-demo {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .animation-demo-item {
+            flex: 1;
+            min-width: 200px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .animation-demo-box {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #60a5fa, #8b5cf6);
+            border-radius: 8px;
+            margin: 0 auto 12px;
+        }
+        .animation-demo-label {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* 进度条样式 */
+        .demo-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #60a5fa, #8b5cf6);
+            transition: width 0.3s ease;
+        }
+        .demo-dots {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+        }
+        .demo-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #333;
+            cursor: pointer;
+        }
+        .demo-dot.active {
+            background: #60a5fa;
+        }
+
+        /* 步骤流程 */
+        .flow-steps {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .flow-step {
+            background: rgba(96, 165, 250, 0.15);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            color: #60a5fa;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+        .flow-arrow {
+            color: #444;
+            font-size: 18px;
+        }
+
+        /* 标签 */
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 500;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.1);
+            color: #aaa;
+        }
+        .tag.primary { background: rgba(96, 165, 250, 0.2); color: #60a5fa; }
+        .tag.success { background: rgba(52, 211, 153, 0.2); color: #34d399; }
+        .tag.warning { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .tag.danger { background: rgba(244, 114, 182, 0.2); color: #f472b6; }
+
+        /* 提示框 */
+        .tip-box {
+            background: rgba(96, 165, 250, 0.08);
+            border: 1px solid rgba(96, 165, 250, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 20px 0;
+        }
+        .tip-box.success {
+            background: rgba(52, 211, 153, 0.08);
+            border-color: rgba(52, 211, 153, 0.2);
+        }
+        .tip-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #60a5fa;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tip-box.success .tip-title { color: #34d399; }
+        .tip-content {
+            font-size: 14px;
+            color: #888;
+        }
+
+        /* 响应式 */
+        @media (max-width: 900px) {
+            .sidebar { width: 240px; }
+            .main-content { margin-left: 240px; padding: 30px 40px; }
+        }
+        @media (max-width: 700px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 20px; }
+        }
+
+        /* 高亮关键字 */
+        .keyword { color: #f472b6; }
+        .string { color: #34d399; }
+        .comment { color: #555; }
+    </style>
+</head>
+<body>
+    <!-- 背景光斑 -->
+    <div class="bg-blur" style="top: -150px; left: 100px; background: #3b82f6;"></div>
+    <div class="bg-blur" style="bottom: -150px; right: 100px; background: #8b5cf6; animation-delay: -5s;"></div>
+
+    <!-- 侧边导航 -->
+    <nav class="sidebar">
+        <div style="padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <div style="font-size: 18px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 10px;">
+                <span>📚</span> PPT 生成规范
+            </div>
+            <div style="font-size: 12px; color: #555; margin-top: 4px;">交互式教程</div>
+        </div>
+
+        <div class="nav-section">入门</div>
+        <a class="nav-item active" data-page="overview">
+            <span>📖</span> 概述
+        </a>
+        <a class="nav-item" data-page="principles">
+            <span>💡</span> 核心原则
+        </a>
+
+        <div class="nav-section">内容规范</div>
+        <a class="nav-item" data-page="vocabulary">
+            <span>📝</span> 词汇对照
+        </a>
+        <a class="nav-item" data-page="structure">
+            <span>🏗️</span> 结构设计
+        </a>
+
+        <div class="nav-section">视觉规范</div>
+        <a class="nav-item" data-page="colors">
+            <span>🎨</span> 颜色规范
+        </a>
+        <a class="nav-item" data-page="typography">
+            <span>✏️</span> 字体规范
+        </a>
+        <a class="nav-item" data-page="animation">
+            <span>✨</span> 动画规范
+        </a>
+
+        <div class="nav-section">技术实现</div>
+        <a class="nav-item" data-page="layout">
+            <span>📐</span> 布局规范
+        </a>
+        <a class="nav-item" data-page="tech">
+            <span>⚙️</span> 技术栈
+        </a>
+
+        <div class="nav-section">完整模板</div>
+        <a class="nav-item" data-page="template">
+            <span>🚀</span> 完整模板
+        </a>
+        <a class="nav-item" data-page="demo">
+            <span>🎯</span> 实时演示
+        </a>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+
+        <!-- 概述 -->
+        <section id="page-overview" class="page-section active">
+            <h1 class="page-title">PPT 生成规范</h1>
+            <p class="page-subtitle">面向零基础编程学习者的交互式幻灯片制作指南</p>
+
+            <div class="tip-box success">
+                <div class="tip-title">🎉 开始学习</div>
+                <div class="tip-content">左侧导航可切换不同章节，点击各页面卡片查看详细说明和交互演示。</div>
+            </div>
+
+            <h2 class="section-title">这是什么？</h2>
+            <div class="card">
+                <div class="card-title">📚 CourseHub PPT 规范</div>
+                <p style="color: #888; font-size: 14px; margin-bottom: 16px;">
+                    这是一套为 <strong style="color: #fff;">零基础编程教学</strong> 设计的 PPT 制作规范。
+                    不同于传统幻灯片，这里的每一页都可以<strong style="color: #60a5fa;">互动展示</strong>，
+                    支持键盘翻页、逐步显示动画，让学生在课堂上跟随老师的节奏一步步理解知识。
+                </p>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <span class="tag primary">用户触发式动画</span>
+                    <span class="tag success">键盘导航</span>
+                    <span class="tag warning">生活类比</span>
+                    <span class="tag danger">问题拆解</span>
+                </div>
+            </div>
+
+            <h2 class="section-title">核心特性</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
+                <div class="card">
+                    <div class="card-title">🎯 通俗易懂</div>
+                    <p style="color: #888; font-size: 13px;">
+                        避免专业术语，用生活类比解释每个概念。
+                        如：变量 = 便利贴、函数 = 遥控器按钮。
+                    </p>
+                </div>
+                <div class="card">
+                    <div class="card-title">✨ 逐步显示</div>
+                    <p style="color: #888; font-size: 13px;">
+                        每页内容分步展示，点击才出现下一个元素，
+                        让学生跟得上老师的讲解节奏。
+                    </p>
+                </div>
+                <div class="card">
+                    <div class="card-title">⌨️ 键盘控制</div>
+                    <p style="color: #888; font-size: 13px;">
+                        空格/右箭头显示下一元素或翻页，
+                        左箭头回退。全程无需鼠标。
+                    </p>
+                </div>
+                <div class="card">
+                    <div class="card-title">🎨 深色主题</div>
+                    <p style="color: #888; font-size: 13px;">
+                        投影仪友好，亮色文字 + 深色背景，
+                        配合模糊光斑动画，现代感十足。
+                    </p>
+                </div>
+            </div>
+
+            <h2 class="section-title">快速开始</h2>
+            <div class="card">
+                <div class="card-title">1. 创建 HTML 文件</div>
+                <div class="code-block">
+                    <code>courses/<span class="keyword">课程名</span>/<span class="keyword">课时名</span>/index.html</code>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">2. 引入 TailwindCSS</div>
+                <div class="code-block">
+                    <code>&lt;<span class="keyword">script</span> <span class="keyword">src</span>=<span class="string">"https://cdn.tailwindcss.com"</span>&gt;&lt;/<span class="keyword">script</span>&gt;</code>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">3. 编写幻灯片页面</div>
+                <div class="code-block">
+                    <code>&lt;<span class="keyword">div</span> <span class="keyword">class</span>=<span class="string">"slide active"</span>&gt;<br>
+nbsp;&nbsp;&lt;<span class="keyword">h1</span>&gt;标题&lt;/<span class="keyword">h1</span>&gt;<br>
+&nbsp;&nbsp;&lt;<span class="keyword">p</span>&gt;副标题&lt;/<span class="keyword">p</span>&gt;<br>
+&lt;/<span class="keyword">div</span>&gt;</code>
+                </div>
+            </div>
+        </section>
+
+        <!-- 核心原则 -->
+        <section id="page-principles" class="page-section">
+            <h1 class="page-title">核心原则</h1>
+            <p class="page-subtitle">面向零基础，每页都要问自己这三个问题</p>
+
+            <h2 class="section-title">灵魂三问</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
+                <div class="card" style="border-left: 3px solid #60a5fa;">
+                    <div class="card-title">🤔 能看懂吗？</div>
+                    <p style="color: #888; font-size: 13px;">
+                        零基础的人能看懂这页吗？
+                        如果有术语，有解释清楚吗？
+                    </p>
+                </div>
+                <div class="card" style="border-left: 3px solid #34d399;">
+                    <div class="card-title">🌰 有例子吗？</div>
+                    <p style="color: #888; font-size: 13px;">
+                        有没有用生活例子解释？
+                        用表情/图片辅助理解了吗？
+                    </p>
+                </div>
+                <div class="card" style="border-left: 3px solid #fbbf24;">
+                    <div class="card-title">📖 术语解释了吗？</div>
+                    <p style="color: #888; font-size: 13px;">
+                        有没有专业词汇没解释？
+                        避免让学生产生困惑。
+                    </p>
+                </div>
+            </div>
+
+            <h2 class="section-title">每页必备四要素</h2>
+            <div class="flow-steps">
+                <div class="flow-step">大问题/标题</div>
+                <span class="flow-arrow">↓</span>
+                <div class="flow-step">生活例子/类比</div>
+                <span class="flow-arrow">↓</span>
+                <div class="flow-step">代码示例</div>
+                <span class="flow-arrow">↓</span>
+                <div class="flow-step">一句话总结</div>
+            </div>
+
+            <h2 class="section-title">问题拆解流程</h2>
+            <div class="card">
+                <div class="card-title">🔄 贯穿整个 PPT 的流程</div>
+                <div style="background: #111; border-radius: 8px; padding: 24px; margin-top: 16px; font-family: monospace;">
+                    <div style="color: #60a5fa;">遇到问题</div>
+                    <div style="color: #888; margin-left: 20px;">↓</div>
+                    <div style="color: #60a5fa; margin-left: 20px;">拆解问题（拆成小问题）</div>
+                    <div style="color: #888; margin-left: 40px;">↓</div>
+                    <div style="color: #60a5fa; margin-left: 40px;">再拆解（直到能用一个命令解决）</div>
+                    <div style="color: #888; margin-left: 60px;">↓</div>
+                    <div style="color: #34d399; margin-left: 60px;">✅ 写出代码解决</div>
+                </div>
+            </div>
+
+            <h2 class="section-title">拆解示例</h2>
+            <div class="card">
+                <div class="card-title">问题：让计算机显示 "Hello"</div>
+                <table style="margin-top: 16px;">
+                    <tr><th>步骤</th><th>思考</th><th>结果</th></tr>
+                    <tr><td>1</td><td>显示在哪里？</td><td>→ 屏幕</td></tr>
+                    <tr><td>2</td><td>怎么让屏幕显示？</td><td>→ 用一个"命令"</td></tr>
+                    <tr><td>3</td><td>什么命令？</td><td>→ print() = "显示出来"</td></tr>
+                    <tr><td style="color: #34d399; font-weight: 600;">答案</td><td colspan="2" style="color: #34d399;">print("Hello")</td></tr>
+                </table>
+            </div>
+        </section>
+
+        <!-- 词汇对照 -->
+        <section id="page-vocabulary" class="page-section">
+            <h1 class="page-title">词汇对照</h1>
+            <p class="page-subtitle">用通俗词汇替代专业术语，让学生一听就懂</p>
+
+            <h2 class="section-title">常用词汇对照表</h2>
+            <div class="card">
+                <table>
+                    <tr><th style="width: 40%;">✅ PPT 上应该用的词</th><th style="width: 60%;">❌ 避免用的词</th></tr>
+                    <tr><td style="color: #34d399; font-weight: 500;">命令、指令</td><td>函数（除非解释清楚）</td></tr>
+                    <tr><td style="color: #34d399; font-weight: 500;">显示出来 / 打印</td><td>输出、打印</td></tr>
+                    <tr><td style="color: #34d399; font-weight: 500;">让计算机记住</td><td>赋值、存储</td></tr>
+                    <tr><td style="color: #34d399; font-weight: 500;">拆解问题</td><td>拆分问题（太技术化）</td></tr>
+                    <tr><td style="color: #34d399; font-weight: 500;">实际上在做什么</td><td>本质是什么（太抽象）</td></tr>
+                    <tr><td style="color: #34d399; font-weight: 500;">部件、组件</td><td>模块（太技术化）</td></tr>
+                    <tr><td style="color: #34d399; font-weight: 500;">一件什么事</td><td>什么操作</td></tr>
+                </table>
+            </div>
+
+            <h2 class="section-title">生活类比库</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
+                <div class="card">
+                    <div class="card-title">👨‍💻 程序/代码</div>
+                    <div style="color: #888; font-size: 13px;">= 食谱、说明书</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🍽️ 计算机三大步</div>
+                    <div style="color: #888; font-size: 13px;">= 餐厅服务员（接单→做菜→上菜）</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">📺 函数/命令</div>
+                    <div style="color: #888; font-size: 13px;">= 遥控器按钮</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">📝 变量</div>
+                    <div style="color: #888; font-size: 13px;">= 储物柜/便利贴</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🔄 循环</div>
+                    <div style="color: #888; font-size: 13px;">= 重复做同一件事</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">🚦 判断</div>
+                    <div style="color: #888; font-size: 13px;">= 遇到岔路口做选择</div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <div class="tip-title">💡 技巧</div>
+                <div class="tip-content">每讲一个概念，遵循"概念 → 生活例子 → 代码实现"的顺序，学生更容易理解。</div>
+            </div>
+        </section>
+
+        <!-- 结构设计 -->
+        <section id="page-structure" class="page-section">
+            <h1 class="page-title">结构设计</h1>
+            <p class="page-subtitle">标准的 PPT 页面结构，让教学更有节奏感</p>
+
+            <h2 class="section-title">课程开始</h2>
+            <div class="card">
+                <div class="card-title">🎬 引入：用一个问题抓住注意力</div>
+                <div class="flow-steps" style="margin-top: 16px;">
+                    <div class="flow-step">生活问题</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-step">学生思考</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-step">引入知识点</div>
+                </div>
+            </div>
+
+            <h2 class="section-title">知识点讲解（循环）</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px;">
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 12px;">🔍</div>
+                    <div class="card-title" style="justify-content: center;">先展示拆解过程</div>
+                    <div style="color: #888; font-size: 13px;">怎么把大问题变小</div>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 12px;">💻</div>
+                    <div class="card-title" style="justify-content: center;">再展示代码</div>
+                    <div style="color: #888; font-size: 13px;">怎么用命令解决</div>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 32px; margin-bottom: 12px;">📌</div>
+                    <div class="card-title" style="justify-content: center;">最后一句话总结</div>
+                    <div style="color: #888; font-size: 13px;">记住什么</div>
+                </div>
+            </div>
+
+            <h2 class="section-title">课程结束</h2>
+            <div class="card">
+                <div class="card-title">🏁 总结页</div>
+                <p style="color: #888; font-size: 14px; margin-top: 12px;">
+                    用<strong style="color: #fff;">通俗的话</strong>总结今天学了什么，<br>
+                    而不是罗列技术术语。
+                </p>
+                <div class="code-block" style="margin-top: 16px;">
+                    <code><span class="comment"># 错误示例</span><br>
+今天学习了 print() 函数的用法。<br><br>
+<span class="comment"># 正确示例</span><br>
+今天学会了怎么让计算机<strong style="color: #fbbf24;">"开口说话"</strong>！</code>
+                </div>
+            </div>
+
+            <h2 class="section-title">PPT 页面模板</h2>
+        </div>
+    </section>
+
+    <!-- 颜色规范 -->
+    <section id="page-colors" class="page-section">
+        <h1 class="page-title">颜色规范</h1>
+        <p class="page-subtitle">深色背景 + 亮色文字，投影仪最佳选择</p>
+
+        <h2 class="section-title">配色方案</h2>
+        <div class="color-grid">
+            <div class="color-swatch" style="background: #0a0a0a; border: 1px solid #333;">
+                <div class="name">背景色</div>
+                <div class="hex">#0a0a0a</div>
+            </div>
+            <div class="color-swatch" style="background: #111; border: 1px solid #333;">
+                <div class="name">备选背景</div>
+                <div class="hex">#111111</div>
+            </div>
+            <div class="color-swatch" style="background: #ffffff; color: #000;">
+                <div class="name">主文字</div>
+                <div class="hex">#ffffff</div>
+            </div>
+            <div class="color-swatch" style="background: #f0f0f0; color: #000;">
+                <div class="name">次文字</div>
+                <div class="hex">#f0f0f0</div>
+            </div>
+            <div class="color-swatch" style="background: #e0e0e0; color: #000;">
+                <div class="name">辅助文字</div>
+                <div class="hex">#e0e0e0</div>
+            </div>
+            <div class="color-swatch" style="background: #b0b0b0; color: #000;">
+                <div class="name">次要文字</div>
+                <div class="hex">#b0b0b0</div>
+            </div>
+            <div class="color-swatch" style="background: #60a5fa;">
+                <div class="name">强调蓝</div>
+                <div class="hex">#60a5fa</div>
+            </div>
+            <div class="color-swatch" style="background: #34d399;">
+                <div class="name">成功绿</div>
+                <div class="hex">#34d399</div>
+            </div>
+            <div class="color-swatch" style="background: #fbbf24;">
+                <div class="name">警告黄</div>
+                <div class="hex">#fbbf24</div>
+            </div>
+            <div class="color-swatch" style="background: #f472b6;">
+                <div class="name">粉红</div>
+                <div class="hex">#f472b6</div>
+            </div>
+        </div>
+
+        <h2 class="section-title">PPT 配色示例</h2>
+        <div class="preview-box">
+            <div class="preview-label">预览效果</div>
+            <h1 style="color: #fff; font-size: 2rem; margin-bottom: 8px;">标题文字</h1>
+            <p style="color: #b0b0b0; margin-bottom: 16px;">这是辅助说明文字</p>
+            <div style="display: flex; gap: 12px;">
+                <span style="background: #60a5fa; padding: 6px 16px; border-radius: 6px; font-size: 14px;">主要按钮</span>
+                <span style="background: #34d399; padding: 6px 16px; border-radius: 6px; font-size: 14px;">成功</span>
+                <span style="background: #fbbf24; padding: 6px 16px; border-radius: 6px; font-size: 14px;">注意</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 字体规范 -->
+    <section id="page-typography" class="page-section">
+        <h1 class="page-title">字体规范</h1>
+        <p class="page-subtitle">清晰易读的字体选择</p>
+
+        <h2 class="section-title">字体推荐</h2>
+        <div class="card">
+            <table>
+                <tr><th>类型</th><th>字体</th><th>用途</th></tr>
+                <tr><td>中文字体</td><td style="font-family: 'Noto Sans SC', sans-serif;">思源黑体 / HarmonyOS Sans SC</td><td>正文、标题</td></tr>
+                <tr><td>英文字体</td><td style="font-family: 'Inter', sans-serif;">Inter / Roboto</td><td>正文、代码</td></tr>
+                <tr><td>代码字体</td><td style="font-family: 'SF Mono', 'Fira Code', monospace;">SF Mono / Fira Code</td><td>代码展示</td></tr>
+            </table>
+        </div>
+
+        <h2 class="section-title">字重规范</h2>
+        <div class="card">
+            <table>
+                <tr><th>元素</th><th>字重</th><th>示例</th></tr>
+                <tr><td>标题</td><td>font-bold (700)</td><td style="font-weight: 700;">粗体文字</td></tr>
+                <tr><td>正文</td><td>font-normal (400)</td><td style="font-weight: 400;">正常文字</td></tr>
+                <tr><td>辅助文字</td><td>font-light (300)</td><td style="font-weight: 300;">轻量文字</td></tr>
+            </table>
+        </div>
+    </section>
+
+    <!-- 动画规范 -->
+    <section id="page-animation" class="page-section">
+        <h1 class="page-title">动画规范</h1>
+        <p class="page-subtitle">用户触发式逐步显示动画</p>
+
+        <h2 class="section-title">核心逻辑</h2>
+        <div class="card">
+            <div class="card-title">🎯 逐步显示流程</div>
+            <div class="flow-steps" style="margin-top: 16px;">
+                <div class="flow-step">元素隐藏</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">点击/按键</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">显示下一个</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">全部显示完</div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-step">翻页</div>
+            </div>
+        </div>
+
+        <h2 class="section-title">CSS 动画</h2>
+        <div class="code-block">
+            <code><span class="keyword">.animate-item</span> {<br>
+&nbsp;&nbsp;<span class="keyword">opacity</span>: <span class="string">0</span>;<br>
+&nbsp;&nbsp;<span class="keyword">transform</span>: <span class="string">translateY(20px)</span>;<br>
+&nbsp;&nbsp;<span class="keyword">transition</span>: <span class="string">opacity 0.3s ease, transform 0.3s ease</span>;<br>
+}<br><br>
+<span class="keyword">.animate-item.visible</span> {<br>
+&nbsp;&nbsp;<span class="keyword">opacity</span>: <span class="string">1</span>;<br>
+&nbsp;&nbsp;<span class="keyword">transform</span>: <span class="string">translateY(0)</span>;<br>
+}</code>
+        </div>
+
+        <h2 class="section-title">动画演示</h2>
+        <div class="animation-demo" id="animationDemo">
+            <div class="animation-demo-item">
+                <div class="animation-demo-box" style="opacity: 0; transform: translateY(20px);">1</div>
+                <div class="animation-demo-label">点击出现</div>
+            </div>
+            <div class="animation-demo-item">
+                <div class="animation-demo-box">2</div>
+                <div class="animation-demo-label">平滑过渡</div>
+            </div>
+            <div class="animation-demo-item">
+                <div class="animation-demo-box">3</div>
+                <div class="animation-demo-label">循序渐进</div>
+            </div>
+        </div>
+        <button onclick="playAnimationDemo()" style="background: #60a5fa; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-top: 12px;">
+            ▶ 播放动画演示
+        </button>
+    </section>
+
+    <!-- 布局规范 -->
+    <section id="page-layout" class="page-section">
+        <h1 class="page-title">布局规范</h1>
+        <p class="page-subtitle">全屏 flexbox 布局，充分利用视口</p>
+
+        <h2 class="section-title">布局结构</h2>
+        <div class="card">
+            <div class="code-block">
+                <code><span class="comment">/* 全屏容器 */</span><br>
+<span class="keyword">.app-container</span> {<br>
+&nbsp;&nbsp;<span class="keyword">display</span>: <span class="string">flex</span>;<br>
+&nbsp;&nbsp;<span class="keyword">flex-direction</span>: <span class="string">column</span>;<br>
+&nbsp;&nbsp;<span class="keyword">min-height</span>: <span class="string">100vh</span>;<br>
+}<br><br>
+<span class="comment">/* 页面容器（幻灯片） */</span><br>
+<span class="keyword">.slide</span> {<br>
+&nbsp;&nbsp;<span class="keyword">position</span>: <span class="string">absolute</span>;<br>
+&nbsp;&nbsp;<span class="keyword">inset</span>: <span class="string">0</span>;<br>
+&nbsp;&nbsp;<span class="keyword">display</span>: <span class="string">flex</span>;<br>
+&nbsp;&nbsp;<span class="keyword">flex-direction</span>: <span class="string">column</span>;<br>
+&nbsp;&nbsp;<span class="keyword">justify-content</span>: <span class="string">center</span>;<br>
+&nbsp;&nbsp;<span class="keyword">align-items</span>: <span class="string">center</span>;<br>
+&nbsp;&nbsp;<span class="keyword">padding</span>: <span class="string">4rem</span>;<br>
+}<br><br>
+<span class="keyword">.slide.active</span> {<br>
+&nbsp;&nbsp;<span class="keyword">opacity</span>: <span class="string">1</span>;<br>
+&nbsp;&nbsp;<span class="keyword">transform</span>: <span class="string">translateX(0)</span>;<br>
+}</code>
+            </div>
+        </div>
+
+        <h2 class="section-title">进度条和导航点</h2>
+        <div class="code-block">
+            <code><span class="comment">/* 进度条 */</span><br>
+<span class="keyword">.progress-bar</span> {<br>
+&nbsp;&nbsp;<span class="keyword">position</span>: <span class="string">fixed</span>;<br>
+&nbsp;&nbsp;<span class="keyword">bottom</span>: <span class="string">0</span>;<br>
+&nbsp;&nbsp;<span class="keyword">left</span>: <span class="string">0</span>;<br>
+&nbsp;&nbsp;<span class="keyword">height</span>: <span class="string">4px</span>;<br>
+&nbsp;&nbsp;<span class="keyword">background</span>: <span class="string">linear-gradient(90deg, #3b82f6, #8b5cf6)</span>;<br>
+}<br><br>
+<span class="comment">/* 导航点 */</span><br>
+<span class="keyword">.progress-dots</span> {<br>
+&nbsp;&nbsp;<span class="keyword">position</span>: <span class="string">fixed</span>;<br>
+&nbsp;&nbsp;<span class="keyword">bottom</span>: <span class="string">20px</span>;<br>
+&nbsp;&nbsp;<span class="keyword">left</span>: <span class="string">50%</span>;<br>
+&nbsp;&nbsp;<span class="keyword">transform</span>: <span class="string">translateX(-50%)</span>;<br>
+&nbsp;&nbsp;<span class="keyword">display</span>: <span class="string">flex</span>;<br>
+&nbsp;&nbsp;<span class="keyword">gap</span>: <span class="string">8px</span>;<br>
+}</code>
+        </div>
+    </section>
+
+    <!-- 技术栈 -->
+    <section id="page-tech" class="page-section">
+        <h1 class="page-title">技术栈</h1>
+        <p class="page-subtitle">轻量级技术方案，打开浏览器即可运行</p>
+
+        <h2 class="section-title">核心技术</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px;">
+            <div class="card">
+                <div class="card-title">🎨 TailwindCSS</div>
+                <p style="color: #888; font-size: 13px;">国内 CDN 加速，快速原型开发原子化 CSS 框架</p>
+                <div class="code-block" style="margin-top: 12px;">
+                    <code>&lt;<span class="keyword">script</span> <span class="keyword">src</span>=<span class="string">"https://cdn.tailwindcss.com"</span>&gt;</code>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">⚡ Vue 3（可选）</div>
+                <p style="color: #888; font-size: 13px;">复杂交互页面使用，CDN 引入无需构建</p>
+                <div class="code-block" style="margin-top: 12px;">
+                    <code>&lt;<span class="keyword">script</span> <span class="keyword">src</span>=<span class="string">"https://unpkg.com/vue@3"</span>&gt;</code>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">📝 marked.js</div>
+                <p style="color: #888; font-size: 13px;">Markdown 解析，用于教案和作业渲染</p>
+                <div class="code-block" style="margin-top: 12px;">
+                    <code>&lt;<span class="keyword">script</span> <span class="keyword">src</span>=<span class="string">"https://cdn.jsdelivr.net/npm/marked/marked.min.js"</span>&gt;</code>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">文件结构</h2>
+        <div class="card">
+            <div class="code-block">
+                <code>courses/<br>
+&nbsp;&nbsp;└── <span class="keyword">课程名</span>/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="keyword">课时名</span>/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="string">index.html</span> &nbsp;<span class="comment">← PPT 入口</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="string">教案.md</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">← 教案内容</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="string">作业.md</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">← 作业内容</span></code>
+            </div>
+        </div>
+
+        <h2 class="section-title">默认规则</h2>
+        <div class="card">
+            <table>
+                <tr><th>未指定</th><th>默认值</th></tr>
+                <tr><td>页数</td><td>8~20 页</td></tr>
+                <tr><td>风格</td><td>极简科技风（深色）</td></tr>
+                <tr><td>比例</td><td>16:9 横屏</td></tr>
+            </table>
+        </div>
+    </section>
+
+    <!-- 完整模板 -->
+    <section id="page-template" class="page-section">
+        <h1 class="page-title">完整模板</h1>
+        <p class="page-subtitle">可复制使用的完整 HTML PPT 模板</p>
+
+        <button onclick="copyTemplate()" style="background: #34d399; color: #000; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-bottom: 20px;">
+            📋 复制完整模板
+        </button>
+
+        <div class="code-block" style="max-height: 400px; overflow-y: auto;">
+            <code>&lt;!DOCTYPE html&gt;<br>
+&lt;html lang="zh-CN"&gt;<br>
+&lt;head&gt;<br>
+&nbsp;&nbsp;&lt;meta charset="UTF-8"&gt;<br>
+&nbsp;&nbsp;&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;<br>
+&nbsp;&nbsp;&lt;title&gt;课时名称&lt;/title&gt;<br>
+&nbsp;&nbsp;&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;<br>
+&nbsp;&nbsp;&lt;style&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;body { font-family: 'Inter', sans-serif; background: #0a0a0a; overflow: hidden; }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4rem; opacity: 0; transition: all 0.5s ease; }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.slide.active { opacity: 1; }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.animate-item { opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease; }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;.animate-item.visible { opacity: 1; transform: translateY(0); }<br>
+&nbsp;&nbsp;&lt;/style&gt;<br>
+&lt;/head&gt;<br>
+&lt;body&gt;<br>
+&nbsp;&nbsp;&lt;div id="slides-container"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="slide active"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;h1 class="text-5xl font-bold text-white"&gt;标题&lt;/h1&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;p class="text-xl text-gray-400"&gt;副标题&lt;/p&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;<br>
+&nbsp;&nbsp;&lt;/div&gt;<br>
+&nbsp;&nbsp;&lt;div class="fixed bottom-0 left-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500" id="progress"&gt;&lt;/div&gt;<br>
+&nbsp;&nbsp;&lt;script&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;let current = 0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const slides = document.querySelectorAll('.slide');<br>
+&nbsp;&nbsp;&nbsp;&nbsp;document.addEventListener('keydown', (e) => {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (e.key === 'ArrowRight' || e.key === ' ') next();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (e.key === 'ArrowLeft') prev();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;});<br>
+&nbsp;&nbsp;&nbsp;&nbsp;function next() { if (current < slides.length - 1) { slides[current].classList.remove('active'); slides[++current].classList.add('active'); } }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;function prev() { if (current > 0) { slides[current].classList.remove('active'); slides[--current].classList.add('active'); } }<br>
+&nbsp;&nbsp;&lt;/script&gt;<br>
+&lt;/body&gt;<br>
+&lt;/html&gt;</code>
+        </div>
+    </section>
+
+    <!-- 实时演示 -->
+    <section id="page-demo" class="page-section">
+        <h1 class="page-title">实时演示</h1>
+        <p class="page-subtitle">点击进入互动演示，亲身体验 PPT 功能</p>
+
+        <a href="../demo.html" style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: #fff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 18px; margin: 20px 0;">
+            🚀 打开实时演示
+        </a>
+
+        <h2 class="section-title">演示功能</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px;">
+            <div class="card">
+                <div class="card-title">⌨️ 键盘控制</div>
+                <p style="color: #888; font-size: 13px;">← → 翻页，空格显示下一元素</p>
+            </div>
+            <div class="card">
+                <div class="card-title">✨ 逐步动画</div>
+                <p style="color: #888; font-size: 13px;">点击触发，元素逐个出现</p>
+            </div>
+            <div class="card">
+                <div class="card-title">📊 进度条</div>
+                <p style="color: #888; font-size: 13px;">底部显示当前进度</p>
+            </div>
+            <div class="card">
+                <div class="card-title">🎯 激光笔</div>
+                <p style="color: #888; font-size: 13px;">鼠标按住可显示激光笔效果</p>
+            </div>
+        </div>
+
+        <h2 class="section-title">快捷键</h2>
+        <div class="card">
+            <table>
+                <tr><th>按键</th><th>功能</th></tr>
+                <tr><td style="font-weight: 600;">→ / 空格</td><td>显示下一元素，或翻到下一页</td></tr>
+                <tr><td style="font-weight: 600;">←</td><td>隐藏当前元素，或回到上一页</td></tr>
+                <tr><td style="font-weight: 600;">鼠标按住</td><td>显示激光笔</td></tr>
+            </table>
+        </div>
+
+        <div class="tip-box success">
+            <div class="tip-title">💡 提示</div>
+            <div class="tip-content">演示页面展示了完整的 PPT 功能，包括逐步显示动画、键盘导航、进度条等。</div>
+        </div>
+    </section>
+
+</main>
+
+<script>
+    // 导航切换
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const page = item.dataset.page;
+
+            // 更新导航状态
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            item.classList.add('active');
+
+            // 切换页面
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+        });
+    });
+
+    // 动画演示
+    function playAnimationDemo() {
+        const boxes = document.querySelectorAll('#animationDemo .animation-demo-box');
+        boxes.forEach((box, i) => {
+            box.style.opacity = '0';
+            box.style.transform = 'translateY(20px)';
+            box.style.transition = 'none';
+        });
+
+        setTimeout(() => {
+            boxes.forEach((box, i) => {
+                box.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                setTimeout(() => {
+                    box.style.opacity = '1';
+                    box.style.transform = 'translateY(0)';
+                }, i * 300);
+            });
+        }, 50);
+    }
+
+    // 复制模板
+    function copyTemplate() {
+            const template = `<!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课时名称</title>
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; overflow: hidden; }
+        .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4rem; opacity: 0; transition: all 0.5s ease; }
+        .slide.active { opacity: 1; }
+        .animate-item { opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease; }
+        .animate-item.visible { opacity: 1; transform: translateY(0); }
+    <\/style>
+    </head>
+    <body>
+    <div id="slides-container">
+        <div class="slide active">
+            <h1 class="text-5xl font-bold text-white">标题</h1>
+            <p class="text-xl text-gray-400">副标题</p>
+        </div>
+    </div>
+    <div class="fixed bottom-0 left-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500" id="progress"></div>
+    <script>
+        let current = 0;
+        const slides = document.querySelectorAll('.slide');
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') next();
+            if (e.key === 'ArrowLeft') prev();
+        });
+        function next() { if (current < slides.length - 1) { slides[current].classList.remove('active'); slides[++current].classList.add('active'); } }
+        function prev() { if (current > 0) { slides[current].classList.remove('active'); slides[--current].classList.add('active'); } }
+    <\/script>
+    </body>
+    </html>`;
+
+        navigator.clipboard.writeText(template).then(() => {
+            alert('✅ 模板已复制到剪贴板！');
+        }).catch(() => {
+            alert('复制失败，请手动复制');
+        });
+    }
+</script>
+</body>
+</html>

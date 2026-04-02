@@ -6,49 +6,551 @@
     <title>变量及其输入 - 让计算机"记住"数据</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=HarmonyOS+Sans+SC:wght@300;400;700&display=swap');
-        body { font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif; background: #0a0a0a; overflow: hidden; }
-        .bg-blur { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); opacity: 0.25; animation: float 8s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(50px, 50px); } }
-        .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4rem; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
-        .slide.active { opacity: 1; pointer-events: auto; }
-        .animate-item { opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease; }
-        .animate-item.visible { opacity: 1; transform: translateY(0); }
-        .progress-bar { position: fixed; bottom: 0; left: 0; height: 4px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 0.3s ease; }
-        .progress-dots { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; cursor: pointer; transition: all 0.3s ease; }
-        .dot.active { background: #60a5fa; transform: scale(1.3); }
-        .code-block { background: #1e1e2e; border: 1px solid #3b82f6; border-radius: 12px; padding: 1.5rem 2rem; font-family: 'Monaco', 'Menlo', monospace; font-size: 1.1rem; color: #f0f0f0; margin: 1rem 0; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=HarmonyOS+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif;
+            background: #0a0a0a;
+            overflow: hidden;
+        }
+
+        .bg-blur {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.25;
+            animation: float 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(50px, 50px); }
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+            padding-bottom: 6rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .animate-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .animate-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            transition: width 0.3s ease;
+        }
+
+        .progress-dots {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #334155;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #60a5fa;
+            transform: scale(1.3);
+        }
+
+        .code-block {
+            background: #1e1e2e;
+            border: 1px solid #3b82f6;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 1.1rem;
+            color: #f0f0f0;
+            margin: 1rem 0;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+        }
+
         .code-block .keyword { color: #f472b6; }
         .code-block .function { color: #34d399; }
         .code-block .number { color: #fbbf24; }
         .code-block .string { color: #a78bfa; }
         .code-block .comment { color: #6b7280; }
-        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 1.5rem; text-align: center; }
-        .info-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
-        .info-table th, .info-table td { border: 1px solid rgba(255,255,255,0.2); padding: 0.75rem 1rem; text-align: center; }
-        .info-table th { background: rgba(59, 130, 246, 0.4); color: #ffffff; }
-        .info-table td { background: rgba(255,255,255,0.05); color: #f0f0f0; }
+
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .info-table th, .info-table td {
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.75rem 1rem;
+            text-align: center;
+        }
+
+        .info-table th {
+            background: rgba(59, 130, 246, 0.4);
+            color: #ffffff;
+        }
+
+        .info-table td {
+            background: rgba(255,255,255,0.05);
+            color: #f0f0f0;
+        }
+
+        /* 拖拽区域样式 */
+        .drag-item {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            background: rgba(96, 165, 250, 0.15);
+            border: 2px solid rgba(96, 165, 250, 0.4);
+            border-radius: 8px;
+            color: #60a5fa;
+            font-weight: 600;
+            cursor: grab;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .drag-item:hover {
+            background: rgba(96, 165, 250, 0.25);
+            transform: scale(1.05);
+        }
+
+        .drag-item:active {
+            cursor: grabbing;
+        }
+
+        .drag-item.dragging {
+            opacity: 0.5;
+        }
+
+        .drag-item.completed {
+            background: rgba(52, 211, 153, 0.2);
+            border-color: #34d399;
+            color: #34d399;
+            cursor: default;
+        }
+
+        .drop-zone {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 80px;
+            min-height: 50px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 2px dashed rgba(255,255,255,0.3);
+            border-radius: 8px;
+            color: #d1d5db;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+
+        .drop-zone.highlight {
+            border-color: #60a5fa;
+            background: rgba(96, 165, 250, 0.1);
+            border-style: solid;
+        }
+
+        .drop-zone.correct {
+            border-color: #34d399;
+            background: rgba(52, 211, 153, 0.2);
+            color: #34d399;
+            border-style: solid;
+        }
+
+        .drop-zone.wrong {
+            border-color: #f87171;
+            background: rgba(248, 113, 113, 0.2);
+            animation: shake 0.3s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* 测验选项样式 */
+        .quiz-option {
+            padding: 1rem 1.5rem;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 0.5rem 0;
+            background: rgba(255,255,255,0.03);
+        }
+
+        .quiz-option:hover:not(.correct):not(.wrong) {
+            border-color: #3b82f6;
+            background: rgba(59,130,246,0.1);
+        }
+
+        .quiz-option.correct {
+            border-color: #22c55e;
+            background: rgba(34,197,94,0.2);
+            animation: correctPulse 0.5s ease;
+        }
+
+        .quiz-option.wrong {
+            border-color: #ef4444;
+            background: rgba(239,68,68,0.2);
+        }
+
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .quiz-option .letter {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            color: #e5e7eb;
+        }
+
+        .quiz-option span {
+            color: #e5e7eb;
+        }
+
+        .quiz-option p {
+            color: #e5e7eb;
+        }
+
+        .quiz-option.correct .letter {
+            background: #22c55e;
+            color: white;
+        }
+
+        .quiz-option.wrong .letter {
+            background: #ef4444;
+            color: white;
+        }
+
+        /* 粒子效果 */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.5rem;
+            animation: confetti 0.8s ease forwards;
+            z-index: 9999;
+        }
+
+        @keyframes confetti {
+            0% { opacity: 1; transform: scale(1) translateY(0); }
+            100% { opacity: 0; transform: scale(1.5) translateY(-60px); }
+        }
+
+        /* 变量盒子可视化 */
+        .var-box {
+            width: 60px;
+            height: 60px;
+            background: rgba(96, 165, 250, 0.15);
+            border: 2px solid rgba(96, 165, 250, 0.4);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .var-box .var-name {
+            font-size: 1.2rem;
+            color: #60a5fa;
+        }
+
+        .var-box .var-value {
+            font-size: 0.9rem;
+            color: #fbbf24;
+        }
+
+        /* 反馈提示 */
+        .feedback-toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            animation: fadeIn 0.3s ease;
+            z-index: 9999;
+            text-align: center;
+        }
+
+        .feedback-toast.success {
+            background: rgba(52, 211, 153, 0.95);
+            color: white;
+        }
+
+        .feedback-toast.error {
+            background: rgba(248, 113, 113, 0.95);
+            color: white;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
     </style>
 </head>
 <body>
+    <!-- 背景光斑 -->
     <div class="bg-blur" style="top: -200px; left: -200px; background: #3b82f6;"></div>
     <div class="bg-blur" style="bottom: -200px; right: -200px; background: #8b5cf6; animation-delay: -4s;"></div>
 
+    <!-- 顶部栏：得分和连胜 -->
+    <header class="fixed top-0 left-0 right-0 flex justify-between items-center px-6 py-3 bg-black/30 backdrop-blur border-b border-white/10 z-50">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl">📚</span>
+            <div>
+                <h1 class="text-sm font-bold text-white">变量及其输入</h1>
+                <p class="text-xs text-gray-200">C++ 语法篇 · 第 2 课</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-500/20 border border-yellow-500/40">
+                <span class="text-yellow-400 text-lg">⭐</span>
+                <span id="scoreDisplay" class="font-bold text-yellow-400">0</span>
+            </div>
+            <div class="flex items-center gap-2 px-4 py-2 rounded-full bg-pink-500/20 border border-pink-500/40">
+                <span class="text-pink-400 text-lg">🔥</span>
+                <span id="streakDisplay" class="font-bold text-pink-400">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 页面内容 -->
     <div id="slides-container">
+
         <!-- 第1页：封面 -->
         <div class="slide active">
-            <h1 class="text-5xl font-bold text-gray-100 mb-8 animate-item">变量及其输入</h1>
+            <h1 class="text-5xl font-bold text-gray-100 mb-6 animate-item">变量及其输入</h1>
             <p class="text-2xl text-blue-400 mb-8 animate-item">让计算机"记住"数据</p>
             <div class="grid grid-cols-3 gap-6 w-full max-w-4xl mb-6">
-                <div class="card animate-item"><div class="text-4xl mb-3">📦</div><p class="text-lg text-gray-100 font-bold">变量</p><p class="text-gray-400 text-sm">存放数据的盒子</p></div>
-                <div class="card animate-item"><div class="text-4xl mb-3">⌨️</div><p class="text-lg text-gray-100 font-bold">输入</p><p class="text-gray-400 text-sm">scanf() 命令</p></div>
-                <div class="card animate-item"><div class="text-4xl mb-3">🔄</div><p class="text-lg text-gray-100 font-bold">赋值</p><p class="text-gray-400 text-sm">把值存进变量</p></div>
+                <div class="card animate-item">
+                    <div class="text-4xl mb-3">📦</div>
+                    <p class="text-lg text-gray-100 font-bold">变量</p>
+                    <p class="text-gray-200 text-sm">存放数据的盒子</p>
+                </div>
+                <div class="card animate-item">
+                    <div class="text-4xl mb-3">⌨️</div>
+                    <p class="text-lg text-gray-100 font-bold">输入</p>
+                    <p class="text-gray-200 text-sm">scanf() 命令</p>
+                </div>
+                <div class="card animate-item">
+                    <div class="text-4xl mb-3">🔄</div>
+                    <p class="text-lg text-gray-100 font-bold">赋值</p>
+                    <p class="text-gray-200 text-sm">把值存进变量</p>
+                </div>
             </div>
-            <p class="text-gray-500 animate-item">C++ 语法篇 · 第 2 课</p>
+            <div class="flex gap-4 mt-4 animate-item">
+                <div class="px-4 py-2 rounded-full bg-blue-500/20 text-blue-400 text-sm">int</div>
+                <div class="px-4 py-2 rounded-full bg-green-500/20 text-green-400 text-sm">double</div>
+                <div class="px-4 py-2 rounded-full bg-yellow-500/20 text-yellow-400 text-sm">scanf()</div>
+            </div>
         </div>
 
-        <!-- 第2页：程序1-4 a+b问题 -->
+        <!-- 第2页：变量是什么 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">变量是什么？</h2>
+            <div class="card w-full max-w-2xl animate-item">
+                <div class="text-6xl mb-4">📦</div>
+                <p class="text-xl text-gray-100 mb-4">变量就像一个<strong class="text-blue-400">盒子</strong></p>
+                <p class="text-gray-200">盒子上贴了名字，里面可以放数字</p>
+            </div>
+            <div class="grid grid-cols-3 gap-4 mt-6 w-full max-w-3xl animate-item">
+                <div class="card">
+                    <p class="text-2xl mb-2">1️⃣</p>
+                    <p class="text-gray-100">找一个盒子</p>
+                    <p class="text-gray-200 text-sm">声明变量</p>
+                </div>
+                <div class="card">
+                    <p class="text-2xl mb-2">2️⃣</p>
+                    <p class="text-gray-100">贴上名字</p>
+                    <p class="text-gray-200 text-sm">起个变量名</p>
+                </div>
+                <div class="card">
+                    <p class="text-2xl mb-2">3️⃣</p>
+                    <p class="text-gray-100">放东西进去</p>
+                    <p class="text-gray-200 text-sm">赋值</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第3页：变量可视化 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">变量可视化</h2>
+            <div class="flex items-center gap-8 animate-item">
+                <div class="var-box">
+                    <span class="var-name">a</span>
+                    <span class="var-value">5</span>
+                </div>
+                <div class="text-4xl text-gray-200">→</div>
+                <div class="var-box">
+                    <span class="var-name">b</span>
+                    <span class="var-value">3</span>
+                </div>
+            </div>
+            <p class="text-gray-200 mt-6 animate-item">变量 a 存放 5，变量 b 存放 3</p>
+        </div>
+
+        <!-- 第4页：声明变量 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">声明变量</h2>
+            <div class="code-block animate-item">
+                <span class="keyword">int</span> a;        <span class="comment">// 声明整数变量 a</span><br>
+                <span class="keyword">double</span> b;     <span class="comment">// 声明浮点数变量 b</span>
+            </div>
+            <table class="info-table w-full max-w-2xl mt-6 animate-item">
+                <thead>
+                    <tr><th>类型</th><th>含义</th><th>例子</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="text-blue-400 font-bold">int</td><td class="text-gray-100">整数</td><td class="text-gray-100">1, 100, -5</td></tr>
+                    <tr><td class="text-green-400 font-bold">double</td><td class="text-gray-100">浮点数</td><td class="text-gray-100">3.14, -0.5</td></tr>
+                </tbody>
+            </table>
+            <p class="text-yellow-400 mt-4 animate-item">⚠️ 变量必须先声明才能使用！</p>
+        </div>
+
+        <!-- 第5页：赋值 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">赋值：把值存进变量</h2>
+            <div class="code-block animate-item">
+                <span class="keyword">int</span> a;<br>
+                a = <span class="number">5</span>;       <span class="comment">// a 盒子里放 5</span>
+            </div>
+            <div class="flex items-center gap-4 mt-6 animate-item">
+                <div class="var-box opacity-50">
+                    <span class="var-name">a</span>
+                    <span class="var-value">?</span>
+                </div>
+                <div class="text-2xl text-green-400">→</div>
+                <div class="var-box" style="border-color: #34d399;">
+                    <span class="var-name">a</span>
+                    <span class="var-value">5</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第6页：= 不是等于 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">⚠️ = 不是"等于"！</h2>
+            <div class="card w-full max-w-2xl animate-item">
+                <p class="text-xl text-red-400 font-bold mb-4">= 是"赋值"：把右边的值放进左边的变量</p>
+            </div>
+            <div class="code-block mt-6 animate-item">
+                a = <span class="number">5</span>;       <span class="comment">// a 盒子放 5</span><br>
+                a = a + <span class="number">1</span>;   <span class="comment">// 算出来 6，再放进 a</span>
+            </div>
+            <p class="text-yellow-400 mt-6 animate-item">变量是"喜新厌旧"的，新的值会覆盖旧的值！</p>
+        </div>
+
+        <!-- 第7页：测验1 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">测验：变量赋值</h2>
+            <p class="text-xl text-gray-200 mb-6 animate-item">int a = 3; a = 5; a 的值是？</p>
+            <div class="space-y-3 w-full max-w-md animate-item" id="quiz-1">
+                <div class="quiz-option" data-correct="false" onclick="checkQuiz(this, false, 1)">
+                    <span class="letter">A</span>
+                    <span>3</span>
+                </div>
+                <div class="quiz-option" data-correct="true" onclick="checkQuiz(this, true, 1)">
+                    <span class="letter">B</span>
+                    <span>5</span>
+                </div>
+                <div class="quiz-option" data-correct="false" onclick="checkQuiz(this, false, 1)">
+                    <span class="letter">C</span>
+                    <span>报错</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第8页：scanf() -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">scanf() 读取输入</h2>
+            <div class="code-block animate-item">
+                <span class="keyword">int</span> a;<br>
+                <span class="function">scanf</span>(<span class="string">"%d"</span>, &amp;a);
+            </div>
+            <div class="flex items-center gap-4 mt-6 animate-item">
+                <div class="card">
+                    <p class="text-blue-400 font-bold">%d</p>
+                    <p class="text-gray-200 text-sm">读取整数</p>
+                </div>
+                <div class="text-2xl text-gray-200">+</div>
+                <div class="card">
+                    <p class="text-yellow-400 font-bold">&amp;a</p>
+                    <p class="text-gray-200 text-sm">存到变量 a</p>
+                </div>
+            </div>
+            <p class="text-red-400 mt-6 animate-item">⚠️ & 不能漏掉！</p>
+        </div>
+
+        <!-- 第9页：a+b例题 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-4　a+b问题</h2>
             <div class="code-block animate-item">
@@ -60,142 +562,410 @@
                 &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="number">0</span>;<br>
                 }
             </div>
-            <p class="text-gray-400 mt-4 animate-item">声明变量 → 读取输入 → 计算 → 输出</p>
+            <p class="text-gray-200 mt-4 animate-item">声明 → 读取 → 计算 → 输出</p>
         </div>
 
-        <!-- 第3页：提示1-3 -->
+        <!-- 第10页：测验2 -->
         <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">提示1-3：scanf的占位符</h2>
-            <div class="card w-full max-w-2xl animate-item">
-                <p class="text-blue-400 font-bold text-xl mb-4">scanf中的占位符和变量的数据类型应一一对应</p>
-                <p class="text-gray-300">每个变量前需要加"&amp;"符号</p>
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">测验：scanf 填空</h2>
+            <p class="text-xl text-gray-200 mb-6 animate-item">如何读取一个整数存到变量 a？</p>
+            <div class="code-block text-sm animate-item">
+                <span class="keyword">int</span> a;<br>
+                <span class="function">scanf</span>(<span id="quiz2-blank" class="text-purple-400">________</span>, &amp;a);
             </div>
-            <div class="code-block mt-6 animate-item">
-                <span class="keyword">int</span> a, b;<br>
-                <span class="function">scanf</span>(<span class="string">"%d%d"</span>, &amp;a, &amp;b);
+            <div class="flex gap-4 mt-6 animate-item" id="quiz-2">
+                <div class="drag-item" draggable="true" data-value="%d" onclick="selectQuiz2(this)">%d</div>
+                <div class="drag-item" draggable="true" data-value="%f" onclick="selectQuiz2(this)">%f</div>
+                <div class="drag-item" draggable="true" data-value="a" onclick="selectQuiz2(this)">a</div>
             </div>
+            <p id="quiz2-feedback" class="mt-4 text-lg font-semibold hidden"></p>
         </div>
 
-        <!-- 第4页：变量类型 -->
-        <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">声明变量</h2>
-            <div class="code-block animate-item"><span class="keyword">int</span> a;        <span class="comment">// 声明整数变量 a</span><br><span class="keyword">double</span> b;     <span class="comment">// 声明浮点数变量 b</span></div>
-            <table class="info-table w-full max-w-2xl mt-6 animate-item">
-                <thead><tr><th>类型</th><th>含义</th><th>例子</th></tr></thead>
-                <tbody>
-                    <tr><td class="text-blue-400">int</td><td class="text-gray-100">整数</td><td class="text-gray-100">1, 100, -5</td></tr>
-                    <tr><td class="text-green-400">double</td><td class="text-gray-100">浮点数</td><td class="text-gray-100">3.14, -0.5</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- 第5页：scanf() -->
-        <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">scanf() 读取输入</h2>
-            <div class="code-block animate-item"><span class="keyword">int</span> a;<br><span class="function">scanf</span>(<span class="string">"%d"</span>, &amp;a);</div>
-            <p class="text-yellow-400 mt-4 animate-item">⚠️ & 不能漏掉！</p>
-        </div>
-
-        <!-- 第6页：赋值运算 -->
-        <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">赋值运算的理解</h2>
-            <div class="card animate-item"><p class="text-xl text-red-400 font-bold mb-4">⚠️ = 不是"等于"！</p><p class="text-gray-100">= 是"赋值"：把右边的值放进左边的变量</p></div>
-            <div class="code-block mt-4 animate-item">
-                a = <span class="number">5</span>;       <span class="comment">// a 盒子放 5</span><br>
-                a = a + <span class="number">1</span>;   <span class="comment">// 算出来 6，再放进 a</span>
-            </div>
-            <p class="text-yellow-400 mt-4 animate-item">变量是"喜新厌旧"的，新的值会覆盖旧的值！</p>
-        </div>
-
-        <!-- 第7页：例题1-1 圆柱体表面积 -->
-        <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">例题1-1　圆柱体的表面积</h2>
-            <p class="text-gray-300 mb-4 animate-item">输入底面半径 r 和高 h，输出圆柱体的表面积，保留3位小数</p>
-            <div class="grid grid-cols-2 gap-4 w-full max-w-2xl">
-                <div class="card animate-item"><p class="text-gray-400 text-sm">样例输入</p><p class="text-green-400">3.5 9</p></div>
-                <div class="card animate-item"><p class="text-gray-400 text-sm">样例输出</p><p class="text-green-400">Area = 274.889</p></div>
-            </div>
-        </div>
-
-        <!-- 第8页：程序1-5 圆柱体表面积 -->
-        <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">程序1-5　圆柱体的表面积</h2>
-            <div class="code-block animate-item">
-                <span class="keyword">#include</span> <span class="string">&lt;stdio.h&gt;</span><br>
-                <span class="keyword">#include</span> <span class="string">&lt;math.h&gt;</span><br>
-                <span class="keyword">int</span> main() {<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">const double</span> pi = <span class="function">acos</span>(-<span class="number">1.0</span>);<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">double</span> r, h, s1, s2, s;<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">scanf</span>(<span class="string">"%lf%lf"</span>, &amp;r, &amp;h);<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;s1 = pi*r*r;<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;s2 = <span class="number">2</span>*pi*r*h;<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;s = s1*<span class="number">2.0</span> + s2;<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">printf</span>(<span class="string">"Area = %.3f\n"</span>, s);<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> <span class="number">0</span>;<br>
-                }
-            </div>
-        </div>
-
-        <!-- 第9页：竞赛规则 -->
-        <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">竞赛规则提醒</h2>
-            <div class="space-y-4 w-full max-w-2xl">
-                <div class="card animate-item"><p class="text-red-400 font-bold">❌ 不要加提示语</p><p class="text-gray-500 text-sm mt-1">printf("请输入a:") - 错误！</p></div>
-                <div class="card animate-item"><p class="text-green-400 font-bold">✓ 直接 scanf()</p><p class="text-gray-500 text-sm mt-1">scanf("%d", &a); - 正确！</p></div>
-                <div class="card animate-item"><p class="text-yellow-400 font-bold">✓ 输出格式要严格</p><p class="text-gray-500 text-sm mt-1">题目说保留3位小数，就用 %.3f</p></div>
-            </div>
-        </div>
-
-        <!-- 第10页：变量交换 -->
+        <!-- 第11页：变量交换 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">变量交换：三变量法</h2>
+            <p class="text-gray-200 mb-6 animate-item">如何交换 a=3 和 b=5 的值？</p>
             <div class="code-block animate-item">
-                <span class="keyword">int</span> a = <span class="number">3</span>, b = <span class="number">5</span>, t;<br>
+                <span class="keyword">int</span> a = <span class="number">3</span>, b = <span class="number">5</span>, t;<br><br>
                 t = a;  <span class="comment">// t = 3</span><br>
                 a = b;  <span class="comment">// a = 5</span><br>
                 b = t;  <span class="comment">// b = 3</span>
             </div>
+            <p class="text-yellow-400 mt-4 animate-item">就像用空杯子交换酱油和醋</p>
         </div>
 
-        <!-- 第11页：总结 -->
+        <!-- 第12页：拖拽练习：变量交换 -->
         <div class="slide">
-            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">今天学了什么？</h2>
-            <div class="grid grid-cols-2 gap-4 w-full max-w-3xl">
-                <div class="card animate-item"><p class="text-blue-400 font-bold">int a;</p><p class="text-gray-400 text-sm">声明整数变量</p></div>
-                <div class="card animate-item"><p class="text-green-400 font-bold">double b;</p><p class="text-gray-400 text-sm">声明浮点数变量</p></div>
-                <div class="card animate-item"><p class="text-yellow-400 font-bold">scanf("%d", &a);</p><p class="text-gray-400 text-sm">读取输入</p></div>
-                <div class="card animate-item"><p class="text-purple-400 font-bold">变量交换</p><p class="text-gray-400 text-sm">三变量法</p></div>
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">拖拽练习：完成变量交换</h2>
+            <p class="text-gray-200 mb-6 animate-item">把代码块拖到正确的位置</p>
+            
+            <div class="card w-full max-w-2xl animate-item">
+                <p class="text-sm text-gray-200 mb-4">初始状态：a = 3, b = 5</p>
+                <div class="code-block text-sm">
+                    <span class="keyword">int</span> a = <span class="number">3</span>, b = <span class="number">5</span>, t;<br><br>
+                    <span id="drop1" class="drop-zone" data-answer="t = a;" ondrop="handleDrop(event, 't = a;')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">①</span>  <span class="comment">// t = ?</span><br>
+                    <span id="drop2" class="drop-zone" data-answer="a = b;" ondrop="handleDrop(event, 'a = b;')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">②</span>  <span class="comment">// a = ?</span><br>
+                    <span id="drop3" class="drop-zone" data-answer="b = t;" ondrop="handleDrop(event, 'b = t;')" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">③</span>  <span class="comment">// b = ?</span>
+                </div>
+            </div>
+
+            <div class="flex gap-4 mt-6 animate-item" id="drag-source">
+                <div class="drag-item" draggable="true" data-value="a = b;">a = b;</div>
+                <div class="drag-item" draggable="true" data-value="b = t;">b = t;</div>
+                <div class="drag-item" draggable="true" data-value="t = a;">t = a;</div>
+            </div>
+
+            <button id="check-swap-btn" class="mt-6 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg hidden" onclick="checkSwapExercise()">
+                检查答案
+            </button>
+        </div>
+
+        <!-- 第13页：圆柱体例题 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-6 animate-item">例题：圆柱体表面积</h2>
+            <p class="text-gray-200 mb-4 animate-item">输入底面半径 r 和高 h，输出表面积</p>
+            <div class="grid grid-cols-2 gap-4 w-full max-w-2xl mb-6 animate-item">
+                <div class="card">
+                    <p class="text-gray-200 text-sm">样例输入</p>
+                    <p class="text-green-400 text-lg">3.5 9</p>
+                </div>
+                <div class="card">
+                    <p class="text-gray-200 text-sm">样例输出</p>
+                    <p class="text-green-400 text-lg">Area = 274.889</p>
+                </div>
+            </div>
+            <p class="text-gray-200 animate-item">公式：S = 2πr² + 2πrh</p>
+        </div>
+
+        <!-- 第14页：竞赛规则 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">竞赛规则提醒</h2>
+            <div class="space-y-4 w-full max-w-2xl">
+                <div class="card animate-item">
+                    <p class="text-red-400 font-bold">❌ 不要加提示语</p>
+                    <p class="text-gray-200 text-sm mt-1">printf("请输入a:") - 错误！</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-green-400 font-bold">✓ 直接 scanf()</p>
+                    <p class="text-gray-200 text-sm mt-1">scanf("%d", &a); - 正确！</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-yellow-400 font-bold">✓ 输出格式要严格</p>
+                    <p class="text-gray-200 text-sm mt-1">题目说保留3位小数，就用 %.3f</p>
+                </div>
             </div>
         </div>
 
-        <!-- 第12页：下节课预告 -->
+        <!-- 第15页：总结 -->
+        <div class="slide">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">今天学了什么？</h2>
+            <div class="grid grid-cols-2 gap-4 w-full max-w-3xl">
+                <div class="card animate-item">
+                    <p class="text-blue-400 font-bold">int a;</p>
+                    <p class="text-gray-200 text-sm">声明整数变量</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-green-400 font-bold">double b;</p>
+                    <p class="text-gray-200 text-sm">声明浮点数变量</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-yellow-400 font-bold">scanf("%d", &a);</p>
+                    <p class="text-gray-200 text-sm">读取输入</p>
+                </div>
+                <div class="card animate-item">
+                    <p class="text-purple-400 font-bold">变量交换</p>
+                    <p class="text-gray-200 text-sm">三变量法 t = a; a = b; b = t;</p>
+                </div>
+            </div>
+            <div class="mt-6 animate-item">
+                <p class="text-yellow-400">⭐ 本课得分：<span id="final-score">0</span></p>
+            </div>
+        </div>
+
+        <!-- 第16页：下节课预告 -->
         <div class="slide">
             <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">下节课预告</h2>
-            <div class="card animate-item"><div class="text-4xl mb-4">📝</div><p class="text-2xl text-gray-100 font-bold">顺序结构程序设计</p><p class="text-gray-400 mt-4">一步一步执行，像做菜一样</p></div>
-            <p class="text-gray-500 mt-8 animate-item">C++ 语法篇 · 第 3 课</p>
+            <div class="card animate-item">
+                <div class="text-4xl mb-4">📝</div>
+                <p class="text-2xl text-gray-100 font-bold">顺序结构程序设计</p>
+                <p class="text-gray-200 mt-4">一步一步执行，像做菜一样</p>
+            </div>
+            <p class="text-gray-200 mt-8 animate-item">C++ 语法篇 · 第 3 课</p>
         </div>
+
     </div>
 
-    <div class="fixed top-4 right-4 text-gray-500 text-sm animate-item">点击空格/右箭头逐步显示</div>
+    <!-- 提示 -->
+    <div class="fixed top-20 right-4 text-gray-200 text-sm animate-item">点击空格/右箭头逐步显示</div>
+
+    <!-- 进度条 -->
     <div class="progress-bar" id="progress"></div>
     <div class="progress-dots" id="dots"></div>
 
     <script>
-        let currentSlide = 0, currentItem = 0;
+        // 学习数据
+        const learningData = {
+            score: 0,
+            streak: 0,
+            quizAnswered: {}
+        };
+
+        // 幻灯片控制
+        let currentSlide = 0;
+        let currentItem = 0;
         const slides = document.querySelectorAll('.slide');
         const totalSlides = slides.length;
+
+        // 创建进度点
         const dotsContainer = document.getElementById('dots');
-        for (let i = 0; i < totalSlides; i++) { const dot = document.createElement('div'); dot.className = 'dot' + (i === 0 ? ' active' : ''); dot.addEventListener('click', () => goToSlide(i)); dotsContainer.appendChild(dot); }
-        function getCurrentItems() { return slides[currentSlide].querySelectorAll('.animate-item'); }
-        function showNextItem() { const items = getCurrentItems(); if (currentItem < items.length) { items[currentItem].classList.add('visible'); currentItem++; return true; } return false; }
-        function hideAllItems() { const items = getCurrentItems(); items.forEach(item => item.classList.remove('visible')); currentItem = 0; }
-        function goToSlide(index) { if (index < 0 || index >= totalSlides) return; slides[currentSlide].classList.remove('active'); document.querySelectorAll('.dot')[currentSlide].classList.remove('active'); currentSlide = index; slides[currentSlide].classList.add('active'); document.querySelectorAll('.dot')[currentSlide].classList.add('active'); hideAllItems(); updateProgress(); }
-        function nextSlide() { if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1); }
-        function prevSlide() { if (currentSlide > 0) goToSlide(currentSlide - 1); }
-        function updateProgress() { document.getElementById('progress').style.width = ((currentSlide + 1) / totalSlides * 100) + '%'; }
-        document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); if (!showNextItem()) nextSlide(); } else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); } });
-        document.addEventListener('click', (e) => { if (e.target.closest('.dot')) return; if (!showNextItem()) nextSlide(); });
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.addEventListener('click', () => goToSlide(i));
+            dotsContainer.appendChild(dot);
+        }
+
+        function getCurrentItems() {
+            return slides[currentSlide].querySelectorAll('.animate-item');
+        }
+
+        function showNextItem() {
+            const items = getCurrentItems();
+            if (currentItem < items.length) {
+                items[currentItem].classList.add('visible');
+                currentItem++;
+                return true;
+            }
+            return false;
+        }
+
+        function hideAllItems() {
+            const items = getCurrentItems();
+            items.forEach(item => item.classList.remove('visible'));
+            currentItem = 0;
+        }
+
+        function goToSlide(index) {
+            if (index < 0 || index >= totalSlides) return;
+            slides[currentSlide].classList.remove('active');
+            document.querySelectorAll('.dot')[currentSlide].classList.remove('active');
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+            document.querySelectorAll('.dot')[currentSlide].classList.add('active');
+            hideAllItems();
+            updateProgress();
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+
+        function updateProgress() {
+            document.getElementById('progress').style.width =
+                ((currentSlide + 1) / totalSlides * 100) + '%';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                if (!showNextItem()) {
+                    nextSlide();
+                }
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.dot')) return;
+            if (e.target.closest('.quiz-option')) return;
+            if (e.target.closest('.drag-item')) return;
+            if (e.target.closest('.drop-zone')) return;
+            if (e.target.closest('button')) return;
+            if (!showNextItem()) {
+                nextSlide();
+            }
+        });
+
         updateProgress();
+
+        // 得分更新
+        function updateScore(points) {
+            learningData.score += points;
+            document.getElementById('scoreDisplay').textContent = learningData.score;
+            document.getElementById('final-score').textContent = learningData.score;
+        }
+
+        function updateStreak() {
+            learningData.streak++;
+            document.getElementById('streakDisplay').textContent = learningData.streak;
+            if (learningData.streak >= 3) {
+                showFeedback('🔥 连胜 ' + learningData.streak + '！', 'success');
+            }
+        }
+
+        function resetStreak() {
+            learningData.streak = 0;
+            document.getElementById('streakDisplay').textContent = '0';
+        }
+
+        // 反馈提示
+        function showFeedback(text, type) {
+            const existing = document.querySelector('.feedback-toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'feedback-toast ' + type;
+            toast.textContent = text;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 1500);
+        }
+
+        // 粒子效果
+        function showParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const emojis = ['⭐', '✨', '🎉', '💯', '🎊'];
+            for (let i = 0; i < 6; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                particle.style.left = (rect.left + rect.width / 2 + (Math.random() - 0.5) * 60) + 'px';
+                particle.style.top = (rect.top + rect.height / 2) + 'px';
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 800);
+            }
+        }
+
+        // 测验1：选择题
+        function checkQuiz(element, isCorrect, quizId) {
+            if (learningData.quizAnswered[quizId]) return;
+            learningData.quizAnswered[quizId] = true;
+
+            if (isCorrect) {
+                element.classList.add('correct');
+                updateScore(10);
+                updateStreak();
+                showFeedback('正确！+10分', 'success');
+                showParticles(element);
+            } else {
+                element.classList.add('wrong');
+                resetStreak();
+                showFeedback('错误', 'error');
+                // 显示正确答案
+                document.querySelectorAll('#quiz-1 .quiz-option').forEach(opt => {
+                    if (opt.dataset.correct === 'true') {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+        }
+
+        // 测验2：点击选择
+        let quiz2Answer = null;
+        function selectQuiz2(element) {
+            if (quiz2Answer) return;
+            quiz2Answer = element.dataset.value;
+            
+            document.querySelectorAll('#quiz-2 .drag-item').forEach(item => {
+                item.style.pointerEvents = 'none';
+                item.classList.add('completed');
+            });
+            
+            const blank = document.getElementById('quiz2-blank');
+            const feedback = document.getElementById('quiz2-feedback');
+            
+            if (quiz2Answer === '%d') {
+                blank.textContent = '"%d"';
+                blank.classList.add('text-green-400');
+                feedback.textContent = '✓ 正确！%d 表示读取整数';
+                feedback.className = 'mt-4 text-lg font-semibold text-green-400';
+                updateScore(10);
+                updateStreak();
+                showParticles(blank);
+            } else {
+                blank.textContent = '"' + quiz2Answer + '"';
+                blank.classList.add('text-red-400');
+                feedback.textContent = quiz2Answer === '%f' ? '✗ %f 用于 double 类型' : '✗ 直接写变量名不行';
+                feedback.className = 'mt-4 text-lg font-semibold text-red-400';
+                resetStreak();
+            }
+        }
+
+        // 拖拽交换练习
+        const swapAnswers = { drop1: null, drop2: null, drop3: null };
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.target.classList.add('highlight');
+        }
+
+        function handleDragLeave(e) {
+            e.target.classList.remove('highlight');
+        }
+
+        function handleDrop(e, value) {
+            e.preventDefault();
+            e.target.classList.remove('highlight');
+            e.target.classList.add('correct');
+            e.target.textContent = value;
+            swapAnswers[e.target.id] = value;
+            
+            // 检查是否完成所有放置
+            if (swapAnswers.drop1 && swapAnswers.drop2 && swapAnswers.drop3) {
+                document.getElementById('check-swap-btn').classList.remove('hidden');
+            }
+        }
+
+        // 初始化拖拽源
+        document.querySelectorAll('#drag-source .drag-item').forEach(item => {
+            item.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('text/plain', item.dataset.value);
+                item.classList.add('dragging');
+            });
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+            });
+        });
+
+        function checkSwapExercise() {
+            const correct = 
+                swapAnswers.drop1 === 't = a;' &&
+                swapAnswers.drop2 === 'a = b;' &&
+                swapAnswers.drop3 === 'b = t;';
+            
+            if (correct) {
+                updateScore(20);
+                updateStreak();
+                showFeedback('太棒了！+20分', 'success');
+                showParticles(document.getElementById('check-swap-btn'));
+            } else {
+                resetStreak();
+                showFeedback('顺序不对，再想想', 'error');
+                // 重置
+                swapAnswers.drop1 = null;
+                swapAnswers.drop2 = null;
+                swapAnswers.drop3 = null;
+                ['drop1', 'drop2', 'drop3'].forEach(id => {
+                    const el = document.getElementById(id);
+                    el.textContent = '①';
+                    el.classList.remove('correct');
+                });
+                document.querySelectorAll('#drag-source .drag-item').forEach(item => {
+                    item.style.pointerEvents = 'auto';
+                    item.classList.remove('completed');
+                });
+                document.getElementById('check-swap-btn').classList.add('hidden');
+            }
+        }
     </script>
 </body>
 </html>

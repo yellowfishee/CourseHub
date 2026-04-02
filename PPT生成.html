@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPT 生成规范 - CourseHub</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .bg-blur {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            animation: float 10s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(40px, 40px); }
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(15, 15, 20, 0.95);
+            border-right: 1px solid rgba(255,255,255,0.08);
+            overflow-y: auto;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #888;
+            font-size: 14px;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+        .nav-item:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+        }
+        .nav-item.active {
+            color: #60a5fa;
+            background: rgba(96, 165, 250, 0.1);
+            border-left-color: #60a5fa;
+        }
+        .nav-section {
+            padding: 16px 20px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            padding: 40px 60px 80px;
+            max-width: 1100px;
+        }
+
+        .page-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .page-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1.page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        h2.section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 48px 0 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .code-block {
+            background: #111;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            overflow-x: auto;
+            font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+            font-size: 13px;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+        th {
+            background: rgba(96, 165, 250, 0.15);
+            color: #60a5fa;
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: #aaa;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 500;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.1);
+            color: #aaa;
+        }
+        .tag.primary { background: rgba(96, 165, 250, 0.2); color: #60a5fa; }
+        .tag.success { background: rgba(52, 211, 153, 0.2); color: #34d399; }
+        .tag.warning { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .tag.danger { background: rgba(244, 114, 182, 0.2); color: #f472b6; }
+
+        .tip-box {
+            background: rgba(96, 165, 250, 0.1);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 16px 0;
+        }
+        .tip-box.warning {
+            background: rgba(251, 191, 36, 0.1);
+            border-color: rgba(251, 191, 36, 0.3);
+        }
+
+        /* 交互演示区域 */
+        .demo-box {
+            background: #000;
+            border-radius: 12px;
+            padding: 32px;
+            margin: 20px 0;
+            min-height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 拖拽样式 */
+        .drag-item {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            background: rgba(96, 165, 250, 0.15);
+            border: 1px solid rgba(96, 165, 250, 0.4);
+            border-radius: 8px;
+            color: #60a5fa;
+            font-weight: 500;
+            cursor: grab;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .drag-item:hover {
+            background: rgba(96, 165, 250, 0.25);
+            transform: scale(1.05);
+        }
+        .drag-item:active {
+            cursor: grabbing;
+        }
+        .drag-item.dragging {
+            opacity: 0.5;
+        }
+
+        .drop-zone {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 60px;
+            min-height: 44px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: #666;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .drop-zone.highlight {
+            border-color: #60a5fa;
+            background: rgba(96, 165, 250, 0.1);
+        }
+        .drop-zone.correct {
+            border-color: #34d399;
+            background: rgba(52, 211, 153, 0.2);
+            color: #34d399;
+            border-style: solid;
+        }
+        .drop-zone.wrong {
+            border-color: #f87171;
+            background: rgba(248, 113, 113, 0.2);
+            animation: shake 0.3s ease;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* 测验样式 */
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quiz-option:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .quiz-option.correct {
+            border-color: #34d399;
+            background: rgba(52, 211, 153, 0.2);
+            animation: correctPulse 0.5s ease;
+        }
+        .quiz-option.wrong {
+            border-color: #f87171;
+            background: rgba(248, 113, 113, 0.2);
+        }
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .quiz-option .letter {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* 粒子效果 */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.5rem;
+            animation: confetti 0.8s ease forwards;
+            z-index: 9999;
+        }
+        @keyframes confetti {
+            0% { opacity: 1; transform: scale(1) translateY(0); }
+            100% { opacity: 0; transform: scale(1.5) translateY(-60px); }
+        }
+
+        /* 分数显示 */
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(251, 191, 36, 0.15);
+            border-radius: 20px;
+            font-weight: 600;
+            color: #fbbf24;
+        }
+        .streak-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(244, 114, 182, 0.15);
+            border-radius: 20px;
+            font-weight: 600;
+            color: #f472b6;
+        }
+
+        .flow-steps {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .flow-step {
+            background: rgba(96, 165, 250, 0.15);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            color: #60a5fa;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+        .flow-arrow {
+            color: #444;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景装饰 -->
+    <div class="bg-blur" style="top: -200px; left: -100px; background: #3b82f6;"></div>
+    <div class="bg-blur" style="bottom: -200px; right: -100px; background: #8b5cf6; animation-delay: -5s;"></div>
+
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+        <div class="nav-section">概述</div>
+        <div class="nav-item active" data-page="core">核心原则</div>
+        <div class="nav-item" data-page="drag">拖拽系统</div>
+        <div class="nav-item" data-page="quiz">测验系统</div>
+        <div class="nav-item" data-page="tracker">学习追踪</div>
+        <div class="nav-item" data-page="layout">布局规范</div>
+        <div class="nav-item" data-page="demo">交互演示</div>
+    </aside>
+
+    <!-- 主内容 -->
+    <main class="main-content">
+        <!-- 核心原则 -->
+        <section class="page-section active" id="page-core">
+            <h1 class="page-title">PPT 生成规范</h1>
+            <p class="page-subtitle">以学生交互为核心，支持拖拽、选择、即时反馈</p>
+
+            <h2 class="section-title">核心原则</h2>
+
+            <div class="card">
+                <div class="card-title">
+                    <span class="text-2xl">🎯</span>
+                    1. 交互优先（最重要！）
+                </div>
+                <p class="text-gray-400 mb-4">学生必须参与，不能只是看！每个知识点都要设计交互环节：</p>
+                <div class="flow-steps">
+                    <span class="flow-step">拖拽题</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">选择题</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">填空题</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">排序题</span>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <strong>设计检查清单：</strong>
+                <ul class="mt-2 space-y-1 text-gray-400">
+                    <li>• 这个知识点有交互吗？</li>
+                    <li>• 学生能动手操作吗？</li>
+                    <li>• 操作后有即时反馈吗？</li>
+                    <li>• 有得分/连胜等激励机制吗？</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <span class="text-2xl">📝</span>
+                    2. 语言通俗易懂
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>应该用的词</th>
+                            <th>避免用的词</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>命令</td>
+                            <td>函数（除非解释清楚）</td>
+                        </tr>
+                        <tr>
+                            <td>显示出来 / 打印</td>
+                            <td>输出、打印</td>
+                        </tr>
+                        <tr>
+                            <td>让计算机记住</td>
+                            <td>赋值、存储</td>
+                        </tr>
+                        <tr>
+                            <td>拆解问题</td>
+                            <td>拆分问题</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <span class="text-2xl">📋</span>
+                    3. 每页都要有的元素
+                </div>
+                <div class="flow-steps">
+                    <span class="flow-step">大问题/标题</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">生活类比</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">代码示例</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">交互练习</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">一句话总结</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 拖拽系统 -->
+        <section class="page-section" id="page-drag">
+            <h1 class="page-title">拖拽系统</h1>
+            <p class="page-subtitle">核心交互方式，学生通过拖拽完成答题</p>
+
+            <h2 class="section-title">拖拽填空题</h2>
+            <div class="card">
+                <p class="text-gray-400 mb-4">把正确答案拖到框里：</p>
+                <div class="demo-box">
+                    <p class="text-xl mb-4">a = <span class="drop-zone" data-answer="5" id="demo-drop-1">?</span></p>
+                    <div class="flex gap-4 mt-4">
+                        <div class="drag-item" draggable="true" data-value="3">3</div>
+                        <div class="drag-item" draggable="true" data-value="5">5</div>
+                        <div class="drag-item" draggable="true" data-value="7">7</div>
+                    </div>
+                </div>
+                <div class="code-block">
+<pre>// HTML
+&lt;span class="drop-zone" data-answer="5"&gt;?&lt;/span&gt;
+&lt;div class="drag-item" draggable="true" data-value="5"&gt;5&lt;/div&gt;
+
+// JavaScript
+dropZone.addEventListener('drop', e => {
+    const value = e.dataTransfer.getData('text/plain');
+    if (value === dropZone.dataset.answer) {
+        dropZone.classList.add('correct');
+        updateScore(10);
+    }
+});</pre>
+                </div>
+            </div>
+
+            <h2 class="section-title">拖拽排序题</h2>
+            <div class="card">
+                <p class="text-gray-400 mb-4">把执行顺序排列正确：</p>
+                <div class="demo-box">
+                    <p class="text-sm text-gray-500 mb-3">餐厅吃饭的正确顺序是：</p>
+                    <div class="drag-items-container flex flex-wrap gap-3">
+                        <div class="drag-item" draggable="true" data-type="sort" data-value="做菜">做菜</div>
+                        <div class="drag-item" draggable="true" data-type="sort" data-value="点菜">点菜</div>
+                        <div class="drag-item" draggable="true" data-type="sort" data-value="端菜">端菜</div>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-4">提示：先点菜，再做菜，最后端菜</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 测验系统 -->
+        <section class="page-section" id="page-quiz">
+            <h1 class="page-title">测验系统</h1>
+            <p class="page-subtitle">即时反馈的选择题，激发学习动力</p>
+
+            <h2 class="section-title">即时反馈测验</h2>
+            <div class="card">
+                <p class="text-gray-400 mb-4">点击选择正确答案：</p>
+                <div class="demo-box">
+                    <p class="text-lg mb-4">print("Hello") 会显示什么？</p>
+                    <div class="space-y-3" id="quiz-demo">
+                        <div class="quiz-option" data-correct="true">
+                            <span class="letter">A</span>
+                            <span>Hello</span>
+                        </div>
+                        <div class="quiz-option" data-correct="false">
+                            <span class="letter">B</span>
+                            <span>print("Hello")</span>
+                        </div>
+                        <div class="quiz-option" data-correct="false">
+                            <span class="letter">C</span>
+                            <span>报错</span>
+                        </div>
+                    </div>
+                    <div id="quiz-feedback" class="mt-4 text-center text-lg font-semibold hidden"></div>
+                </div>
+                <div class="code-block">
+<pre>quizOption.addEventListener('click', () => {
+    if (option.dataset.correct === 'true') {
+        option.classList.add('correct');
+        showParticles(option);
+        updateScore(10);
+        updateStreak();
+    } else {
+        option.classList.add('wrong');
+        resetStreak();
+    }
+});</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- 学习追踪 -->
+        <section class="page-section" id="page-tracker">
+            <h1 class="page-title">学习追踪</h1>
+            <p class="page-subtitle">得分、连胜等激励机制</p>
+
+            <div class="card">
+                <div class="flex gap-4 mb-6">
+                    <div class="score-display">
+                        <span>⭐</span>
+                        <span>得分: <span id="score-value">0</span></span>
+                    </div>
+                    <div class="streak-display">
+                        <span>🔥</span>
+                        <span>连胜: <span id="streak-value">0</span></span>
+                    </div>
+                </div>
+                <p class="text-gray-500 text-sm">答对题目得分，连续答对增加连胜数</p>
+            </div>
+
+            <div class="code-block">
+<pre>const learningData = {
+    score: 0,
+    streak: 0
+};
+
+function updateScore(points) {
+    learningData.score += points;
+    document.getElementById('scoreDisplay').textContent = learningData.score;
+}
+
+function updateStreak() {
+    learningData.streak++;
+    if (learningData.streak >= 3) {
+        showBadge('连胜 ' + learningData.streak);
+    }
+}
+
+function resetStreak() {
+    learningData.streak = 0;
+}</pre>
+            </div>
+        </section>
+
+        <!-- 布局规范 -->
+        <section class="page-section" id="page-layout">
+            <h1 class="page-title">布局规范</h1>
+            <p class="page-subtitle">全屏 flexbox 布局规范</p>
+
+            <div class="card">
+                <div class="card-title">全屏容器</div>
+                <div class="code-block">
+<pre>.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.header {
+    padding: 0.75rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.step-container {
+    flex: 1;
+    padding: 1.5rem;
+    padding-bottom: 5rem;
+}
+.nav-bar {
+    padding: 0.75rem 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}</pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">视觉规范</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>项目</th>
+                            <th>规范</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>背景</td>
+                            <td>#0a0a0a 或渐变背景</td>
+                        </tr>
+                        <tr>
+                            <td>文字颜色</td>
+                            <td>#ffffff, #f0f0f0, #e0e0e0</td>
+                        </tr>
+                        <tr>
+                            <td>强调色</td>
+                            <td>#60a5fa, #34d399, #fbbf24, #f472b6</td>
+                        </tr>
+                        <tr>
+                            <td>中文字体</td>
+                            <td>HarmonyOS Sans SC / 思源黑体</td>
+                        </tr>
+                        <tr>
+                            <td>英文字体</td>
+                            <td>Inter / Roboto</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-title">页数规范</div>
+                <div class="tip-box">
+                    <p class="text-gray-300"><strong>不设上限，讲完为止。</strong></p>
+                    <p class="text-gray-500 text-sm mt-2">根据内容需要决定页数，可以是 5 页，也可以是 50 页，只要能把知识点讲清楚。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 交互演示 -->
+        <section class="page-section" id="page-demo">
+            <h1 class="page-title">完整交互演示</h1>
+            <p class="page-subtitle">点击测试各个交互功能</p>
+
+            <div class="card">
+                <div class="card-title">拖拽 → 填空题</div>
+                <div class="demo-box">
+                    <p class="text-xl mb-4">变量 a 的值是：<span class="drop-zone" data-answer="10" id="final-drop">?</span></p>
+                    <div class="flex gap-4 mt-4">
+                        <div class="drag-item" draggable="true" data-value="5">5</div>
+                        <div class="drag-item" draggable="true" data-value="10">10</div>
+                        <div class="drag-item" draggable="true" data-value="15">15</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">点击 → 选择题</div>
+                <div class="demo-box">
+                    <p class="text-lg mb-4">哪个是打印命令？</p>
+                    <div class="space-y-3">
+                        <div class="quiz-option" data-correct="false">
+                            <span class="letter">A</span>
+                            <span>a = 5</span>
+                        </div>
+                        <div class="quiz-option" data-correct="true">
+                            <span class="letter">B</span>
+                            <span>print()</span>
+                        </div>
+                        <div class="quiz-option" data-correct="false">
+                            <span class="letter">C</span>
+                            <span>if</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                <strong>技术栈：</strong>
+                <ul class="mt-2 space-y-1 text-gray-400">
+                    <li>• TailwindCSS（CDN）</li>
+                    <li>• 原生 HTML5 Drag and Drop API</li>
+                    <li>• 原生 JavaScript（ES modules）</li>
+                    <li>• CSS Animations</li>
+                    <li>• 无需 Vue/React，保持轻量</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 学习数据
+        const learningData = {
+            score: 0,
+            streak: 0
+        };
+
+        // 侧边栏导航
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+                document.getElementById('page-' + item.dataset.page).classList.add('active');
+            });
+        });
+
+        // 拖拽功能
+        document.querySelectorAll('.drag-item').forEach(item => {
+            item.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('text/plain', item.dataset.value);
+                item.classList.add('dragging');
+            });
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+            });
+        });
+
+        // 放置区域
+        document.querySelectorAll('.drop-zone').forEach(zone => {
+            zone.addEventListener('dragover', e => {
+                e.preventDefault();
+                zone.classList.add('highlight');
+            });
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('highlight');
+            });
+            zone.addEventListener('drop', e => {
+                e.preventDefault();
+                zone.classList.remove('highlight');
+                const value = e.dataTransfer.getData('text/plain');
+                
+                if (value === zone.dataset.answer) {
+                    zone.textContent = value;
+                    zone.classList.add('correct');
+                    zone.classList.remove('wrong');
+                    updateScore(10);
+                    showFeedback('正确！ +10分', 'green');
+                    showParticles(zone);
+                } else {
+                    zone.classList.add('wrong');
+                    zone.classList.remove('correct');
+                    resetStreak();
+                    showFeedback('再想想', 'red');
+                }
+            });
+        });
+
+        // 测验功能
+        document.querySelectorAll('.quiz-option').forEach(option => {
+            option.addEventListener('click', () => {
+                if (option.classList.contains('correct') || option.classList.contains('wrong')) return;
+                
+                if (option.dataset.correct === 'true') {
+                    option.classList.add('correct');
+                    updateScore(10);
+                    updateStreak();
+                    showFeedback('正确！ +10分', 'green');
+                    showParticles(option);
+                } else {
+                    option.classList.add('wrong');
+                    resetStreak();
+                    showFeedback('错误', 'red');
+                }
+            });
+        });
+
+        function updateScore(points) {
+            learningData.score += points;
+            document.getElementById('score-value').textContent = learningData.score;
+        }
+
+        function updateStreak() {
+            learningData.streak++;
+            document.getElementById('streak-value').textContent = learningData.streak;
+        }
+
+        function resetStreak() {
+            learningData.streak = 0;
+            document.getElementById('streak-value').textContent = '0';
+        }
+
+        function showFeedback(text, color) {
+            const feedback = document.createElement('div');
+            feedback.textContent = text;
+            feedback.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                padding: 16px 32px;
+                background: ${color === 'green' ? 'rgba(52, 211, 153, 0.9)' : 'rgba(248, 113, 113, 0.9)'};
+                color: white;
+                border-radius: 12px;
+                font-size: 1.25rem;
+                font-weight: 600;
+                animation: fadeIn 0.3s ease;
+                z-index: 9999;
+            `;
+            document.body.appendChild(feedback);
+            setTimeout(() => feedback.remove(), 1500);
+        }
+
+        function showParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const emojis = ['⭐', '✨', '🎉', '💯', '🎊'];
+            for (let i = 0; i < 6; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                particle.style.left = (rect.left + rect.width / 2 + (Math.random() - 0.5) * 40) + 'px';
+                particle.style.top = (rect.top + rect.height / 2) + 'px';
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 800);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -66,6 +66,26 @@
             border-bottom-color: var(--primary-color);
         }
 
+        .fullscreen-btn {
+            margin-left: auto;
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--secondary-color);
+            cursor: pointer;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: all 0.2s;
+        }
+
+        .fullscreen-btn:hover {
+            background: #f3f4f6;
+            color: var(--primary-color);
+        }
+
         /* Tab 内容区 */
         .tab-content {
             flex: 1;
@@ -139,6 +159,9 @@
             <button class="tab-btn active" data-tab="ppt">PPT</button>
             <button class="tab-btn" data-tab="lesson">教案</button>
             <button class="tab-btn" data-tab="homework">作业</button>
+            <button id="fullscreen-btn" class="fullscreen-btn" title="全屏模式">
+                ⛶ 全屏
+            </button>
         </nav>
 
         <div id="ppt-content" class="tab-content active">
@@ -191,6 +214,26 @@
                 btn.classList.add('active');
                 document.getElementById(`${tab}-content`).classList.add('active');
             });
+        });
+
+        // 全屏功能
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        fullscreenBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('Fullscreen error:', err);
+                });
+                fullscreenBtn.innerHTML = '⛶ 退出';
+            } else {
+                document.exitFullscreen();
+                fullscreenBtn.innerHTML = '⛶ 全屏';
+            }
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                fullscreenBtn.innerHTML = '⛶ 全屏';
+            }
         });
 
         // 返回按钮

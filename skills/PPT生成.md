@@ -2,7 +2,23 @@
 
 ## 核心原则
 
-### 1. 语言通俗易懂（最重要！）
+### 1. 交互优先（最重要！）
+
+**学生必须参与，不能只是看！**
+
+每个知识点都要设计交互环节：
+- 拖拽题：把答案拖到正确位置
+- 选择题：点击选择即时反馈
+- 填空题：输入代码并验证
+- 排序题：拖拽排列正确顺序
+
+**交互设计检查清单：**
+- [ ] 这个知识点有交互吗？
+- [ ] 学生能动手操作吗？
+- [ ] 操作后有即时反馈吗？
+- [ ] 有得分/连胜等激励机制吗？
+
+### 2. 语言通俗易懂
 
 **面向零基础初学者，每页都要问：**
 
@@ -25,15 +41,17 @@
 
 ```
 大问题/标题
-    ↓
+     ↓
 生活例子/类比（用表情或图片）
-    ↓
+     ↓
 代码示例
-    ↓
+     ↓
+交互练习（拖拽/选择/输入）
+     ↓
 一句话总结
 ```
 
-### 2. 问题拆解流程
+### 3. 问题拆解流程
 
 **贯穿整个 PPT 的流程：**
 
@@ -53,7 +71,7 @@
 每个知识点：
   [先展示拆解过程（怎么把问题变小）]
   [再展示代码（怎么用命令解决）]
-  [最后一句话总结（记住什么）]
+  [最后交互练习（学生动手做）]
 
 课程结束：
   [用通俗的话总结今天学了什么]
@@ -66,8 +84,8 @@
 | 项目 | 规范 |
 |------|------|
 | 比例 | 16:9 横屏 |
-| 背景 | #0a0a0a 或 #111111 + 模糊光斑动画 |
-| **文字颜色 | 必须使用亮色：#ffffff、#f0f0f0、#e0e0e0，禁止使用深色（黑色、深灰）** |
+| 背景 | #0a0a0a 或渐变背景 |
+| **文字颜色 | 必须使用亮色：#ffffff、#f0f0f0、#e0e0e0** |
 | 辅助文字 | #b0b0b0、#a0a0a0 |
 | 强调色 | #60a5fa（亮蓝）、#34d399（亮绿）、#fbbf24（亮黄）、#f472b6（亮粉） |
 | 中文字体 | HarmonyOS Sans SC / 思源黑体 |
@@ -75,68 +93,210 @@
 | 标题字重 | font-bold |
 | 正文字重 | font-light / font-normal |
 
-### 逐步显示动画（重要！用户触发式）
+---
 
-**同一页内，点击逐步显示元素，全部显示完后才翻页：**
+## 拖拽交互系统（核心！）
 
-1. **核心逻辑**：
-   - 每页所有元素默认隐藏（opacity: 0, transform: translateY(20px)）
-   - 每次点击空格/右箭头，显示下一个元素
-   - 当前页元素全部显示完后，再点击才翻到下一页
-   - 左箭头：已显示元素重新隐藏（回到上一个状态）
+### 拖拽题型设计
 
-2. **CSS 动画**：
-   ```css
-   .animate-item {
-       opacity: 0;
-       transform: translateY(20px);
-       transition: opacity 0.3s ease, transform 0.3s ease;
-   }
-   .animate-item.visible {
-       opacity: 1;
-       transform: translateY(0);
-   }
-   ```
+#### 1. 拖拽填空题
 
-3. **JavaScript 逻辑**：
-   ```javascript
-   let currentSlide = 0;
-   let currentItem = 0;  // 当前页已显示的元素索引
+```html
+<!-- 题目区域 -->
+<div class="question-box">
+    <p>把正确的数字拖到框里：a = <span class="drop-zone" data-answer="5">?</span></p>
+</div>
 
-   document.addEventListener('keydown', (e) => {
-       if (e.key === 'ArrowRight' || e.key === ' ') {
-           // 获取当前页所有元素
-           const items = slides[currentSlide].querySelectorAll('.animate-item');
-           if (currentItem < items.length) {
-               // 还有元素没显示，显示下一个
-               items[currentItem].classList.add('visible');
-               currentItem++;
-           } else {
-               // 元素已全部显示，翻到下一页
-               nextSlide();
-           }
-       }
-   });
+<!-- 可选项 -->
+<div class="drag-options">
+    <div class="drag-item" draggable="true" data-value="3">3</div>
+    <div class="drag-item" draggable="true" data-value="5">5</div>
+    <div class="drag-item" draggable="true" data-value="7">7</div>
+</div>
+```
 
-   function nextSlide() {
-       // 翻页逻辑，重置 currentItem = 0
-   }
-   ```
+```javascript
+// 拖拽逻辑
+dropZone.addEventListener('dragover', e => {
+    e.preventDefault();
+    dropZone.classList.add('highlight');
+});
 
-4. **每个元素都要添加 `animate-item` class**
+dropZone.addEventListener('drop', e => {
+    const value = e.dataTransfer.getData('text/plain');
+    if (value === dropZone.dataset.answer) {
+        dropZone.textContent = value;
+        dropZone.classList.add('correct');
+        updateScore(10);
+        showFeedback('正确！', 'green');
+    } else {
+        dropZone.classList.add('wrong');
+        updateStreak(0);
+        showFeedback('再想想', 'red');
+    }
+});
+```
 
-## 交互要求
+#### 2. 拖拽排序题
 
-- 键盘 ← → 翻页
-- 底部进度导航条
-- 平滑切换动画
+```html
+<!-- 题目 -->
+<p class="text-xl mb-6">把执行顺序排列正确：</p>
+
+<!-- 排序区域 -->
+<div class="sort-zone">
+    <div class="sort-item" data-correct="1">做菜</div>
+    <div class="sort-item" data-correct="2">端菜</div>
+    <div class="sort-item" data-correct="3">点菜</div>
+</div>
+
+<!-- 可拖拽项 -->
+<div class="drag-source">
+    <div class="drag-item" draggable="true">做菜</div>
+    <div class="drag-item" draggable="true">端菜</div>
+    <div class="drag-item" draggable="true">点菜</div>
+</div>
+```
+
+#### 3. 拖拽分类题
+
+```html
+<!-- 分类区域 -->
+<div class="category-zone">
+    <div class="category" data-type="变量">
+        <div class="category-label">变量</div>
+        <div class="drop-zone"></div>
+    </div>
+    <div class="category" data-type="命令">
+        <div class="category-label">命令</div>
+        <div class="drop-zone"></div>
+    </div>
+</div>
+
+<!-- 待分类项 -->
+<div class="drag-items">
+    <div class="drag-item" draggable="true" data-type="变量">a = 5</div>
+    <div class="drag-item" draggable="true" data-type="命令">print()</div>
+</div>
+```
+
+---
+
+## 测验系统
+
+### 即时反馈测验
+
+```html
+<div class="quiz-container">
+    <p class="quiz-question">print("Hello") 会显示什么？</p>
+    <div class="quiz-options">
+        <div class="quiz-option" data-correct="true">
+            <span class="letter">A</span>
+            <span>Hello</span>
+        </div>
+        <div class="quiz-option" data-correct="false">
+            <span class="letter">B</span>
+            <span>print("Hello")</span>
+        </div>
+        <div class="quiz-option" data-correct="false">
+            <span class="letter">C</span>
+            <span>报错</span>
+        </div>
+    </div>
+</div>
+```
+
+```javascript
+quizOption.addEventListener('click', () => {
+    if (option.dataset.correct === 'true') {
+        option.classList.add('correct');
+        showParticles(option);
+        updateScore(10);
+        updateStreak();
+    } else {
+        option.classList.add('wrong');
+        resetStreak();
+    }
+});
+```
+
+---
+
+## 学习追踪系统
+
+```javascript
+const learningData = {
+    score: 0,
+    streak: 0,
+    completedSteps: [],
+    quizResults: []
+};
+
+function updateScore(points) {
+    learningData.score += points;
+    document.getElementById('scoreDisplay').textContent = learningData.score;
+    animateScore();
+}
+
+function updateStreak() {
+    learningData.streak++;
+    document.getElementById('streakDisplay').textContent = learningData.streak;
+    if (learningData.streak >= 3) {
+        showBadge('连胜 ' + learningData.streak);
+    }
+}
+
+function resetStreak() {
+    learningData.streak = 0;
+    document.getElementById('streakDisplay').textContent = '0';
+}
+```
+
+---
+
+## 即时反馈动画
+
+```css
+/* 正确反馈 */
+@keyframes correctPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); background: rgba(52, 211, 153, 0.3); }
+    100% { transform: scale(1); }
+}
+.correct { 
+    animation: correctPulse 0.5s ease;
+    border-color: #34d399 !important;
+    color: #34d399;
+}
+
+/* 错误反馈 */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+.wrong { 
+    animation: shake 0.3s ease;
+    border-color: #f87171 !important;
+}
+
+/* 粒子效果 */
+.particle {
+    position: fixed;
+    pointer-events: none;
+    animation: confetti 0.8s ease forwards;
+}
+@keyframes confetti {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(2) translateY(-50px); }
+}
+```
+
+---
 
 ## 全屏布局规范
 
-PPT 必须使用全屏 flexbox 布局，充分利用视口高度：
-
 ```css
-/* 全屏容器 */
 .app-container {
     display: flex;
     flex-direction: column;
@@ -145,264 +305,40 @@ PPT 必须使用全屏 flexbox 布局，充分利用视口高度：
 .header {
     padding: 0.75rem 1.5rem;
     border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-.content {
-    flex: 1;
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
 }
-.step-container {
-    flex: 1;
-    padding: 1.5rem;
-    padding-bottom: 5rem; /* 防止内容被导航遮挡 */
-}
+.content { flex: 1; display: flex; flex-direction: column; }
+.step-container { flex: 1; padding: 1.5rem; padding-bottom: 5rem; }
 .nav-bar {
     padding: 0.75rem 1.5rem;
     border-top: 1px solid rgba(255,255,255,0.1);
 }
 ```
 
+---
+
 ## 技术栈
 
-- TailwindCSS（国内 CDN）
-- 复杂页面使用 Vue3（CDN）
-- 单个 HTML 文件，可直接打开运行
+- TailwindCSS（CDN）
+- 原生 HTML5 Drag and Drop API
+- 原生 JavaScript（ES modules）
+- CSS Animations
+- **无需 Vue/React，保持轻量**
 
-## 默认规则
+---
 
-- 未指定页数：自动生成 8~20 页
-- 未指定风格：默认极简科技风
+## 页数规范
 
-## PPT 结构模板
+**不设上限，讲完为止。**
 
-```html
-<!-- 第1页：封面 -->
-<div class="slide">
-    <h1>标题</h1>
-    <p class="subtitle">副标题（通俗易懂）</p>
-</div>
+根据内容需要决定页数，可以是 5 页，也可以是 50 页，只要能把知识点讲清楚。
 
-<!-- 第2页：今天的问题 -->
-<div class="slide">
-    <h2>先想一个问题</h2>
-    <p class="text-2xl">如何让计算机做 xxx？</p>
-    <p class="hint">先别写代码，先想清楚怎么做</p>
-</div>
-
-<!-- 第3页：拆解问题 -->
-<div class="slide">
-    <h2>拆解这个问题</h2>
-    <!-- 用步骤展示拆解过程 -->
-    <!-- 1 → 1.1 → 1.2 → ... -->
-</div>
-
-<!-- 第4-N页：知识点讲解 -->
-<!-- 每页包含： -->
-<!-- 1. 生活类比（用表情图标） -->
-<!-- 2. 代码展示 -->
-<!-- 3. 一句话总结 -->
-
-<!-- 最后一页：总结 -->
-<!-- 用通俗的话总结今天学了什么 -->
-```
-
-## 生活类比示例页
-
-```html
-<!-- 用餐厅服务员类比计算机工作 -->
-<div class="slide">
-    <h2>就像去餐厅吃饭</h2>
-    <div class="analogy-box">
-        <div class="emoji">🍽️</div>
-        <p>你点菜（接收）→ 厨房做（处理）→ 端菜给你（展示）</p>
-    </div>
-    <p class="text-gray-400 mt-4">计算机也一样：接收命令 → 处理 → 展示结果</p>
-</div>
-```
-
-## print() 示例页（通俗版）
-
-```html
-<!-- print() 是什么 -->
-<div class="slide">
-    <h2>print() 是什么？</h2>
-    <div class="grid-3">
-        <div class="card">
-            <div class="emoji">📝</div>
-            <div class="title">print() 是什么？</div>
-            <div class="desc">一个"命令"</div>
-            <div class="sub">意思是"显示出来"</div>
-        </div>
-        <div class="card">
-            <div class="emoji">⚙️</div>
-            <div class="title">它做什么？</div>
-            <div class="desc">控制屏幕显示</div>
-            <div class="sub">把文字显示在屏幕上</div>
-        </div>
-        <div class="card">
-            <div class="emoji">🖨️</div>
-            <div class="title">类比</div>
-            <div class="desc">就像打印机</div>
-            <div class="sub">print = "打印到屏幕"</div>
-        </div>
-    </div>
-</div>
-```
-
-## HTML PPT 模板
-
-```html
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>课时名称</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap');
-
-        body {
-            font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif;
-            background: #0a0a0a;
-            overflow: hidden;
-        }
-
-        /* 背景光斑动画 */
-        .bg-blur {
-            position: fixed;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.3;
-            animation: float 8s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(50px, 50px); }
-        }
-
-        /* 页面容器 */
-        .slide {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 4rem;
-            opacity: 0;
-            transform: translateX(100px);
-            transition: all 0.5s ease;
-        }
-
-        .slide.active {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        /* 进度条 */
-        .progress-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            transition: width 0.3s ease;
-        }
-
-        /* 进度点 */
-        .progress-dots {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #334155;
-            cursor: pointer;
-        }
-
-        .dot.active {
-            background: #60a5fa;
-        }
-
-        /* 逐步显示动画 - 用户触发 */
-        .animate-item {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        .animate-item.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    </style>
-</head>
-<body>
-    <!-- 背景光斑 -->
-    <div class="bg-blur" style="top: -200px; left: -200px; background: #3b82f6;"></div>
-    <div class="bg-blur" style="bottom: -200px; right: -200px; background: #8b5cf6; animation-delay: -4s;"></div>
-
-    <!-- 页面内容 -->
-    <div id="slides-container">
-        <div class="slide active">
-            <h1 class="text-5xl font-bold text-white mb-4">标题</h1>
-            <p class="text-xl text-gray-400">副标题</p>
-        </div>
-    </div>
-
-    <!-- 进度条 -->
-    <div class="progress-bar" id="progress"></div>
-    <div class="progress-dots" id="dots"></div>
-
-    <script>
-        // 键盘翻页
-        let current = 0;
-        const slides = document.querySelectorAll('.slide');
-        const total = slides.length;
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' || e.key === ' ') {
-                next();
-            } else if (e.key === 'ArrowLeft') {
-                prev();
-            }
-        });
-
-        function next() {
-            if (current < total - 1) {
-                slides[current].classList.remove('active');
-                slides[++current].classList.add('active');
-                updateProgress();
-            }
-        }
-
-        function prev() {
-            if (current > 0) {
-                slides[current].classList.remove('active');
-                slides[--current].classList.add('active');
-                updateProgress();
-            }
-        }
-
-        function updateProgress() {
-            document.getElementById('progress').style.width =
-                ((current + 1) / total * 100) + '%';
-        }
-    </script>
-</body>
-</html>
-```
+---
 
 ## 文件输出
 
 输出路径: `courses/课程名/课时名/index.html`
+
+**注意：每个课件都应该是可交互的，学生必须动手参与！**

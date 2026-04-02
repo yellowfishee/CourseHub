@@ -67,6 +67,146 @@ const COURSES_DATA = [
         "description": "",
         "hasOutline": false,
         "hasMeta": false
+      },
+      {
+        "slug": "05-注解与习题",
+        "title": "05-注解与习题",
+        "description": "第1章综合复习，涵盖C语言基础、数据类型、输入格式和习题",
+        "hasOutline": true,
+        "hasMeta": false
+      },
+      {
+        "slug": "06-for循环",
+        "title": "06-for循环",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "07-while循环和do-while循环",
+        "title": "07-while循环和do-while循环",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "08-循环的代价",
+        "title": "08-循环的代价",
+        "description": "理解循环的效率问题，学习如何测量和优化程序运行时间",
+        "hasOutline": true,
+        "hasMeta": false
+      },
+      {
+        "slug": "09-输入输出框架",
+        "title": "09-输入输出框架",
+        "description": "学习算法竞赛中的输入输出技巧，包括文件读写、多组数据处理和常见错误",
+        "hasOutline": true,
+        "hasMeta": false
+      },
+      {
+        "slug": "10-注解与习题",
+        "title": "10-注解与习题",
+        "description": "第2章循环结构综合复习，涵盖for/while循环、嵌套循环、计时函数和习题",
+        "hasOutline": true,
+        "hasMeta": false
+      },
+      {
+        "slug": "11-数组",
+        "title": "11-数组",
+        "description": "学习一维数组和二维数组的使用，掌握数组的基本操作",
+        "hasOutline": true,
+        "hasMeta": false
+      },
+      {
+        "slug": "12-字符数组",
+        "title": "12-字符数组",
+        "description": "学习字符串的处理，掌握字符数组的基本操作",
+        "hasOutline": true,
+        "hasMeta": false
+      },
+      {
+        "slug": "13-竞赛题目选讲",
+        "title": "13-竞赛题目选讲",
+        "description": "通过竞赛题目综合运用数组和字符串知识",
+        "hasOutline": true,
+        "hasMeta": false
+      },
+      {
+        "slug": "14-注解与习题",
+        "title": "14-注解与习题",
+        "description": "回顾数组和字符串的重点知识，巩固学习成果",
+        "hasOutline": true,
+        "hasMeta": false
+      },
+      {
+        "slug": "15-函数和结构体",
+        "title": "15-函数和结构体",
+        "description": "学习函数的定义和调用，理解结构体的使用方法",
+        "hasOutline": true,
+        "hasMeta": false
+      },
+      {
+        "slug": "16-函数调用与参数传递",
+        "title": "16-函数调用与参数传递",
+        "description": "深入理解函数参数传递机制：值传递、指针传递",
+        "hasOutline": true,
+        "hasMeta": false
+      },
+      {
+        "slug": "17-递归",
+        "title": "17-递归",
+        "description": "学习递归函数的概念和使用方法",
+        "hasOutline": true,
+        "hasMeta": false
+      },
+      {
+        "slug": "18-竞赛题目选讲",
+        "title": "18-竞赛题目选讲",
+        "description": "综合运用函数、递归等知识解决竞赛题目",
+        "hasOutline": true,
+        "hasMeta": false
+      },
+      {
+        "slug": "19-注解与习题",
+        "title": "19-注解与习题",
+        "description": "全面回顾函数、结构体和递归的重点知识",
+        "hasOutline": true,
+        "hasMeta": false
+      },
+      {
+        "slug": "20-从C到C++",
+        "title": "20-从C到C++",
+        "description": "学习C++相对C语言的增强特性",
+        "hasOutline": true,
+        "hasMeta": false
+      },
+      {
+        "slug": "21-STL初步",
+        "title": "21-STL初步",
+        "description": "介绍C++标准模板库的基本使用方法",
+        "hasOutline": true,
+        "hasMeta": false
+      },
+      {
+        "slug": "22-大整数类",
+        "title": "22-大整数类",
+        "description": "处理超出基本类型范围的整数运算",
+        "hasOutline": true,
+        "hasMeta": false
+      },
+      {
+        "slug": "23-竞赛题目举例",
+        "title": "23-竞赛题目举例",
+        "description": "综合运用所学知识解决实际问题",
+        "hasOutline": true,
+        "hasMeta": false
+      },
+      {
+        "slug": "24-习题",
+        "title": "24-习题",
+        "description": "本课程综合练习与知识巩固",
+        "hasOutline": true,
+        "hasMeta": false
       }
     ]
   },
