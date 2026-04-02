@@ -100,8 +100,8 @@
             border-radius: 12px;
             padding: 1.25rem;
             font-family: 'JetBrains Mono', 'Fira Code', monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
+            font-size: 0.85rem;
+            line-height: 1.5;
             overflow-x: auto;
             max-width: 100%;
         }
@@ -169,7 +169,7 @@
 
         @keyframes correctPulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.05); background: rgba(52, 211, 153, 0.3); }
             100% { transform: scale(1); }
         }
 
@@ -194,7 +194,7 @@
         }
 
         @keyframes confetti {
-            0% { opacity: 1; transform: scale(1); }
+            0% { opacity: 1; transform: scale(1) translateY(0); }
             100% { opacity: 0; transform: scale(2) translateY(-50px); }
         }
 
@@ -222,16 +222,47 @@
             color: #f472b6;
         }
 
-        .memory-box {
-            background: rgba(96, 165, 250, 0.1);
-            border: 2px solid rgba(96, 165, 250, 0.3);
-            border-radius: 12px;
-            padding: 1rem;
+        .drag-item {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            cursor: grab;
+            transition: all 0.2s;
+            display: inline-block;
+            margin: 0.25rem;
         }
 
-        .arrow {
-            color: #60a5fa;
-            font-size: 2rem;
+        .drag-item:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: #60a5fa;
+        }
+
+        .drag-item.dragging {
+            opacity: 0.5;
+        }
+
+        .drop-zone {
+            background: rgba(255,255,255,0.03);
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 8px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            padding: 0.5rem 1rem;
+        }
+
+        .drop-zone.drag-over {
+            background: rgba(96, 165, 250, 0.1);
+            border-color: #60a5fa;
+        }
+
+        .drop-zone.filled {
+            background: rgba(52, 211, 153, 0.1);
+            border-color: #34d399;
+            border-style: solid;
         }
     </style>
 </head>
@@ -246,182 +277,298 @@
 
     <!-- Slide 1: Title -->
     <div class="slide active" data-slide="1">
-        <div class="max-w-4xl w-full">
+        <div class="max-w-5xl w-full">
             <div class="text-center mb-12">
                 <div class="animate-item inline-block px-4 py-1 bg-cyan-500/20 rounded-full text-cyan-400 text-sm mb-4">第16课</div>
                 <h1 class="animate-item text-5xl font-bold mb-4 text-gray-100">函数调用与参数传递</h1>
-                <p class="animate-item text-xl text-gray-400">深入理解值传递和指针传递</p>
+                <p class="animate-item text-xl text-gray-400">计算机是怎么传递数据的？</p>
             </div>
             
             <div class="animate-item mt-12 text-center">
-                <div class="text-6xl mb-6">📦</div>
-                <p class="text-xl text-gray-300">副本 vs 地址</p>
+                <div class="text-6xl mb-6">🔄</div>
+                <p class="text-xl text-gray-300">值传递 vs 指针传递</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 2: Value Passing -->
+    <!-- Slide 2: Life analogy - Restaurant -->
     <div class="slide" data-slide="2">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📦 值传递是什么？</h2>
+        <div class="max-w-5xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🍽️ 生活类比：餐厅传菜</h2>
             
             <div class="animate-item mb-8">
-                <p class="text-gray-300 mb-6">值传递就像复印文件：原文件不变，函数拿到的是副本</p>
-                
-                <div class="flex items-center justify-center gap-4 mb-8">
-                    <div class="memory-box text-center">
-                        <div class="text-gray-400 text-sm mb-1">main函数</div>
-                        <div class="text-xl font-bold text-blue-400">x = 10</div>
+                <div class="flex items-center justify-center gap-8 mb-8">
+                    <div class="text-center">
+                        <div class="text-6xl mb-3">👨‍🍳</div>
+                        <p class="text-gray-400">厨师做菜</p>
                     </div>
-                    <div class="arrow">→</div>
-                    <div class="memory-box text-center">
-                        <div class="text-gray-400 text-sm mb-1">swap函数</div>
-                        <div class="text-xl font-bold text-green-400">a = 10 (副本)</div>
-                        <div class="text-xl font-bold text-green-400">b = 20 (副本)</div>
+                    <div class="text-4xl text-gray-500">→</div>
+                    <div class="text-center">
+                        <div class="text-6xl mb-3">🍽️</div>
+                        <p class="text-gray-400">服务员传菜</p>
+                    </div>
+                    <div class="text-4xl text-gray-500">→</div>
+                    <div class="text-center">
+                        <div class="text-6xl mb-3">👤</div>
+                        <p class="text-gray-400">顾客吃菜</p>
                     </div>
                 </div>
             </div>
 
             <div class="animate-item tip-box">
-                <p class="font-bold mb-1">💡 特点</p>
-                <p class="text-gray-300">在函数内部修改参数，不会影响外部的原始变量</p>
+                <p class="font-bold mb-1">💡 问题</p>
+                <p class="text-gray-300">服务员传菜有两种方式：</p>
+                <p class="text-gray-400 text-sm mt-1">1. 把菜的<strong class="text-yellow-400">副本</strong>端给顾客（顾客改了不影响厨房的菜）</p>
+                <p class="text-gray-400 text-sm">2. 把菜的<strong class="text-green-400">原件</strong>端给顾客（顾客改了厨房的菜也变了）</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 3: Value Passing Example -->
+    <!-- Slide 3: Value Passing Concept -->
     <div class="slide" data-slide="3">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📦 值传递示例</h2>
+        <div class="max-w-5xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📄 什么是值传递？</h2>
+            
+            <div class="animate-item mb-6">
+                <p class="text-gray-300 mb-4 text-lg">值传递就像复印文件：原文件不变，拿到的是副本</p>
+                
+                <div class="flex items-center justify-center gap-4 mb-6">
+                    <div class="bg-white/10 rounded-xl p-4 border border-white/20 text-center">
+                        <div class="text-2xl mb-2">📄</div>
+                        <p class="text-blue-400 font-bold">原件：a=10</p>
+                        <p class="text-gray-400 text-sm">main函数中的变量</p>
+                    </div>
+                    <div class="text-4xl text-gray-500">→ 复印 →</div>
+                    <div class="bg-white/10 rounded-xl p-4 border border-white/20 text-center">
+                        <div class="text-2xl mb-2">📄📄</div>
+                        <p class="text-green-400 font-bold">副本：a=10</p>
+                        <p class="text-gray-400 text-sm">swap函数中的变量</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animate-item tip-box">
+                <p class="font-bold mb-1">💡 关键点</p>
+                <p class="text-gray-300">修改副本<strong class="text-red-400">不会影响</strong>原件！</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Value Passing Code Example -->
+    <div class="slide" data-slide="4">
+        <div class="max-w-5xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📝 值传递示例</h2>
             
             <div class="animate-item mb-6">
                 <div class="code-block">
                     <code>
-<span class="code-keyword">#include</span> <span class="code-string">&lt;stdio.h&gt;</span><br><br>
+<span class="code-comment">// 值传递的例子：修改不会影响原变量</span><br><br>
+<span class="code-keyword">void</span> <span class="code-function">tryChange</span>(<span class="code-keyword">int</span> x) {<br>
+&nbsp;&nbsp;<span class="code-comment">// x是a的副本，不是a本身！</span><br>
+&nbsp;&nbsp;x = x + <span class="code-number">100</span>;<br>
+&nbsp;&nbsp;<span class="code-function">printf</span>(<span class="code-string">"函数里 x = %d\n"</span>, x);<br>
+}<br><br>
+<span class="code-keyword">int</span> main() {<br>
+&nbsp;&nbsp;<span class="code-keyword">int</span> a = <span class="code-number">10</span>;<br>
+&nbsp;&nbsp;<span class="code-function">tryChange</span>(a);&nbsp;&nbsp;<span class="code-comment">// 把a的值传过去</span><br>
+&nbsp;&nbsp;<span class="code-function">printf</span>(<span class="code-string">"函数外 a = %d\n"</span>, a);<br>
+&nbsp;&nbsp;<span class="code-keyword">return</span> <span class="code-number">0</span>;<br>
+}
+                    </code>
+                </div>
+            </div>
+
+            <div class="animate-item grid grid-cols-2 gap-4">
+                <div class="bg-green-500/20 border border-green-500/50 rounded-lg p-4 text-center">
+                    <p class="text-green-400 font-bold">函数里输出</p>
+                    <p class="text-2xl">x = 110</p>
+                </div>
+                <div class="bg-blue-500/20 border border-blue-500/50 rounded-lg p-4 text-center">
+                    <p class="text-blue-400 font-bold">函数外输出</p>
+                    <p class="text-2xl">a = 10</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Pointer Passing Concept -->
+    <div class="slide" data-slide="5">
+        <div class="max-w-5xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🔑 什么是地址传递？</h2>
+            
+            <div class="animate-item mb-6">
+                <p class="text-gray-300 mb-4 text-lg">地址传递就像给了餐厅钥匙：可以直接操作厨房里的菜</p>
+                
+                <div class="flex items-center justify-center gap-4 mb-6">
+                    <div class="bg-white/10 rounded-xl p-4 border border-white/20 text-center">
+                        <div class="text-2xl mb-2">🔐</div>
+                        <p class="text-yellow-400 font-bold">钥匙（地址）</p>
+                        <p class="text-gray-400 text-sm">告诉函数变量在哪里</p>
+                    </div>
+                    <div class="text-4xl text-gray-500">→</div>
+                    <div class="bg-white/10 rounded-xl p-4 border border-white/20 text-center">
+                        <div class="text-2xl mb-2">📄</div>
+                        <p class="text-green-400 font-bold">直接操作原件</p>
+                        <p class="text-gray-400 text-sm">用 * 访问变量本身</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animate-item tip-box">
+                <p class="font-bold mb-1">💡 关键点</p>
+                <p class="text-gray-300">传递地址可以<strong class="text-green-400">直接修改</strong>原变量！</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Pointer Syntax -->
+    <div class="slide" data-slide="6">
+        <div class="max-w-5xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📝 指针的声明和使用</h2>
+            
+            <div class="animate-item mb-6">
+                <div class="code-block mb-4">
+                    <code>
+<span class="code-comment">// 指针声明：类型 * 指针变量名</span><br>
+<span class="code-keyword">int</span> a = <span class="code-number">10</span>;&nbsp;&nbsp;<span class="code-comment">// 普通的整数变量</span><br>
+<span class="code-keyword">int</span> *p;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// 声明一个指向int的指针</span><br>
+p = &a;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// p存储a的地址（&是取地址）</span><br><br>
+<span class="code-function">printf</span>(<span class="code-string">"a的值：%d\n"</span>, a);&nbsp;&nbsp;<span class="code-comment">// 10</span><br>
+<span class="code-function">printf</span>(<span class="code-string">"a的地址：%p\n"</span>, &a);<br>
+<span class="code-function">printf</span>(<span class="code-string">"p的值：%p\n"</span>, p);&nbsp;&nbsp;<span class="code-comment">// 和 &a 一样</span><br>
+<span class="code-function">printf</span>(<span class="code-string">"通过p访问a：%d\n"</span>, *p);<span class="code-comment">// *是解引用，得到p指向的变量</span>
+                    </code>
+                </div>
+            </div>
+
+            <div class="animate-item grid grid-cols-3 gap-4 text-sm">
+                <div class="bg-white/5 rounded-lg p-3 border border-white/10 text-center">
+                    <p class="text-yellow-400 font-bold">&变量名</p>
+                    <p class="text-gray-400">取地址运算符</p>
+                </div>
+                <div class="bg-white/5 rounded-lg p-3 border border-white/10 text-center">
+                    <p class="text-green-400 font-bold">*指针变量</p>
+                    <p class="text-gray-400">解引用运算符</p>
+                </div>
+                <div class="bg-white/5 rounded-lg p-3 border border-white/10 text-center">
+                    <p class="text-blue-400 font-bold">类型 *</p>
+                    <p class="text-gray-400">指针类型声明</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Pointer Swap Example -->
+    <div class="slide" data-slide="7">
+        <div class="max-w-5xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🔄 经典问题：交换两个数</h2>
+            
+            <div class="animate-item mb-6">
+                <div class="grid grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-red-400 font-bold mb-3">❌ 值传递（失败）</h4>
+                        <div class="code-block">
+                            <code>
 <span class="code-keyword">void</span> <span class="code-function">swap</span>(<span class="code-keyword">int</span> a, <span class="code-keyword">int</span> b) {<br>
 &nbsp;&nbsp;<span class="code-keyword">int</span> temp = a;<br>
 &nbsp;&nbsp;a = b;<br>
 &nbsp;&nbsp;b = temp;<br>
 }<br><br>
-<span class="code-keyword">int</span> main() {<br>
-&nbsp;&nbsp;<span class="code-keyword">int</span> x = <span class="code-number">10</span>, y = <span class="code-number">20</span>;<br>
-&nbsp;&nbsp;<span class="code-function">swap</span>(x, y);<br>
-&nbsp;&nbsp;<span class="code-function">printf</span>(<span class="code-string">"x=%d y=%d\n"</span>, x, y);<br>
-&nbsp;&nbsp;<span class="code-keyword">return</span> <span class="code-number">0</span>;<br>
-}
-                    </code>
+<span class="code-comment">// main中：</span><br>
+<span class="code-keyword">int</span> x = <span class="code-number">10</span>, y = <span class="code-number">20</span>;<br>
+<span class="code-function">swap</span>(x, y);<br>
+<span class="code-comment">// 结果：x=10, y=20 ❌</span>
+                            </code>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-green-400 font-bold mb-3">✓ 指针传递（成功）</h4>
+                        <div class="code-block">
+                            <code>
+<span class="code-keyword">void</span> <span class="code-function">swap</span>(<span class="code-keyword">int</span> *a, <span class="code-keyword">int</span> *b) {<br>
+&nbsp;&nbsp;<span class="code-keyword">int</span> temp = *a;<br>
+&nbsp;&nbsp;*a = *b;<br>
+&nbsp;&nbsp;*b = temp;<br>
+}<br><br>
+<span class="code-comment">// main中：</span><br>
+<span class="code-keyword">int</span> x = <span class="code-number">10</span>, y = <span class="code-number">20</span>;<br>
+<span class="code-function">swap</span>(&x, &y);<br>
+<span class="code-comment">// 结果：x=20, y=10 ✓</span>
+                            </code>
+                        </div>
+                    </div>
                 </div>
-            </div>
-
-            <div class="animate-item bg-red-500/20 border border-red-500/50 rounded-lg p-4">
-                <p class="text-red-400 font-bold">❌ 运行结果：x=10 y=20 （没有交换！）</p>
-                <p class="text-gray-400 text-sm mt-1">因为swap函数只交换了副本，原变量不变</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 4: Pointer Introduction -->
-    <div class="slide" data-slide="4">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📍 指针是什么？</h2>
+    <!-- Slide 8: Why Pointer Swap Works -->
+    <div class="slide" data-slide="8">
+        <div class="max-w-5xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🔍 为什么指针传递能成功？</h2>
             
-            <div class="animate-item mb-8">
-                <p class="text-gray-300 mb-6">指针就是变量的"地址"，就像房间号指向房间</p>
+            <div class="animate-item mb-6">
+                <p class="text-gray-300 mb-4 text-lg">内存示意图</p>
                 
-                <div class="flex items-center justify-center gap-8 mb-8">
-                    <div class="memory-box text-center">
-                        <div class="text-gray-400 text-sm mb-1">变量</div>
-                        <div class="text-2xl font-bold text-yellow-400">x = 10</div>
-                        <div class="text-gray-500 text-sm mt-1">内存地址：0x1000</div>
+                <div class="flex items-center justify-center gap-8 mb-6">
+                    <div class="bg-white/10 rounded-xl p-4 border border-white/20 w-48">
+                        <p class="text-gray-400 text-sm mb-2">main函数</p>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-blue-400">x:</span>
+                                <span>10</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-blue-400">y:</span>
+                                <span>20</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="text-4xl">→</div>
-                    <div class="memory-box text-center">
-                        <div class="text-gray-400 text-sm mb-1">指针变量p</div>
-                        <div class="text-2xl font-bold text-green-400">p = 0x1000</div>
-                        <div class="text-gray-500 text-sm mt-1">存储的是地址</div>
+                    
+                    <div class="text-4xl text-gray-500">↓ &x, &y</div>
+                    
+                    <div class="bg-white/10 rounded-xl p-4 border border-white/20 w-48">
+                        <p class="text-gray-400 text-sm mb-2">swap函数</p>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-yellow-400">*a:</span>
+                                <span>→ x</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-yellow-400">*b:</span>
+                                <span>→ y</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="animate-item tip-box">
-                <p class="font-bold mb-1">💡 生活类比</p>
-                <p class="text-gray-300">就像快递柜：变量是柜子里的物品，指针是取件码</p>
+                <p class="font-bold mb-1">💡 关键</p>
+                <p class="text-gray-300">指针 a 指向 x，指针 b 指向 y。<br>
+                修改 *a 就是修改 x，修改 *b 就是修改 y！</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 5: Pointer Declaration -->
-    <div class="slide" data-slide="5">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📍 指针的声明和使用</h2>
-            
-            <div class="animate-item mb-6">
-                <div class="code-block">
-                    <code>
-<span class="code-keyword">int</span> x = <span class="code-number">10</span>;&nbsp;&nbsp;<span class="code-comment">// 定义整型变量x</span><br>
-<span class="code-keyword">int</span> *p;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// 定义指向int的指针p</span><br>
-p = &x;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// p指向x的地址（&是取地址运算符）</span><br><br>
-<span class="code-function">printf</span>(<span class="code-string">"x的值：%d\n"</span>, x);<br>
-<span class="code-function">printf</span>(<span class="code-string">"x的地址：%p\n"</span>, &x);<br>
-<span class="code-function">printf</span>(<span class="code-string">"p的值：%p\n"</span>, p);<br>
-<span class="code-function">printf</span>(<span class="code-string">"通过p访问x：%d\n"</span>, *p);&nbsp;&nbsp;<span class="code-comment">// *p是解引用</span>
-                    </code>
-                </div>
-            </div>
-
-            <div class="animate-item bg-green-500/20 border border-green-500/50 rounded-lg p-4">
-                <p class="text-green-400 font-bold">✓ *p 表示访问p指向的变量</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 6: Pointer Swap -->
-    <div class="slide" data-slide="6">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🔄 用指针实现交换</h2>
-            
-            <div class="animate-item mb-6">
-                <div class="code-block">
-                    <code>
-<span class="code-keyword">void</span> <span class="code-function">swap</span>(<span class="code-keyword">int</span> *p, <span class="code-keyword">int</span> *q) {<br>
-&nbsp;&nbsp;<span class="code-keyword">int</span> temp = *p;&nbsp;&nbsp;<span class="code-comment">// temp存储p指向的值</span><br>
-&nbsp;&nbsp;*p = *q;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// p指向的位置存储q指向的值</span><br>
-&nbsp;&nbsp;*q = temp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// q指向的位置存储temp</span><br>
-}<br><br>
-<span class="code-keyword">int</span> main() {<br>
-&nbsp;&nbsp;<span class="code-keyword">int</span> x = <span class="code-number">10</span>, y = <span class="code-number">20</span>;<br>
-&nbsp;&nbsp;<span class="code-function">swap</span>(&x, &y);&nbsp;&nbsp;<span class="code-comment">// 传递地址</span><br>
-&nbsp;&nbsp;<span class="code-function">printf</span>(<span class="code-string">"x=%d y=%d\n"</span>, x, y);<br>
-&nbsp;&nbsp;<span class="code-keyword">return</span> <span class="code-number">0</span>;<br>
-}
-                    </code>
-                </div>
-            </div>
-
-            <div class="animate-item bg-green-500/20 border border-green-500/50 rounded-lg p-4">
-                <p class="text-green-400 font-bold">✓ 运行结果：x=20 y=10 （成功交换！）</p>
-                <p class="text-gray-400 text-sm mt-1">因为传递的是地址，函数直接修改了原始变量</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 7: Array as Parameter -->
-    <div class="slide" data-slide="7">
-        <div class="max-w-4xl w-full">
+    <!-- Slide 9: Array Passing -->
+    <div class="slide" data-slide="9">
+        <div class="max-w-5xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📊 数组作为参数</h2>
             
             <div class="animate-item mb-6">
-                <p class="text-gray-300 mb-4">数组名本身就是地址，传递给函数时不需要 &</p>
+                <p class="text-gray-300 mb-4 text-lg">数组名本身就是地址！传递给函数时不需要 &</p>
                 
-                <div class="code-block">
+                <div class="code-block mb-4">
                     <code>
-<span class="code-keyword">void</span> <span class="code-function">printArray</span>(<span class="code-keyword">int</span> a[], <span class="code-keyword">int</span> n) {<br>
+<span class="code-keyword">void</span> <span class="code-function">printArray</span>(<span class="code-keyword">int</span> arr[], <span class="code-keyword">int</span> n) {<br>
+&nbsp;&nbsp;<span class="code-comment">// arr 是指针，指向数组首元素</span><br>
 &nbsp;&nbsp;<span class="code-keyword">for</span>(<span class="code-keyword">int</span> i = <span class="code-number">0</span>; i < n; i++)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-function">printf</span>(<span class="code-string">"%d "</span>, a[i]);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-function">printf</span>(<span class="code-string">"%d "</span>, arr[i]);<br>
 }<br><br>
 <span class="code-keyword">int</span> main() {<br>
-&nbsp;&nbsp;<span class="code-keyword">int</span> arr[<span class="code-number">5</span>] = {<span class="code-number">1</span>,<span class="code-number">2</span>,<span class="code-number">3</span>,<span class="code-number">4</span>,<span class="code-number">5</span>};<br>
-&nbsp;&nbsp;<span class="code-function">printArray</span>(arr, <span class="code-number">5</span>);&nbsp;&nbsp;<span class="code-comment">// arr本身就是地址</span><br>
+&nbsp;&nbsp;<span class="code-keyword">int</span> a[<span class="code-number">5</span>] = {<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>};<br>
+&nbsp;&nbsp;<span class="code-function">printArray</span>(a, <span class="code-number">5</span>);&nbsp;&nbsp;<span class="code-comment">// a 就是地址，不需要 &a</span><br>
 &nbsp;&nbsp;<span class="code-keyword">return</span> <span class="code-number">0</span>;<br>
 }
                     </code>
@@ -429,71 +576,86 @@ p = &x;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// p指向x的�
             </div>
 
             <div class="animate-item tip-box">
-                <p class="font-bold mb-1">💡 注意</p>
-                <p class="text-gray-300">数组作为参数时，传递的是地址（引用传递）</p>
+                <p class="font-bold mb-1">💡 重要特性</p>
+                <p class="text-gray-300">数组作为参数时是<strong class="text-yellow-400">地址传递</strong>，在函数内部修改数组会影响原数组！</p>
             </div>
         </div>
     </div>
 
-    <!-- Slide 8: Memory Diagram -->
-    <div class="slide" data-slide="8">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🧠 内存示意图</h2>
+    <!-- Slide 10: Memory Layout -->
+    <div class="slide" data-slide="10">
+        <div class="max-w-5xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🧠 内存布局图</h2>
             
-            <div class="animate-item mb-8">
-                <p class="text-gray-300 mb-6">值传递 vs 指针传递的内存对比：</p>
-                
+            <div class="animate-item mb-6">
                 <div class="grid grid-cols-2 gap-8">
-                    <div class="memory-box">
-                        <h4 class="text-red-400 font-bold mb-3">值传递</h4>
-                        <div class="text-sm space-y-2">
-                            <div class="flex justify-between border-b border-gray-700 pb-1">
-                                <span>main: x</span>
-                                <span class="text-blue-400">10</span>
-                            </div>
-                            <div class="flex justify-between border-b border-gray-700 pb-1">
-                                <span>swap: a (副本)</span>
-                                <span class="text-green-400">10</span>
-                            </div>
-                            <div class="flex justify-between border-b border-gray-700 pb-1">
-                                <span>swap: b (副本)</span>
-                                <span class="text-green-400">20</span>
-                            </div>
+                    <div>
+                        <h4 class="text-blue-400 font-bold mb-3">值传递</h4>
+                        <div class="bg-black/30 rounded p-4 font-mono text-xs">
+                            <p class="text-gray-400 mb-2">栈内存：</p>
+                            <div class="border-b border-gray-700 pb-1 mb-1">┌─────────────────────┐</div>
+                            <div class="border-b border-gray-700 pb-1 mb-1">│ main: a = 10        │</div>
+                            <div class="border-b border-gray-700 pb-1 mb-1">├─────────────────────┤</div>
+                            <div class="border-b border-gray-700 pb-1 mb-1">│ swap: a = 10 (副本) │ ← 独立的变量</div>
+                            <div class="border-b border-gray-700 pb-1 mb-1">│ swap: b = 20 (副本) │</div>
+                            <div class="border-b border-gray-700 pb-1">└─────────────────────┘</div>
                         </div>
-                        <p class="text-gray-400 text-xs mt-2">修改副本，不影响原变量</p>
+                        <p class="text-gray-400 text-sm mt-2">修改副本，不影响原件</p>
                     </div>
                     
-                    <div class="memory-box">
+                    <div>
                         <h4 class="text-green-400 font-bold mb-3">指针传递</h4>
-                        <div class="text-sm space-y-2">
-                            <div class="flex justify-between border-b border-gray-700 pb-1">
-                                <span>main: x</span>
-                                <span class="text-blue-400">10</span>
-                            </div>
-                            <div class="flex justify-between border-b border-gray-700 pb-1">
-                                <span>main: y</span>
-                                <span class="text-blue-400">20</span>
-                            </div>
-                            <div class="flex justify-between border-b border-gray-700 pb-1">
-                                <span>swap: p → &x</span>
-                                <span class="text-yellow-400">0x... </span>
-                            </div>
-                            <div class="flex justify-between border-b border-gray-700 pb-1">
-                                <span>swap: q → &y</span>
-                                <span class="text-yellow-400">0x... </span>
-                            </div>
+                        <div class="bg-black/30 rounded p-4 font-mono text-xs">
+                            <p class="text-gray-400 mb-2">栈内存：</p>
+                            <div class="border-b border-gray-700 pb-1 mb-1">┌─────────────────────┐</div>
+                            <div class="border-b border-gray-700 pb-1 mb-1">│ main: x = 10        │</div>
+                            <div class="border-b border-gray-700 pb-1 mb-1">│ main: y = 20        │</div>
+                            <div class="border-b border-gray-700 pb-1 mb-1">├─────────────────────┤</div>
+                            <div class="border-b border-gray-700 pb-1 mb-1">│ swap: a → &x        │ ← 指向x</div>
+                            <div class="border-b border-gray-700 pb-1">│ swap: b → &y        │ ← 指向y</div>
+                            <div class="">└─────────────────────┘</div>
                         </div>
-                        <p class="text-gray-400 text-xs mt-2">通过地址直接修改原变量</p>
+                        <p class="text-gray-400 text-sm mt-2">通过地址直接操作原件</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Slide 9: Quiz 1 -->
-    <div class="slide" data-slide="9">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验</h2>
+    <!-- Slide 11: Quiz 1 -->
+    <div class="slide" data-slide="11">
+        <div class="max-w-5xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验1</h2>
+            
+            <div class="animate-item mb-8">
+                <p class="text-xl text-gray-300 mb-6">值传递的特点是什么？</p>
+                
+                <div class="space-y-4">
+                    <div class="quiz-option" data-correct="false">
+                        <span class="letter">A</span>
+                        <span>传递地址，可以修改原变量</span>
+                    </div>
+                    <div class="quiz-option" data-correct="true">
+                        <span class="letter">B</span>
+                        <span>传递副本，修改不影响原变量</span>
+                    </div>
+                    <div class="quiz-option" data-correct="false">
+                        <span class="letter">C</span>
+                        <span>不需要参数</span>
+                    </div>
+                    <div class="quiz-option" data-correct="false">
+                        <span class="letter">D</span>
+                        <span>只能传递数字</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: Quiz 2 -->
+    <div class="slide" data-slide="12">
+        <div class="max-w-5xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验2</h2>
             
             <div class="animate-item mb-8">
                 <p class="text-xl text-gray-300 mb-6">以下哪个是正确的指针声明？</p>
@@ -520,13 +682,43 @@ p = &x;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// p指向x的�
         </div>
     </div>
 
-    <!-- Slide 10: Quiz 2 -->
-    <div class="slide" data-slide="10">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验</h2>
+    <!-- Slide 13: Quiz 3 -->
+    <div class="slide" data-slide="13">
+        <div class="max-w-5xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验3</h2>
             
             <div class="animate-item mb-8">
-                <p class="text-xl text-gray-300 mb-6">&x 表示什么？</p>
+                <p class="text-xl text-gray-300 mb-6">数组名作为参数传递时，传递的是什么？</p>
+                
+                <div class="space-y-4">
+                    <div class="quiz-option" data-correct="false">
+                        <span class="letter">A</span>
+                        <span>整个数组的副本</span>
+                    </div>
+                    <div class="quiz-option" data-correct="true">
+                        <span class="letter">B</span>
+                        <span>数组的地址</span>
+                    </div>
+                    <div class="quiz-option" data-correct="false">
+                        <span class="letter">C</span>
+                        <span>数组的大小</span>
+                    </div>
+                    <div class="quiz-option" data-correct="false">
+                        <span class="letter">D</span>
+                        <span>第一个元素的值</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 14: Quiz 4 -->
+    <div class="slide" data-slide="14">
+        <div class="max-w-5xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验4</h2>
+            
+            <div class="animate-item mb-8">
+                <p class="text-xl text-gray-300 mb-6">swap(&x, &y) 中的 &x 是什么意思？</p>
                 
                 <div class="space-y-4">
                     <div class="quiz-option" data-correct="false">
@@ -550,72 +742,116 @@ p = &x;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// p指向x的�
         </div>
     </div>
 
-    <!-- Slide 11: Quiz 3 -->
-    <div class="slide" data-slide="11">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 测验</h2>
-            
-            <div class="animate-item mb-8">
-                <p class="text-xl text-gray-300 mb-6">*p 表示什么？</p>
-                
-                <div class="space-y-4">
-                    <div class="quiz-option" data-correct="true">
-                        <span class="letter">A</span>
-                        <span>p指向的变量的值</span>
-                    </div>
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">B</span>
-                        <span>p的地址</span>
-                    </div>
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">C</span>
-                        <span>p的值</span>
-                    </div>
-                    <div class="quiz-option" data-correct="false">
-                        <span class="letter">D</span>
-                        <span>p的类型</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Slide 12: Summary -->
-    <div class="slide" data-slide="12">
-        <div class="max-w-4xl w-full">
-            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📋 本课总结</h2>
+    <!-- Slide 15: Summary -->
+    <div class="slide" data-slide="15">
+        <div class="max-w-5xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">📋 本章总结</h2>
             
             <div class="animate-item grid grid-cols-2 gap-6">
-                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <div class="text-3xl mb-3">📦</div>
-                    <h3 class="font-bold mb-2 text-gray-100">值传递</h3>
-                    <p class="text-gray-400 text-sm">传递副本，修改不影响原变量</p>
+                <div class="bg-blue-500/20 border border-blue-500/50 rounded-xl p-6">
+                    <h3 class="font-bold text-blue-400 mb-4 text-lg">值传递</h3>
+                    <ul class="text-gray-300 text-sm space-y-2">
+                        <li>• 传递数据的副本</li>
+                        <li>• 修改副本不影响原变量</li>
+                        <li>• 函数内部修改无效</li>
+                        <li>• 普通变量传递方式</li>
+                    </ul>
                 </div>
-                
-                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <div class="text-3xl mb-3">📍</div>
-                    <h3 class="font-bold mb-2 text-gray-100">指针传递</h3>
-                    <p class="text-gray-400 text-sm">传递地址，修改可以影响原变量</p>
-                </div>
-                
-                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <div class="text-3xl mb-3">&</div>
-                    <h3 class="font-bold mb-2 text-gray-100">取地址运算符</h3>
-                    <p class="text-gray-400 text-sm">&x 表示变量x的地址</p>
-                </div>
-                
-                <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                    <div class="text-3xl mb-3">*</div>
-                    <h3 class="font-bold mb-2 text-gray-100">解引用运算符</h3>
-                    <p class="text-gray-400 text-sm">*p 表示访问p指向的变量</p>
+                <div class="bg-green-500/20 border border-green-500/50 rounded-xl p-6">
+                    <h3 class="font-bold text-green-400 mb-4 text-lg">指针传递</h3>
+                    <ul class="text-gray-300 text-sm space-y-2">
+                        <li>• 传递变量的地址</li>
+                        <li>• 通过地址直接修改原变量</li>
+                        <li>• 用 & 取地址，用 * 解引用</li>
+                        <li>• 数组天然是地址传递</li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Slide 13: Next -->
-    <div class="slide" data-slide="13">
-        <div class="max-w-4xl w-full">
+    <!-- Slide 16: Key Points -->
+    <div class="slide" data-slide="16">
+        <div class="max-w-5xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎯 核心要点</h2>
+            
+            <div class="animate-item space-y-4">
+                <div class="bg-white/5 rounded-xl p-5 border border-white/10 flex items-start gap-4">
+                    <span class="text-2xl">1️⃣</span>
+                    <div>
+                        <h3 class="font-bold text-gray-100">&取地址运算符</h3>
+                        <p class="text-gray-400 text-sm">&x 表示变量 x 的内存地址</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white/5 rounded-xl p-5 border border-white/10 flex items-start gap-4">
+                    <span class="text-2xl">2️⃣</span>
+                    <div>
+                        <h3 class="font-bold text-gray-100">*解引用运算符</h3>
+                        <p class="text-gray-400 text-sm">*p 表示访问 p 指向的变量的值</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white/5 rounded-xl p-5 border border-white/10 flex items-start gap-4">
+                    <span class="text-2xl">3️⃣</span>
+                    <div>
+                        <h3 class="font-bold text-gray-100">swap(&x, &y) 的 & 不能省</h3>
+                        <p class="text-gray-400 text-sm">&x 把 x 的地址传过去，函数才能直接修改 x</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white/5 rounded-xl p-5 border border-white/10 flex items-start gap-4">
+                    <span class="text-2xl">4️⃣</span>
+                    <div>
+                        <h3 class="font-bold text-gray-100">数组名本身就是地址</h3>
+                        <p class="text-gray-400 text-sm">传递给函数时不需要加 &</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 17: Common Mistakes -->
+    <div class="slide" data-slide="17">
+        <div class="max-w-5xl w-full">
+            <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">⚠️ 常见错误</h2>
+            
+            <div class="animate-item space-y-4">
+                <div class="bg-red-500/20 border border-red-500/50 rounded-xl p-5">
+                    <h3 class="font-bold text-red-400 mb-2">❌ 错误1：指针未初始化</h3>
+                    <div class="code-block text-sm">
+                        <code>
+<span class="code-keyword">int</span> *p;<br>
+*p = <span class="code-number">10</span>;&nbsp;&nbsp;<span class="code-comment">// 错误！p是野指针，指向未知内存</span>
+                        </code>
+                    </div>
+                </div>
+                
+                <div class="bg-red-500/20 border border-red-500/50 rounded-xl p-5">
+                    <h3 class="font-bold text-red-400 mb-2">❌ 错误2：忘记取地址 &</h3>
+                    <div class="code-block text-sm">
+                        <code>
+<span class="code-function">swap</span>(x, y);&nbsp;&nbsp;<span class="code-comment">// 错误！应该是 swap(&x, &y)</span>
+                        </code>
+                    </div>
+                </div>
+                
+                <div class="bg-red-500/20 border border-red-500/50 rounded-xl p-5">
+                    <h3 class="font-bold text-red-400 mb-2">❌ 错误3：解引用空指针</h3>
+                    <div class="code-block text-sm">
+                        <code>
+<span class="code-keyword">int</span> *p = <span class="code-number">NULL</span>;<br>
+*p = <span class="code-number">10</span>;&nbsp;&nbsp;<span class="code-comment">// 错误！不能解引用NULL指针</span>
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 18: Next Lesson -->
+    <div class="slide" data-slide="18">
+        <div class="max-w-5xl w-full">
             <h2 class="animate-item text-3xl font-bold mb-8 text-gray-100">🎓 下章预告</h2>
             
             <div class="animate-item text-center">
@@ -643,7 +879,7 @@ p = &x;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// p指向x的�
     </div>
 
     <script>
-        const totalSlides = 13;
+        const totalSlides = 18;
         let currentSlide = 1;
         let score = 0;
         let streak = 0;
@@ -712,7 +948,7 @@ p = &x;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// p指向x的�
         function showBadge(text) {
             const badge = document.createElement('div');
             badge.className = 'particle';
-            badge.style.cssText = 'top:50%;left:50%;background:linear-gradient(135deg,#f472b6,#c084fc);color:white;padding:0.75rem 1.5rem;border-radius:2rem;font-weight:bold;font-size:1.25rem;';
+            badge.style.cssText = 'top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#f472b6,#c084fc);color:white;padding:0.75rem 1.5rem;border-radius:2rem;font-weight:bold;font-size:1.25rem;';
             badge.textContent = text;
             document.body.appendChild(badge);
             setTimeout(() => badge.remove(), 800);
@@ -737,6 +973,7 @@ p = &x;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// p指向x的�
         });
 
         document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
             if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); showSlide(currentSlide + 1); }
             else if (e.key === 'ArrowLeft') { e.preventDefault(); showSlide(currentSlide - 1); }
         });
