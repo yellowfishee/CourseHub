@@ -242,6 +242,13 @@ const COURSES_DATA = [
         "description": "",
         "hasOutline": false,
         "hasMeta": false
+      },
+      {
+        "slug": "05-最大公因数与最小公倍数",
+        "title": "05-最大公因数与最小公倍数",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
       }
     ]
   },
@@ -262,6 +269,13 @@ const COURSES_DATA = [
         "title": "凯撒密码",
         "description": "",
         "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "最大公因数与最小公倍数",
+        "title": "最大公因数与最小公倍数",
+        "description": "使用while循环和break语句实现辗转相除法",
+        "hasOutline": true,
         "hasMeta": false
       }
     ]

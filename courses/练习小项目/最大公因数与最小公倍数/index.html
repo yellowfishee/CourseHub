@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最大公因数与最小公倍数</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0a0a0a; color: #fff; overflow: hidden; }
+        
+        .slideshow {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .slide {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: none;
+            padding: 60px 80px;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+        }
+        
+        .slide.active { display: flex; flex-direction: column; }
+        
+        .slide h1 { font-size: 2.5rem; color: #06b6d4; margin-bottom: 1.5rem; }
+        .slide h2 { font-size: 1.8rem; color: #22d3ee; margin-bottom: 1rem; }
+        .slide p { font-size: 1.3rem; line-height: 1.8; color: #e2e8f0; margin-bottom: 1rem; }
+        .slide ul { font-size: 1.2rem; line-height: 2; color: #e2e8f0; padding-left: 2rem; }
+        .slide li { margin-bottom: 0.5rem; }
+        
+        .highlight { color: #06b6d4; font-weight: bold; }
+        .code {
+            background: #1e1e1e;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            font-family: 'SF Mono', Consolas, monospace;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #a5f3fc;
+            margin: 1rem 0;
+            border: 1px solid #334155;
+        }
+        
+        .life-box {
+            background: rgba(6, 182, 212, 0.1);
+            border: 2px solid #06b6d4;
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            margin: 1rem 0;
+        }
+        
+        .life-box h3 { color: #06b6d4; margin-bottom: 0.75rem; font-size: 1.1rem; }
+        .life-box p { color: #e2e8f0; font-size: 1.1rem; }
+        
+        .nav {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+        
+        .nav button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        .nav button:hover { background: #06b6d4; border-color: #06b6d4; }
+        
+        .progress {
+            position: fixed;
+            top: 0; left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #06b6d4, #22d3ee);
+            transition: width 0.3s;
+            z-index: 100;
+        }
+        
+        .slide-num {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+        
+        .quiz-container { margin-top: 1.5rem; }
+        .quiz-option {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin: 0.75rem 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.1rem;
+        }
+        .quiz-option:hover { border-color: #06b6d4; background: rgba(6,182,212,0.1); }
+        .quiz-option.correct { border-color: #22c55e; background: rgba(34,197,94,0.2); }
+        .quiz-option.wrong { border-color: #ef4444; background: rgba(239,68,68,0.2); animation: shake 0.5s; }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .drag-container {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+        .drag-item {
+            background: rgba(6,182,212,0.2);
+            border: 2px solid #06b6d4;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            cursor: grab;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        .drag-item:hover { transform: scale(1.05); background: rgba(6,182,212,0.3); }
+        .drag-item:active { cursor: grabbing; }
+        
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        .emoji-big { font-size: 4rem; margin-bottom: 1rem; }
+        .center-text { text-align: center; justify-content: center; align-items: center; }
+    </style>
+</head>
+<body>
+    <div class="progress" id="progress"></div>
+    
+    <div class="slideshow" id="slideshow">
+        
+        <!-- Slide 1: 导入 -->
+        <div class="slide active center-text">
+            <div class="emoji-big">🔢</div>
+            <h1>最大公因数与最小公倍数</h1>
+            <p>今天我们学两个重要的数学概念</p>
+            <p>还有它们的 Python 实现！</p>
+        </div>
+        
+        <!-- Slide 2: 生活类比 -->
+        <div class="slide">
+            <h1>🎮 生活中的公因数和公倍数</h1>
+            <div class="life-box">
+                <h3>🌰 举例：12和8</h3>
+                <p><span class="highlight">公因数</span>：1, 2, 4（都能被它们整除）</p>
+                <p><span class="highlight">最大公因数</span>：4</p>
+                <p><span class="highlight">公倍数</span>：24, 48, 72...（同时是它们的倍数）</p>
+                <p><span class="highlight">最小公倍数</span>：24</p>
+            </div>
+            <div class="life-box">
+                <h3>🏫 类比：排队</h3>
+                <p>有12个男生和8个女生分组，要求每组人数相同且尽量大</p>
+                <p>最多能分成 <span class="highlight">4</span> 组，每组3男2女</p>
+            </div>
+        </div>
+        
+        <!-- Slide 3: 核心问题 -->
+        <div class="slide center-text">
+            <div class="emoji-big">❓</div>
+            <h1>核心问题</h1>
+            <p style="font-size: 1.5rem; margin-top: 2rem;">怎么用 <span class="highlight">while 循环</span> 和 <span class="highlight">break</span> 来找最大公因数？</p>
+        </div>
+        
+        <!-- Slide 4: 思路 -->
+        <div class="slide">
+            <h1>💡 解题思路</h1>
+            <h2>辗转相除法（减法版）</h2>
+            <div class="life-box">
+                <h3>📝 规则：</h3>
+                <p>1. 比较两个数，谁大就减掉小的那个</p>
+                <p>2. 重复这个过程，直到两个数相等</p>
+                <p>3. 相等的那个数，就是最大公因数！</p>
+            </div>
+            <div class="code">
+                12 和 8：<br>
+                12 > 8，12 - 8 = 4（现在 4 和 8）<br>
+                8 > 4，8 - 4 = 4（现在 4 和 4）<br>
+                4 == 4，结束！最大公因数是 4
+            </div>
+        </div>
+        
+        <!-- Slide 5: 代码 -->
+        <div class="slide">
+            <h1>💻 代码实现</h1>
+            <h2>求最大公因数 GCD</h2>
+            <div class="code">
+def gcd(a, b):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;while True:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#64748b"># 无限循环</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if a > b:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#64748b"># a 太大</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a = a - b&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#64748b"># a 减小</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#64748b"># b 太大</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b = b - a&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#64748b"># b 减小</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if a == b:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#64748b"># 相等了</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#64748b"># 跳出循环！</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;return a&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#64748b"># 返回最大公因数</span>
+            </div>
+        </div>
+        
+        <!-- Slide 6: break 的作用 -->
+        <div class="slide">
+            <h1>🎯 break 的作用</h1>
+            <h2>找到答案就停下！</h2>
+            <div class="life-box">
+                <h3>🚗 类比：开车</h3>
+                <p>while True 就像一直往前开</p>
+                <p>break 就像看到目的地就停车</p>
+                <p>不然会一直开下去（死循环）！</p>
+            </div>
+            <div class="code">
+<span style="color:#64748b"># 没有 break = 死循环（永远停不下来）</span>
+while True:
+    print("停不下来！")
+
+<span style="color:#64748b"># 有 break = 找到答案就停</span>
+while True:
+    if 找到了答案:
+        break&nbsp;&nbsp;&nbsp;<span style="color:#64748b"># 停车！</span>
+            </div>
+        </div>
+        
+        <!-- Slide 7: 最小公倍数 -->
+        <div class="slide">
+            <h1>📝 最小公倍数 LCM</h1>
+            <h2>其实很简单！</h2>
+            <div class="life-box">
+                <h3>📐 公式：</h3>
+                <p style="font-size: 1.3rem;"><span class="highlight">LCM(a, b) = a × b ÷ GCD(a, b)</span></p>
+            </div>
+            <div class="code">
+def lcm(a, b):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;g = gcd(a, b)&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#64748b"># 先求最大公因数</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;return a * b // g&nbsp;&nbsp;<span style="color:#64748b"># 公式</span>
+            </div>
+            <p>为什么这样？记住就行啦！</p>
+        </div>
+        
+        <!-- Slide 8: 完整代码 -->
+        <div class="slide">
+            <h1>📋 完整代码</h1>
+            <div class="code">
+def gcd(a, b):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;while True:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if a > b:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a = a - b<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b = b - a<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if a == b:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return a<br>
+<br>
+def lcm(a, b):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return a * b // gcd(a, b)<br>
+<br>
+<span style="color:#64748b"># 测试</span><br>
+print(gcd(12, 8))&nbsp;&nbsp;<span style="color:#64748b"># 输出 4</span><br>
+print(lcm(12, 8))&nbsp;&nbsp;<span style="color:#64748b"># 输出 24</span>
+            </div>
+        </div>
+        
+        <!-- Slide 9: 动手练习 -->
+        <div class="slide">
+            <h1>✏️ 课堂练习</h1>
+            <h2>用 while + break 求 18 和 12 的最大公因数</h2>
+            <div class="life-box">
+                <h3>📝 步骤：</h3>
+                <p>1. 18 > 12，18 - 12 = 6（现在 6 和 12）</p>
+                <p>2. 12 > 6，12 - 6 = 6（现在 6 和 6）</p>
+                <p>3. 6 == 6，结束！</p>
+                <p style="margin-top: 1rem; font-size: 1.3rem;"><span class="highlight">答案：6</span></p>
+            </div>
+        </div>
+        
+        <!-- Slide 10: 思考题 -->
+        <div class="slide center-text">
+            <div class="emoji-big">🤔</div>
+            <h1>思考题</h1>
+            <p style="font-size: 1.3rem; margin-top: 2rem;">如果两个数互质（没有公共因数），比如 7 和 9</p>
+            <p style="font-size: 1.3rem;">它们的 <span class="highlight">最大公因数</span> 是多少？</p>
+            <p style="font-size: 1.3rem;">它们的 <span class="highlight">最小公倍数</span> 是多少？</p>
+        </div>
+        
+        <!-- Slide 11: 总结 -->
+        <div class="slide">
+            <h1>📌 今天学了什么</h1>
+            <ul>
+                <li><span class="highlight">最大公因数 GCD</span>：两个数的最大公共除数</li>
+                <li><span class="highlight">最小公倍数 LCM</span>：两个数的最小公共倍数</li>
+                <li><span class="highlight">while True + break</span>：循环直到找到答案</li>
+                <li><span class="highlight">辗转相除法</span>：大数减小数，直到相等</li>
+            </ul>
+            <div class="life-box" style="margin-top: 2rem;">
+                <h3>📚 公式要记住：</h3>
+                <p style="font-size: 1.2rem;"><span class="highlight">LCM(a, b) = a × b ÷ GCD(a, b)</span></p>
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="nav">
+        <button onclick="prevSlide()">← 上一页</button>
+        <button onclick="nextSlide()">下一页 →</button>
+    </div>
+    
+    <div class="slide-num" id="slideNum">1 / 11</div>
+    
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const progress = document.getElementById('progress');
+        const slideNum = document.getElementById('slideNum');
+        
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            progress.style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+            slideNum.textContent = (currentSlide + 1) + ' / ' + totalSlides;
+        }
+        
+        function nextSlide() { showSlide(currentSlide + 1); }
+        function prevSlide() { showSlide(currentSlide - 1); }
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+        
+        // Touch support
+        let touchStartX = 0;
+        document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+        document.addEventListener('touchend', (e) => {
+            const diff = touchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) nextSlide();
+                else prevSlide();
+            }
+        });
+    </script>
+</body>
+</html>
