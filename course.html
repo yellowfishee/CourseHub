@@ -6,136 +6,6 @@
     <title>课程概览 - CourseHub</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
-    <style>
-        #course-page {
-            min-height: 100vh;
-            background: var(--bg-color);
-        }
-
-        #course-header {
-            background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
-            color: white;
-            padding: 2.5rem 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        #course-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-
-        .course-header-content {
-            position: relative;
-            z-index: 1;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        #course-header .back-link {
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            margin-bottom: 1.25rem;
-            transition: color 0.2s;
-        }
-
-        #course-header .back-link:hover {
-            color: white;
-        }
-
-        #course-header h1 {
-            font-size: 2.25rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.02em;
-        }
-
-        #course-header .course-description {
-            font-size: 1.1rem;
-            color: rgba(255,255,255,0.75);
-            max-width: 600px;
-        }
-
-        #course-body {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        #course-body h2 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-light);
-            margin-bottom: 1.25rem;
-            padding-left: 0.75rem;
-            border-left: 3px solid var(--primary-color);
-        }
-
-        .lesson-card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 1.25rem 1.5rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.2s ease;
-        }
-
-        .lesson-card:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(59,130,246,0.15);
-            transform: translateX(4px);
-        }
-
-        .lesson-card .lesson-info h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-color);
-            margin-bottom: 0.25rem;
-        }
-
-        .lesson-card .lesson-info p {
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
-
-        .lesson-card .lesson-arrow {
-            color: var(--text-light);
-            font-size: 1.25rem;
-            transition: transform 0.2s ease, color 0.2s ease;
-        }
-
-        .lesson-card:hover .lesson-arrow {
-            color: var(--primary-color);
-            transform: translateX(4px);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-light);
-        }
-
-        .empty-state .icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-    </style>
 </head>
 <body>
     <div id="course-page">
@@ -148,6 +18,10 @@
         </header>
 
         <main id="course-body">
+            <div class="lesson-search">
+                <span class="lesson-search-icon">🔍</span>
+                <input type="text" id="lesson-search-input" placeholder="搜索课时..." autocomplete="off">
+            </div>
             <h2>课时列表</h2>
             <div id="lesson-list"></div>
         </main>
