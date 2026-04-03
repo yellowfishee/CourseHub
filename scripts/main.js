@@ -98,8 +98,10 @@ function renderCourses(filter = '') {
 function renderCard(course) {
     return `
         <a href="course.html?slug=${encodeURIComponent(course.slug)}" class="course-card">
-            <div class="card-icon">${getCourseIcon(course)}</div>
-            <h2>${escapeHTML(course.title)}</h2>
+            <div class="card-header">
+                <span class="card-icon">${getCourseIcon(course)}</span>
+                <h2>${escapeHTML(course.title)}</h2>
+            </div>
             <p class="card-desc">${escapeHTML(course.description) || '点击查看课程详情'}</p>
             <div class="card-footer">
                 <span class="card-lessons">${course.lessons?.length || 0} 课时</span>
