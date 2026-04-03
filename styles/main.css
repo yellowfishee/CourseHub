@@ -292,9 +292,12 @@ body {
     border-radius: 8px;
     overflow-x: auto;
     margin: 1rem 0;
+    max-width: 100%;
+    white-space: pre;
+    display: block;
 }
 
-#lesson-markdown pre code { background: none; color: inherit; padding: 0; font-size: 0.9rem; }
+#lesson-markdown pre code { background: none; color: inherit; padding: 0; font-size: 0.9rem; white-space: pre; }
 
 #lesson-markdown table { border-collapse: collapse; width: 100%; margin: 1rem 0; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; }
 #lesson-markdown th { background: var(--primary-color); color: white; font-weight: 600; padding: 0.75rem 1rem; text-align: left; }
@@ -350,9 +353,12 @@ body {
     border-radius: 8px;
     overflow-x: auto;
     margin: 1rem 0;
+    max-width: 100%;
+    white-space: pre;
+    display: block;
 }
 
-#homework-content pre code { background: none; color: inherit; padding: 0; }
+#homework-content pre code { background: none; color: inherit; padding: 0; white-space: pre; }
 
 #homework-content blockquote { border-left: 3px solid #f59e0b; padding: 0.75rem 1rem; margin: 1rem 0; background: #fffbeb; color: #92400e; border-radius: 0 6px 6px 0; }
 #homework-content blockquote p { margin-bottom: 0; }
