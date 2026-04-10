@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>欧几里得算法</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0a0a0a; color: #fff; overflow: hidden; }
+        
+        .slideshow { width: 100vw; height: 100vh; position: relative; }
+        .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; padding: 60px 80px; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%); }
+        .slide.active { display: flex; flex-direction: column; }
+        .slide h1 { font-size: 2.5rem; color: #06b6d4; margin-bottom: 1.5rem; }
+        .slide h2 { font-size: 1.6rem; color: #22d3ee; margin-bottom: 1rem; }
+        .slide p { font-size: 1.2rem; line-height: 1.8; color: #e2e8f0; margin-bottom: 1rem; }
+        .slide ul { font-size: 1.2rem; line-height: 2; color: #e2e8f0; padding-left: 2rem; }
+        .slide li { margin-bottom: 0.5rem; }
+        
+        .highlight { color: #06b6d4; font-weight: bold; }
+        .code { background: #1e1e1e; padding: 1.5rem 2rem; border-radius: 12px; font-family: 'SF Mono', Consolas, monospace; font-size: 1.1rem; line-height: 1.8; color: #a5f3fc; margin: 1rem 0; border: 1px solid #334155; }
+        
+        .life-box { background: rgba(6, 182, 212, 0.1); border: 2px solid #06b6d4; border-radius: 16px; padding: 1.5rem 2rem; margin: 1rem 0; }
+        .life-box h3 { color: #06b6d4; margin-bottom: 0.75rem; font-size: 1.1rem; }
+        .life-box p { color: #e2e8f0; font-size: 1.1rem; }
+        
+        .nav { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; z-index: 100; }
+        .nav button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: all 0.2s; }
+        .nav button:hover { background: #06b6d4; border-color: #06b6d4; }
+        
+        .progress { position: fixed; top: 0; left: 0; height: 4px; background: linear-gradient(90deg, #06b6d4, #22d3ee); transition: width 0.3s; z-index: 100; }
+        .slide-num { position: fixed; bottom: 30px; right: 40px; font-size: 0.9rem; color: #64748b; }
+        .emoji-big { font-size: 4rem; margin-bottom: 1rem; }
+        .center-text { text-align: center; justify-content: center; align-items: center; }
+        
+        .step { display: flex; align-items: center; gap: 1rem; margin: 0.75rem 0; font-size: 1.1rem; }
+        .step-num { background: #06b6d4; color: #0a0a0a; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+        
+        .formula-box { background: rgba(6, 182, 212, 0.15); border: 2px solid #06b6d4; border-radius: 16px; padding: 2rem; margin: 1.5rem 0; text-align: center; }
+        .formula { font-size: 2rem; color: #fff; font-family: monospace; }
+        
+        .compare-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        .compare-table th, .compare-table td { border: 1px solid #334155; padding: 1rem; text-align: left; }
+        .compare-table th { background: rgba(6,182,212,0.2); color: #06b6d4; }
+        .compare-table td { color: #e2e8f0; }
+    </style>
+</head>
+<body>
+    <div class="progress" id="progress"></div>
+    
+    <div class="slideshow" id="slideshow">
+        
+        <!-- Slide 1: 导入 -->
+        <div class="slide active center-text">
+            <div class="emoji-big">📐</div>
+            <h1>欧几里得算法</h1>
+            <p>又叫辗转相除法</p>
+            <p>一种更快速的求最大公因数的方法！</p>
+        </div>
+        
+        <!-- Slide 2: 故事引入 -->
+        <div class="slide">
+            <h1>📖 欧几里得是谁？</h1>
+            <div class="life-box">
+                <h3>👴 古希腊数学家</h3>
+                <p>欧几里得（Euclid）生活在公元前300年左右</p>
+                <p>他是几何学之父，写了一本叫《几何原本》的书</p>
+            </div>
+            <div class="life-box">
+                <h3>🎯 他的贡献</h3>
+                <p>在《几何原本》中记载了一种求最大公因数的方法</p>
+                <p>这个方法用了两千多年，到现在还在用！</p>
+                <p>所以叫<strong>欧几里得算法</strong></p>
+            </div>
+        </div>
+        
+        <!-- Slide 3: 核心原理 -->
+        <div class="slide">
+            <h1>💡 核心原理</h1>
+            <h2>辗转相除法</h2>
+            <div class="formula-box">
+                <p style="color: #64748b; margin-bottom: 1rem;">如果 a ÷ b = c ... r（余数是r）</p>
+                <p class="formula">GCD(a, b) = GCD(b, r)</p>
+                <p style="color: #64748b; margin-top: 1rem;">也就是说：大数除以小数，余数再和除数求最大公因数</p>
+            </div>
+            <div class="life-box">
+                <h3>🌰 举个例子</h3>
+                <p>12 ÷ 8 = 1 ... <span class="highlight">4</span></p>
+                <p>那么 GCD(12, 8) = GCD(8, 4)</p>
+                <p>而 GCD(8, 4) = 4（4能整除8）</p>
+            </div>
+        </div>
+        
+        <!-- Slide 4: 手动模拟 -->
+        <div class="slide">
+            <h1>✋ 手动模拟一遍</h1>
+            <h2>求 GCD(12, 8)</h2>
+            <div class="step"><span class="step-num">1</span><p>12 ÷ 8 = 1 ... <span class="highlight">4</span>，余数是4</p></div>
+            <div class="step"><span class="step-num">2</span><p>现在算 GCD(8, 4)</p></div>
+            <div class="step"><span class="step-num">3</span><p>8 ÷ 4 = 2 ... <span class="highlight">0</span>，余数是0！</p></div>
+            <div class="step"><span class="highlight">✅</span><p style="font-size: 1.2rem;">余数为0时，除数就是答案！<span class="highlight">GCD(12, 8) = 4</span></p></div>
+        </div>
+        
+        <!-- Slide 5: 另一个例子 -->
+        <div class="slide">
+            <h1>✋ 再来一遍</h1>
+            <h2>求 GCD(100, 24)</h2>
+            <div class="step"><span class="step-num">1</span><p>100 ÷ 24 = 4 ... <span class="highlight">4</span>，余数是4</p></div>
+            <div class="step"><span class="step-num">2</span><p>现在算 GCD(24, 4)</p></div>
+            <div class="step"><span class="step-num">3</span><p>24 ÷ 4 = 6 ... <span class="highlight">0</span>，余数是0！</p></div>
+            <div class="step"><span class="highlight">✅</span><p style="font-size: 1.2rem;">GCD(100, 24) = <span class="highlight">4</span></p></div>
+        </div>
+        
+        <!-- Slide 6: 对比两种方法 -->
+        <div class="slide">
+            <h1>⚖️ 两种方法对比</h1>
+            <table class="compare-table">
+                <tr><th>上次课的方法（暴力枚举）</th><th>欧几里得算法（辗转相除）</th></tr>
+                <tr><td>从最小的数开始往下找</td><td>用大数除以小数，取余数</td></tr>
+                <tr><td>需要减很多次</td><td>用除法，很快！</td></tr>
+                <tr><td>慢</td><td>快！</td></tr>
+            </table>
+            <div class="life-box" style="margin-top: 1.5rem;">
+                <h3>🌰 对比：求 GCD(1000000, 1)</h3>
+                <p>暴力枚举：从1找到... 要减1000000次！</p>
+                <p>欧几里得：1000000 ÷ 1 = 1000000 ... 0，一步搞定！</p>
+            </div>
+        </div>
+        
+        <!-- Slide 7: 代码实现 -->
+        <div class="slide">
+            <h1>💻 代码实现</h1>
+            <h2>纯循环，不用函数！</h2>
+            <div class="code">
+a = int(input())&nbsp;&nbsp;<span style="color:#64748b"># 大数</span><br>
+b = int(input())&nbsp;&nbsp;<span style="color:#64748b"># 小数</span><br>
+<br>
+while b != 0:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#64748b"># 余数不为0就继续</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;r = a % b&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#64748b"># 求余数</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;a = b&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#64748b"># b变成被除数</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;b = r&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#64748b"># r变成除数</span><br>
+<br>
+print(a)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#64748b"># a就是最大公因数</span>
+            </div>
+        </div>
+        
+        <!-- Slide 8: 代码解释 -->
+        <div class="slide">
+            <h1>🔍 代码逐行解释</h1>
+            <div class="step"><span class="step-num">1</span><p><span class="highlight">r = a % b</span> — 用大数除以小数，得到余数</p></div>
+            <div class="step"><span class="step-num">2</span><p><span class="highlight">a = b</span> — 小数变成新的"大数"</p></div>
+            <div class="step"><span class="step-num">3</span><p><span class="highlight">b = r</span> — 余数变成新的"小数"</p></div>
+            <div class="step"><span class="step-num">4</span><p>重复，直到 <span class="highlight">b == 0</span></p></div>
+            <div class="step"><span class="step-num">5</span><p>当 b == 0 时，a 就是答案！</p></div>
+        </div>
+        
+        <!-- Slide 9: 追踪变量 -->
+        <div class="slide">
+            <h1>🔍 追踪变量</h1>
+            <h2>求 GCD(12, 8)</h2>
+            <div class="code">
+a = 12, b = 8<br>
+┌─────────────────────────────┐<br>
+│ r = 12 % 8 = 4&nbsp;&nbsp; │ a = 8, b = 4 │<br>
+│ r = 8 % 4 = 0&nbsp;&nbsp;&nbsp; │ a = 4, b = 0 │<br>
+└─────────────────────────────┘<br>
+b == 0，输出 a = <span class="highlight">4</span>
+            </div>
+        </div>
+        
+        <!-- Slide 10: 课堂练习 -->
+        <div class="slide">
+            <h1>✏️ 课堂练习</h1>
+            <h2>用欧几里得算法求 GCD(18, 12)</h2>
+            <div class="step"><span class="step-num">1</span><p>18 ÷ 12 = 1 ... <span class="highlight">6</span>，余数是6</p></div>
+            <div class="step"><span class="step-num">2</span><p>现在算 GCD(12, 6)</p></div>
+            <div class="step"><span class="step-num">3</span><p>12 ÷ 6 = 2 ... <span class="highlight">0</span>，余数是0！</p></div>
+            <div class="step"><span class="highlight">✅</span><p style="font-size: 1.2rem;">GCD(18, 12) = <span class="highlight">6</span></p></div>
+        </div>
+        
+        <!-- Slide 11: 完整代码 -->
+        <div class="slide">
+            <h1>📋 完整代码</h1>
+            <div class="code">
+a = int(input())
+b = int(input())
+
+while b != 0:
+    r = a % b
+    a = b
+    b = r
+
+print(a)
+
+<span style="color:#64748b"># 测试：</span>
+<span style="color:#64748b"># 输入：12 8  → 输出 4</span>
+<span style="color:#64748b"># 输入：100 24 → 输出 4</span>
+<span style="color:#64748b"># 输入：18 12  → 输出 6</span>
+<span style="color:#64748b"># 输入：7 9    → 输出 1</span>
+            </div>
+        </div>
+        
+        <!-- Slide 12: 总结 -->
+        <div class="slide">
+            <h1>📌 今天学了什么</h1>
+            <ul>
+                <li><span class="highlight">欧几里得算法</span>：又叫辗转相除法</li>
+                <li><span class="highlight">核心公式</span>：GCD(a, b) = GCD(b, a % b)</li>
+                <li><span class="highlight">终止条件</span>：余数为0时，除数就是答案</li>
+                <li><span class="highlight">优点</span>：比暴力枚举快很多！</li>
+            </ul>
+            <div class="formula-box" style="margin-top: 2rem;">
+                <p class="formula">while b != 0:</p>
+                <p class="formula">&nbsp;&nbsp;&nbsp;&nbsp;r = a % b</p>
+                <p class="formula">&nbsp;&nbsp;&nbsp;&nbsp;a, b = b, r</p>
+                <p class="formula">print(a)</p>
+            </div>
+        </div>
+        
+    </div>
+    
+    <div class="nav">
+        <button onclick="prevSlide()">← 上一页</button>
+        <button onclick="nextSlide()">下一页 →</button>
+    </div>
+    
+    <div class="slide-num" id="slideNum">1 / 12</div>
+    
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const progress = document.getElementById('progress');
+        const slideNum = document.getElementById('slideNum');
+        
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            progress.style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+            slideNum.textContent = (currentSlide + 1) + ' / ' + totalSlides;
+        }
+        
+        function nextSlide() { showSlide(currentSlide + 1); }
+        function prevSlide() { showSlide(currentSlide - 1); }
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+    </script>
+</body>
+</html>

@@ -277,6 +277,13 @@ const COURSES_DATA = [
         "description": "使用while循环和break语句实现辗转相除法",
         "hasOutline": true,
         "hasMeta": false
+      },
+      {
+        "slug": "欧几里得算法",
+        "title": "欧几里得算法",
+        "description": "使用辗转相除法求最大公因数",
+        "hasOutline": true,
+        "hasMeta": false
       }
     ]
   }
