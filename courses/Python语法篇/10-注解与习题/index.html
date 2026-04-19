@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注解与习题 - 列表和字符串复习</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=HarmonyOS+Sans+SC:wght@300;400;700&display=swap');
+        body { font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif; background: #0a0a0a; overflow: hidden; }
+        .bg-blur { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); opacity: 0.25; animation: float 8s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(50px, 50px); } }
+        .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4rem; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        .slide.active { opacity: 1; pointer-events: auto; }
+        .animate-item { opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease; }
+        .animate-item.visible { opacity: 1; transform: translateY(0); }
+        .progress-bar { position: fixed; bottom: 0; left: 0; height: 4px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 0.3s ease; }
+        .progress-dots { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; cursor: pointer; transition: all 0.3s ease; }
+        .dot.active { background: #3b82f6; transform: scale(1.3); }
+        .code-block { background: #1e1e2e; border: 1px solid #3b82f6; border-radius: 12px; padding: 1.5rem 2rem; font-family: 'Monaco', 'Menlo', monospace; font-size: 1.1rem; color: #f0f0f0; margin: 1rem 0; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2); }
+        .code-block .keyword { color: #f472b6; }
+        .code-block .function { color: #34d399; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .string { color: #a78bfa; }
+        .code-block .comment { color: #6b7280; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 1.5rem; text-align: center; }
+        .info-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        .info-table th, .info-table td { border: 1px solid rgba(255,255,255,0.2); padding: 0.75rem 1rem; text-align: center; }
+        .info-table th { background: rgba(59, 130, 246, 0.4); color: #ffffff; }
+        .info-table td { background: rgba(255,255,255,0.05); color: #f0f0f0; }
+        .quiz-option { padding: 0.75rem 1rem; border: 2px solid rgba(255,255,255,0.15); border-radius: 0.5rem; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 0.75rem; margin: 0.5rem 0; }
+        .quiz-option:hover { border-color: #3b82f6; background: rgba(59,130,246,0.1); }
+        .quiz-option.correct { border-color: #22c55e; background: rgba(34,197,94,0.2); }
+        .quiz-option.wrong { border-color: #ef4444; background: rgba(239,68,68,0.2); }
+    </style>
+</head>
+<body>
+    <div class="bg-blur" style="top: -200px; left: -200px; background: #3b82f6;"></div>
+    <div class="bg-blur" style="bottom: -200px; right: -200px; background: #8b5cf6; animation-delay: -4s;"></div>
+
+    <div id="slides-container">
+        <div class="slide active" data-slide="1">
+            <h1 class="text-5xl font-bold text-gray-100 mb-8 animate-item">注解与习题</h1>
+            <p class="text-2xl text-blue-400 mb-8 animate-item">列表和字符串复习</p>
+            <div class="grid grid-cols-2 gap-6 w-full max-w-4xl mb-6">
+                <div class="card animate-item"><div class="text-4xl mb-3">📦</div><p class="text-lg text-gray-100 font-bold">列表</p><p class="text-gray-400 text-sm">索引、切片、方法</p></div>
+                <div class="card animate-item"><div class="text-4xl mb-3">📝</div><p class="text-lg text-gray-100 font-bold">字符串</p><p class="text-gray-400 text-sm">不可变、方法</p></div>
+            </div>
+            <p class="text-gray-500 animate-item">Python 语法篇 · 第 10 课</p>
+        </div>
+
+        <div class="slide" data-slide="2">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📦 列表要点回顾</h2>
+            <table class="info-table w-full max-w-3xl animate-item">
+                <thead><tr><th>操作</th><th>代码</th><th>作用</th></tr></thead>
+                <tbody>
+                    <tr><td class="text-blue-400">创建</td><td>nums = [1, 2, 3]</td><td>创建列表</td></tr>
+                    <tr><td class="text-blue-400">索引</td><td>nums[0]</td><td>取第1个</td></tr>
+                    <tr><td class="text-blue-400">切片</td><td>nums[1:3]</td><td>取索引1到2</td></tr>
+                    <tr><td class="text-blue-400">添加</td><td>nums.append(4)</td><td>添加到末尾</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="slide" data-slide="3">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📝 字符串要点回顾</h2>
+            <table class="info-table w-full max-w-3xl animate-item">
+                <thead><tr><th>方法</th><th>代码</th><th>作用</th></tr></thead>
+                <tbody>
+                    <tr><td class="text-purple-400">split</td><td>s.split()</td><td>分割</td></tr>
+                    <tr><td class="text-purple-400">join</td><td>" ".join(lst)</td><td>连接</td></tr>
+                    <tr><td class="text-purple-400">upper</td><td>s.upper()</td><td>大写</td></tr>
+                    <tr><td class="text-purple-400">strip</td><td>s.strip()</td><td>去空格</td></tr>
+                </tbody>
+            </table>
+            <p class="text-red-400 mt-4 animate-item">⚠️ 字符串不可变！</p>
+        </div>
+
+        <div class="slide" data-slide="4">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">❌ 常见错误</h2>
+            <div class="grid grid-cols-2 gap-8 max-w-4xl">
+                <div class="card animate-item">
+                    <h3 class="text-xl font-bold mb-4 text-red-400">索引越界</h3>
+                    <div class="code-block text-sm">nums = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]<br>nums[<span class="number">3</span>] <span class="comment"># IndexError!</span></div>
+                </div>
+                <div class="card animate-item">
+                    <h3 class="text-xl font-bold mb-4 text-red-400">字符串不能修改</h3>
+                    <div class="code-block text-sm">s = <span class="string">"Hello"</span><br>s[<span class="number">0</span>] = <span class="string">'h'</span> <span class="comment"># TypeError!</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="5">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📝 练习：列表去重</h2>
+            <div class="code-block animate-item">nums = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">1</span>, <span class="number">4</span>]<br><br><span class="comment"># 方法：转成集合</span><br>unique = list(set(nums))<br><span class="function">print</span>(unique) <span class="comment"># [1, 2, 3, 4]</span></div>
+        </div>
+
+        <div class="slide" data-slide="6">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🧪 小测验</h2>
+            <p class="text-gray-400 mb-4 animate-item">字符串可以直接修改单个字符吗？</p>
+            <div class="space-y-3 max-w-md">
+                <div class="quiz-option" data-correct="false" onclick="checkQuiz(this, false)">A. 可以</div>
+                <div class="quiz-option" data-correct="true" onclick="checkQuiz(this, true)">B. 不可以，字符串不可变</div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="7">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📋 总结</h2>
+            <div class="grid grid-cols-2 gap-4 max-w-2xl">
+                <div class="card animate-item"><p class="text-blue-400 font-bold">列表</p><p class="text-gray-300 text-sm">可变，索引从0开始</p></div>
+                <div class="card animate-item"><p class="text-purple-400 font-bold">字符串</p><p class="text-gray-300 text-sm">不可变</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="progress-dots" id="progressDots"></div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progressBar');
+        const progressDots = document.getElementById('progressDots');
+        let currentSlide = 0;
+
+        slides.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => goToSlide(i);
+            progressDots.appendChild(dot);
+        });
+
+        function updateSlide() {
+            slides.forEach((s, i) => s.classList.toggle('active', i === currentSlide));
+            document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+            progressBar.style.width = ((currentSlide + 1) / slides.length * 100) + '%';
+            const items = slides[currentSlide].querySelectorAll('.animate-item');
+            items.forEach((item, index) => {
+                item.classList.remove('visible');
+                setTimeout(() => item.classList.add('visible'), 100 + index * 150);
+            });
+        }
+
+        function goToSlide(n) {
+            currentSlide = Math.max(0, Math.min(slides.length - 1, n));
+            updateSlide();
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowRight' || e.key === ' ') goToSlide(currentSlide + 1);
+            if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+        });
+
+        function checkQuiz(el, correct) {
+            el.classList.add(correct ? 'correct' : 'wrong');
+        }
+
+        updateSlide();
+    </script>
+</body>
+</html>

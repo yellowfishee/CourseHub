@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注解与习题 - 前四章回顾</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=HarmonyOS+Sans+SC:wght@300;400;700&display=swap');
+
+        body {
+            font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif;
+            background: #0a0a0a;
+            overflow: hidden;
+        }
+
+        .bg-blur {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.25;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(50px, 50px); }
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .animate-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .animate-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            transition: width 0.3s ease;
+        }
+
+        .progress-dots {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #334155;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #10b981;
+            transform: scale(1.3);
+        }
+
+        .code-block {
+            background: #1e1e2e;
+            border: 1px solid #10b981;
+            border-radius: 12px;
+            padding: 1.2rem 1.5rem;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 1rem;
+            color: #f0f0f0;
+            margin: 0.75rem 0;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2);
+        }
+
+        .code-block .keyword { color: #f472b6; }
+        .code-block .function { color: #34d399; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .string { color: #a78bfa; }
+        .code-block .comment { color: #6b7280; }
+
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .info-table th, .info-table td {
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.6rem 0.8rem;
+            text-align: center;
+        }
+
+        .info-table th {
+            background: rgba(16, 185, 129, 0.4);
+            color: #ffffff;
+        }
+
+        .info-table td {
+            background: rgba(255,255,255,0.05);
+            color: #f0f0f0;
+        }
+
+        .quiz-option {
+            padding: 0.75rem 1rem;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0.5rem 0;
+        }
+        .quiz-option:hover {
+            border-color: #10b981;
+            background: rgba(16,185,129,0.1);
+        }
+        .quiz-option.correct {
+            border-color: #22c55e;
+            background: rgba(34,197,94,0.2);
+        }
+        .quiz-option.wrong {
+            border-color: #ef4444;
+            background: rgba(239,68,68,0.2);
+        }
+        .quiz-option .letter {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .quiz-option.correct .letter { background: #22c55e; }
+        .quiz-option.wrong .letter { background: #ef4444; }
+
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.25rem;
+            animation: confetti 0.8s ease forwards;
+            z-index: 1000;
+        }
+        @keyframes confetti {
+            0% { opacity: 1; transform: scale(1) translateY(0); }
+            100% { opacity: 0; transform: scale(1.5) translateY(-60px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .nav-hint {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .error-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            border-radius: 8px;
+            padding: 0.75rem;
+        }
+
+        .success-box {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.5);
+            border-radius: 8px;
+            padding: 0.75rem;
+        }
+    </style>
+</head>
+<body class="text-gray-100">
+    <div class="bg-blur bg-green-500 top-0 left-0"></div>
+    <div class="bg-blur bg-blue-500 bottom-0 right-0" style="animation-delay: -4s;"></div>
+
+    <div class="nav-hint">按 → 或空格下一页 | ← 上一页</div>
+
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="progress-dots" id="progressDots"></div>
+
+    <!-- 第1页：标题页 -->
+    <div class="slide active" data-slide="1">
+        <div class="text-center">
+            <div class="text-6xl mb-6">📚</div>
+            <h1 class="text-5xl font-bold mb-4" style="background: linear-gradient(135deg, #10b981, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                注解与习题
+            </h1>
+            <p class="text-2xl text-gray-400 mb-8">前四章回顾与巩固</p>
+            <div class="text-gray-500">Python 语法篇 · 第5课</div>
+        </div>
+    </div>
+
+    <!-- 第2页：知识回顾总览 -->
+    <div class="slide" data-slide="2">
+        <h2 class="text-3xl font-bold mb-6">📖 知识回顾</h2>
+        <div class="grid grid-cols-2 gap-6 max-w-4xl">
+            <div class="card animate-item">
+                <div class="text-3xl mb-2">🔢</div>
+                <h3 class="font-bold text-lg">第1章 算术表达式</h3>
+                <p class="text-gray-400 text-sm">加减乘除、整除、取余</p>
+            </div>
+            <div class="card animate-item" style="transition-delay: 0.1s;">
+                <div class="text-3xl mb-2">📦</div>
+                <h3 class="font-bold text-lg">第2章 变量及其输入</h3>
+                <p class="text-gray-400 text-sm">变量声明、input()、类型转换</p>
+            </div>
+            <div class="card animate-item" style="transition-delay: 0.2s;">
+                <div class="text-3xl mb-2">➡️</div>
+                <h3 class="font-bold text-lg">第3章 顺序结构</h3>
+                <p class="text-gray-400 text-sm">输入 → 计算 → 输出</p>
+            </div>
+            <div class="card animate-item" style="transition-delay: 0.3s;">
+                <div class="text-3xl mb-2">🔀</div>
+                <h3 class="font-bold text-lg">第4章 分支结构</h3>
+                <p class="text-gray-400 text-sm">if/elif/else 判断</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第3页：算术表达式回顾 -->
+    <div class="slide" data-slide="3">
+        <h2 class="text-3xl font-bold mb-6">🔢 算术表达式回顾</h2>
+        <table class="info-table max-w-2xl animate-item">
+            <thead>
+                <tr>
+                    <th>运算</th>
+                    <th>Python 写法</th>
+                    <th>例子</th>
+                    <th>结果</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>加法</td>
+                    <td><code>+</code></td>
+                    <td>1 + 2</td>
+                    <td class="text-green-400">3</td>
+                </tr>
+                <tr>
+                    <td>减法</td>
+                    <td><code>-</code></td>
+                    <td>5 - 3</td>
+                    <td class="text-green-400">2</td>
+                </tr>
+                <tr>
+                    <td>乘法</td>
+                    <td><code>*</code></td>
+                    <td>3 * 4</td>
+                    <td class="text-green-400">12</td>
+                </tr>
+                <tr>
+                    <td>除法</td>
+                    <td><code>/</code></td>
+                    <td>8 / 5</td>
+                    <td class="text-yellow-400">1.6</td>
+                </tr>
+                <tr>
+                    <td>整除</td>
+                    <td><code>//</code></td>
+                    <td>8 // 5</td>
+                    <td class="text-blue-400">1</td>
+                </tr>
+                <tr>
+                    <td>取余</td>
+                    <td><code>%</code></td>
+                    <td>8 % 5</td>
+                    <td class="text-pink-400">3</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 第4页：常见错误1 -->
+    <div class="slide" data-slide="4">
+        <h2 class="text-3xl font-bold mb-6">❌ 常见错误：变量名拼写</h2>
+        <div class="grid grid-cols-2 gap-8 max-w-4xl">
+            <div class="error-box animate-item">
+                <h3 class="text-red-400 font-bold mb-2">❌ 错误代码</h3>
+                <div class="code-block">
+                    name = <span class="string">"小明"</span><br>
+                    <span class="function">print</span>(<span class="string">nmae</span>)  <span class="comment"># 拼写错误！</span>
+                </div>
+                <p class="text-red-400 mt-2">NameError: name 'nmae' is not defined</p>
+            </div>
+            <div class="success-box animate-item" style="transition-delay: 0.2s;">
+                <h3 class="text-green-400 font-bold mb-2">✓ 正确代码</h3>
+                <div class="code-block">
+                    name = <span class="string">"小明"</span><br>
+                    <span class="function">print</span>(<span class="string">name</span>)  <span class="comment"># 拼写正确</span>
+                </div>
+                <p class="text-green-400 mt-2">输出：小明</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第5页：常见错误2 -->
+    <div class="slide" data-slide="5">
+        <h2 class="text-3xl font-bold mb-6">❌ 常见错误：类型错误</h2>
+        <div class="grid grid-cols-2 gap-8 max-w-4xl">
+            <div class="error-box animate-item">
+                <h3 class="text-red-400 font-bold mb-2">❌ 错误代码</h3>
+                <div class="code-block">
+                    a = <span class="function">input</span>()  <span class="comment"># 得到字符串</span><br>
+                    <span class="function">print</span>(a + <span class="number">1</span>)  <span class="comment"># 字符串+数字？</span>
+                </div>
+                <p class="text-red-400 mt-2">TypeError: can only concatenate str to str</p>
+            </div>
+            <div class="success-box animate-item" style="transition-delay: 0.2s;">
+                <h3 class="text-green-400 font-bold mb-2">✓ 正确代码</h3>
+                <div class="code-block">
+                    a = <span class="function">int</span>(<span class="function">input</span>())  <span class="comment"># 转整数</span><br>
+                    <span class="function">print</span>(a + <span class="number">1</span>)
+                </div>
+                <p class="text-green-400 mt-2">输入 5 → 输出 6</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第6页：常见错误3 -->
+    <div class="slide" data-slide="6">
+        <h2 class="text-3xl font-bold mb-6">❌ 常见错误：比较运算符</h2>
+        <div class="grid grid-cols-2 gap-8 max-w-4xl">
+            <div class="error-box animate-item">
+                <h3 class="text-red-400 font-bold mb-2">❌ 错误代码</h3>
+                <div class="code-block">
+                    <span class="keyword">if</span> a = <span class="number">5</span>:  <span class="comment"># = 是赋值！</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(<span class="string">"等于5"</span>)
+                </div>
+                <p class="text-red-400 mt-2">SyntaxError: invalid syntax</p>
+            </div>
+            <div class="success-box animate-item" style="transition-delay: 0.2s;">
+                <h3 class="text-green-400 font-bold mb-2">✓ 正确代码</h3>
+                <div class="code-block">
+                    <span class="keyword">if</span> a == <span class="number">5</span>:  <span class="comment"># == 是比较</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(<span class="string">"等于5"</span>)
+                </div>
+                <p class="text-green-400 mt-2">正确判断是否等于5</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第7页：常见错误4 -->
+    <div class="slide" data-slide="7">
+        <h2 class="text-3xl font-bold mb-6">❌ 常见错误：忘记冒号和缩进</h2>
+        <div class="grid grid-cols-2 gap-8 max-w-4xl">
+            <div class="error-box animate-item">
+                <h3 class="text-red-400 font-bold mb-2">❌ 错误代码</h3>
+                <div class="code-block">
+                    <span class="keyword">if</span> a > <span class="number">5</span>  <span class="comment"># 少了冒号！</span><br>
+                    <span class="function">print</span>(<span class="string">"大于5"</span>)  <span class="comment"># 没有缩进！</span>
+                </div>
+            </div>
+            <div class="success-box animate-item" style="transition-delay: 0.2s;">
+                <h3 class="text-green-400 font-bold mb-2">✓ 正确代码</h3>
+                <div class="code-block">
+                    <span class="keyword">if</span> a > <span class="number">5</span>:  <span class="comment"># 有冒号</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(<span class="string">"大于5"</span>)  <span class="comment"># 缩进4格</span>
+                </div>
+            </div>
+        </div>
+        <div class="mt-6 animate-item" style="transition-delay: 0.4s;">
+            <div class="inline-block px-6 py-3 bg-yellow-500/20 rounded-lg border border-yellow-500/50">
+                <span class="text-yellow-400">💡 记住：</span>if/elif/else 后面都要加冒号，代码块要缩进！
+            </div>
+        </div>
+    </div>
+
+    <!-- 第8页：练习题 -->
+    <div class="slide" data-slide="8">
+        <h2 class="text-3xl font-bold mb-6">✏️ 练习题：判断奇偶</h2>
+        <div class="max-w-3xl">
+            <p class="text-gray-400 mb-4 animate-item">输入一个整数，判断它是奇数还是偶数</p>
+            <div class="code-block animate-item" style="transition-delay: 0.2s;">
+                n = <span class="function">int</span>(<span class="function">input</span>())<br><br>
+                <span class="keyword">if</span> n % <span class="number">2</span> == <span class="number">0</span>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(<span class="string">"偶数"</span>)<br>
+                <span class="keyword">else</span>:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(<span class="string">"奇数"</span>)
+            </div>
+            <div class="grid grid-cols-2 gap-4 mt-6 animate-item" style="transition-delay: 0.4s;">
+                <div class="card">
+                    <span class="text-gray-400">输入：</span>
+                    <span class="text-blue-400 font-bold">6</span>
+                    <div class="text-green-400 mt-2">输出：偶数</div>
+                </div>
+                <div class="card">
+                    <span class="text-gray-400">输入：</span>
+                    <span class="text-blue-400 font-bold">7</span>
+                    <div class="text-green-400 mt-2">输出：奇数</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第9页：测验 -->
+    <div class="slide" data-slide="9">
+        <h2 class="text-3xl font-bold mb-6">🧪 小测验</h2>
+        <p class="text-gray-400 mb-4">下面哪个是正确的比较运算符？</p>
+        <div class="space-y-3 max-w-md">
+            <div class="quiz-option" data-correct="false">
+                <span class="letter">A</span>
+                <span>a = 5（判断是否等于5）</span>
+            </div>
+            <div class="quiz-option" data-correct="true">
+                <span class="letter">B</span>
+                <span>a == 5（判断是否等于5）</span>
+            </div>
+            <div class="quiz-option" data-correct="false">
+                <span class="letter">C</span>
+                <span>a := 5（判断是否等于5）</span>
+            </div>
+            <div class="quiz-option" data-correct="false">
+                <span class="letter">D</span>
+                <span>a equals 5（判断是否等于5）</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第10页：总结 -->
+    <div class="slide" data-slide="10">
+        <h2 class="text-3xl font-bold mb-6">📝 总结</h2>
+        <table class="info-table max-w-3xl animate-item">
+            <thead>
+                <tr>
+                    <th>知识点</th>
+                    <th>要点</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>变量</td>
+                    <td>先定义后使用，注意拼写</td>
+                </tr>
+                <tr>
+                    <td>输入</td>
+                    <td>input() 得到字符串，需要转换</td>
+                </tr>
+                <tr>
+                    <td>比较</td>
+                    <td>用 == 不是 =</td>
+                </tr>
+                <tr>
+                    <td>分支</td>
+                    <td>别忘冒号，缩进一致</td>
+                </tr>
+                <tr>
+                    <td>调试</td>
+                    <td>看报错信息，用 print()</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="mt-8 text-center animate-item" style="transition-delay: 0.3s;">
+            <div class="text-xl text-green-400">
+                编程是实践技能，多写多练！💪
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 10;
+
+        function showSlide(n) {
+            if (n < 1 || n > totalSlides) return;
+            currentSlide = n;
+
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.querySelector(`[data-slide="${n}"]`).classList.add('active');
+
+            document.getElementById('progressBar').style.width = `${(n / totalSlides) * 100}%`;
+
+            document.querySelectorAll('.dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i + 1 === n);
+            });
+
+            setTimeout(() => {
+                document.querySelectorAll(`[data-slide="${n}"] .animate-item`).forEach((item, i) => {
+                    setTimeout(() => item.classList.add('visible'), i * 150);
+                });
+            }, 100);
+        }
+
+        function createDots() {
+            const container = document.getElementById('progressDots');
+            for (let i = 1; i <= totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot' + (i === 1 ? ' active' : '');
+                dot.addEventListener('click', () => showSlide(i));
+                container.appendChild(dot);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                showSlide(currentSlide + 1);
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                showSlide(currentSlide - 1);
+            }
+        });
+
+        document.querySelectorAll('.quiz-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const isCorrect = this.dataset.correct === 'true';
+                this.classList.add(isCorrect ? 'correct' : 'wrong');
+                if (isCorrect) {
+                    showParticles(this);
+                } else {
+                    this.style.animation = 'shake 0.3s ease';
+                    setTimeout(() => this.style.animation = '', 300);
+                }
+            });
+        });
+
+        function showParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const emojis = ['⭐', '✨', '🎉', '💯'];
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                particle.style.left = rect.left + rect.width / 2 + 'px';
+                particle.style.top = rect.top + 'px';
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 800);
+            }
+        }
+
+        createDots();
+        showSlide(1);
+    </script>
+</body>
+</html>

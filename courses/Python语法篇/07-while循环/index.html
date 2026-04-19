@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>while循环 - 当条件成立时重复</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=HarmonyOS+Sans+SC:wght@300;400;700&display=swap');
+
+        body {
+            font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif;
+            background: #0a0a0a;
+            overflow: hidden;
+        }
+
+        .bg-blur {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.25;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(50px, 50px); }
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .animate-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .animate-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f472b6, #8b5cf6);
+            transition: width 0.3s ease;
+        }
+
+        .progress-dots {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #334155;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #f472b6;
+            transform: scale(1.3);
+        }
+
+        .code-block {
+            background: #1e1e2e;
+            border: 1px solid #f472b6;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 1.1rem;
+            color: #f0f0f0;
+            margin: 1rem 0;
+            box-shadow: 0 4px 20px rgba(244, 114, 182, 0.2);
+        }
+
+        .code-block .keyword { color: #f472b6; }
+        .code-block .function { color: #34d399; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .string { color: #a78bfa; }
+        .code-block .comment { color: #6b7280; }
+
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .info-table th, .info-table td {
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.75rem 1rem;
+            text-align: center;
+        }
+
+        .info-table th {
+            background: rgba(244, 114, 182, 0.4);
+            color: #ffffff;
+        }
+
+        .info-table td {
+            background: rgba(255,255,255,0.05);
+            color: #f0f0f0;
+        }
+
+        .quiz-option {
+            padding: 0.75rem 1rem;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0.5rem 0;
+        }
+        .quiz-option:hover {
+            border-color: #f472b6;
+            background: rgba(244,114,182,0.1);
+        }
+        .quiz-option.correct {
+            border-color: #22c55e;
+            background: rgba(34,197,94,0.2);
+        }
+        .quiz-option.wrong {
+            border-color: #ef4444;
+            background: rgba(239,68,68,0.2);
+        }
+        .quiz-option .letter {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .quiz-option.correct .letter { background: #22c55e; }
+        .quiz-option.wrong .letter { background: #ef4444; }
+
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.25rem;
+            animation: confetti 0.8s ease forwards;
+            z-index: 1000;
+        }
+        @keyframes confetti {
+            0% { opacity: 1; transform: scale(1) translateY(0); }
+            100% { opacity: 0; transform: scale(1.5) translateY(-60px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .nav-hint {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .vs-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #f472b6, #8b5cf6);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body class="text-gray-100">
+    <div class="bg-blur bg-pink-500 top-0 left-0"></div>
+    <div class="bg-blur bg-purple-500 bottom-0 right-0" style="animation-delay: -4s;"></div>
+
+    <div class="nav-hint">按 → 或空格下一页 | ← 上一页</div>
+
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="progress-dots" id="progressDots"></div>
+
+    <!-- 第1页：标题页 -->
+    <div class="slide active" data-slide="1">
+        <div class="text-center">
+            <div class="text-6xl mb-6">🔁</div>
+            <h1 class="text-5xl font-bold mb-4" style="background: linear-gradient(135deg, #f472b6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                while 循环
+            </h1>
+            <p class="text-2xl text-gray-400 mb-8">当条件成立时重复</p>
+            <div class="text-gray-500">Python 语法篇 · 第7课</div>
+        </div>
+    </div>
+
+    <!-- 第2页：引入 -->
+    <div class="slide" data-slide="2">
+        <h2 class="text-3xl font-bold mb-8">🍽️ 当...的时候</h2>
+        <div class="max-w-3xl">
+            <div class="card animate-item mb-6">
+                <div class="text-3xl mb-4">🍚</div>
+                <h3 class="text-xl font-bold mb-2">生活例子</h3>
+                <div class="code-block text-left">
+                    <span class="keyword">while</span> 还饿着:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;吃一口饭
+                </div>
+                <p class="text-gray-400 mt-4">翻译：当（while）还饿着的时候，就继续吃</p>
+            </div>
+            <div class="grid grid-cols-2 gap-6 animate-item" style="transition-delay: 0.3s;">
+                <div class="card">
+                    <div class="text-2xl mb-2">🔄</div>
+                    <h3 class="font-bold">for 循环</h3>
+                    <p class="text-sm text-gray-400">知道要做多少次</p>
+                    <p class="text-green-400 mt-2">跑10圈</p>
+                </div>
+                <div class="card">
+                    <div class="text-2xl mb-2">🎯</div>
+                    <h3 class="font-bold">while 循环</h3>
+                    <p class="text-sm text-gray-400">不知道要做多少次</p>
+                    <p class="text-pink-400 mt-2">吃饱为止</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第3页：while基本结构 -->
+    <div class="slide" data-slide="3">
+        <h2 class="text-3xl font-bold mb-6">📝 while 循环的基本结构</h2>
+        <div class="code-block text-xl mb-6">
+            count = <span class="number">1</span><br>
+            <span class="keyword">while</span> count <= <span class="number">5</span>:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(<span class="string">f"第 {count} 次"</span>)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;count += <span class="number">1</span>
+        </div>
+        <div class="grid grid-cols-3 gap-4 max-w-4xl">
+            <div class="card animate-item">
+                <div class="text-2xl mb-2">🔐</div>
+                <h3 class="font-bold">while</h3>
+                <p class="text-sm text-gray-400">"当...的时候"</p>
+            </div>
+            <div class="card animate-item" style="transition-delay: 0.2s;">
+                <div class="text-2xl mb-2">⚖️</div>
+                <h3 class="font-bold">条件</h3>
+                <p class="text-sm text-gray-400">判断是否继续</p>
+            </div>
+            <div class="card animate-item" style="transition-delay: 0.4s;">
+                <div class="text-2xl mb-2">🔄</div>
+                <h3 class="font-bold">循环体</h3>
+                <p class="text-sm text-gray-400">条件成立时执行</p>
+            </div>
+        </div>
+        <div class="mt-6 animate-item" style="transition-delay: 0.6s;">
+            <div class="inline-block px-6 py-3 bg-pink-500/20 rounded-lg border border-pink-500/50">
+                <span class="text-pink-400">类比：</span>while 就像一个"门卫"，每次检查条件才放行
+            </div>
+        </div>
+    </div>
+
+    <!-- 第4页：for vs while 对比 -->
+    <div class="slide" data-slide="4">
+        <h2 class="text-3xl font-bold mb-6">⚔️ for vs while：什么时候用哪个？</h2>
+        <div class="grid grid-cols-2 gap-8 max-w-4xl relative">
+            <div class="card animate-item">
+                <div class="text-3xl mb-4">✅ 用 for</div>
+                <ul class="text-left space-y-3">
+                    <li class="flex items-center gap-2">
+                        <span class="text-green-400">✓</span> 已知循环次数
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="text-green-400">✓</span> 输出 1~100
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="text-green-400">✓</span> 遍历列表
+                    </li>
+                </ul>
+                <div class="code-block mt-4 text-sm">
+                    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">10</span>):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(i)
+                </div>
+            </div>
+            <div class="card animate-item" style="transition-delay: 0.2s;">
+                <div class="text-3xl mb-4">🎯 用 while</div>
+                <ul class="text-left space-y-3">
+                    <li class="flex items-center gap-2">
+                        <span class="text-pink-400">✓</span> 未知循环次数
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="text-pink-400">✓</span> 猜数字游戏
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span class="text-pink-400">✓</span> 游戏主循环
+                    </li>
+                </ul>
+                <div class="code-block mt-4 text-sm">
+                    <span class="keyword">while</span> guess != answer:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;guess = <span class="function">int</span>(<span class="function">input</span>())
+                </div>
+            </div>
+            <div class="vs-badge">VS</div>
+        </div>
+    </div>
+
+    <!-- 第5页：break和continue -->
+    <div class="slide" data-slide="5">
+        <h2 class="text-3xl font-bold mb-6">🚪 break 和 continue</h2>
+        <div class="grid grid-cols-2 gap-8 max-w-5xl">
+            <div>
+                <h3 class="text-xl font-bold mb-4 text-red-400">💥 break：跳出整个循环</h3>
+                <div class="code-block animate-item">
+                    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">10</span>):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> i == <span class="number">5</span>:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(i)
+                </div>
+                <div class="mt-4 animate-item" style="transition-delay: 0.2s;">
+                    <span class="text-gray-400">输出：</span>
+                    <span class="text-green-400">0 1 2 3 4</span>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold mb-4 text-yellow-400">⏭️ continue：跳过这一次</h3>
+                <div class="code-block animate-item" style="transition-delay: 0.3s;">
+                    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">10</span>):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> i == <span class="number">5</span>:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">continue</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(i)
+                </div>
+                <div class="mt-4 animate-item" style="transition-delay: 0.5s;">
+                    <span class="text-gray-400">输出：</span>
+                    <span class="text-green-400">0 1 2 3 4 6 7 8 9</span>
+                    <span class="text-red-400">（没有5）</span>
+                </div>
+            </div>
+        </div>
+        <div class="mt-8 animate-item" style="transition-delay: 0.7s;">
+            <div class="inline-block px-6 py-3 bg-gray-800 rounded-lg">
+                <span class="text-red-400">break</span> = 提前下课（整个课都不上了）
+                <span class="mx-4">|</span>
+                <span class="text-yellow-400">continue</span> = 去厕所（这节课跳过，下节课继续）
+            </div>
+        </div>
+    </div>
+
+    <!-- 第6页：死循环 -->
+    <div class="slide" data-slide="6">
+        <h2 class="text-3xl font-bold mb-6">☠️ 死循环问题</h2>
+        <div class="max-w-3xl">
+            <div class="card animate-item bg-red-500/10 border-red-500/50">
+                <div class="text-3xl mb-4">⚠️</div>
+                <h3 class="text-xl font-bold text-red-400 mb-2">什么是死循环？</h3>
+                <p class="text-gray-300">条件永远为真，循环永远不会停止！</p>
+                <div class="code-block mt-4">
+                    <span class="keyword">while</span> <span class="keyword">True</span>:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(<span class="string">"我停不下来啦！"</span>)
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-6 mt-6 animate-item" style="transition-delay: 0.3s;">
+                <div class="card">
+                    <div class="text-2xl mb-2">😱</div>
+                    <h3 class="font-bold text-red-400">危险</h3>
+                    <ul class="text-sm text-left text-gray-400">
+                        <li>• 程序卡住不动</li>
+                        <li>• CPU 飙升</li>
+                        <li>• 需要强制关闭</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="text-2xl mb-2">✅</div>
+                    <h3 class="font-bold text-green-400">如何避免</h3>
+                    <ul class="text-sm text-left text-gray-400">
+                        <li>• 确保条件会变</li>
+                        <li>• 用 break 跳出</li>
+                        <li>• 加计数器限制</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第7页：猜数字游戏 -->
+    <div class="slide" data-slide="7">
+        <h2 class="text-3xl font-bold mb-6">🎮 例题：猜数字游戏</h2>
+        <div class="grid grid-cols-2 gap-8 max-w-5xl">
+            <div>
+                <h3 class="text-xl font-bold mb-4 text-green-400">📝 代码</h3>
+                <div class="code-block text-sm animate-item">
+                    answer = <span class="number">42</span><br>
+                    attempts = <span class="number">0</span><br><br>
+                    <span class="keyword">while</span> attempts < <span class="number">5</span>:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;guess = <span class="function">int</span>(<span class="function">input</span>(<span class="string">"猜："</span>))<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;attempts += <span class="number">1</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> guess == answer:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(<span class="string">"猜对了！"</span>)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">break</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">elif</span> guess < answer:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(<span class="string">"太小！"</span>)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span>:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(<span class="string">"太大！"</span>)
+                </div>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold mb-4 text-yellow-400">🎯 运行示例</h3>
+                <div class="bg-gray-900/50 rounded-lg p-4 font-mono text-sm animate-item" style="transition-delay: 0.3s;">
+                    <div class="text-gray-400">猜：50</div>
+                    <div class="text-red-400">太大！</div>
+                    <div class="text-gray-400">猜：30</div>
+                    <div class="text-red-400">太小！</div>
+                    <div class="text-gray-400">猜：42</div>
+                    <div class="text-green-400">猜对了！</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第8页：常见错误 -->
+    <div class="slide" data-slide="8">
+        <h2 class="text-3xl font-bold mb-6">❌ 常见错误</h2>
+        <div class="space-y-6 max-w-3xl">
+            <div class="card animate-item">
+                <h3 class="text-red-400 font-bold mb-2">错误1：忘记更新条件 → 死循环！</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-red-400">❌ count = 1; while count <= 5: print(count)</div>
+                    <div class="text-green-400">✓ count += 1 在循环体内</div>
+                </div>
+            </div>
+            <div class="card animate-item" style="transition-delay: 0.2s;">
+                <h3 class="text-red-400 font-bold mb-2">错误2：条件写反</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-red-400">❌ while count >= 5（一开始就不成立）</div>
+                    <div class="text-green-400">✓ while count <= 5</div>
+                </div>
+            </div>
+            <div class="card animate-item" style="transition-delay: 0.4s;">
+                <h3 class="text-red-400 font-bold mb-2">错误3：缩进错误</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-red-400">❌ print(count) 没有缩进</div>
+                    <div class="text-green-400">✓ &nbsp;&nbsp;&nbsp;&nbsp;print(count) 缩进4格</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第9页：测验 -->
+    <div class="slide" data-slide="9">
+        <h2 class="text-3xl font-bold mb-6">🧪 小测验</h2>
+        <p class="text-gray-400 mb-4">下面哪个情况应该用 while 而不是 for？</p>
+        <div class="space-y-3 max-w-md">
+            <div class="quiz-option" data-correct="false">
+                <span class="letter">A</span>
+                <span>输出 1 到 100 的所有数字</span>
+            </div>
+            <div class="quiz-option" data-correct="true">
+                <span class="letter">B</span>
+                <span>猜数字，直到猜对为止</span>
+            </div>
+            <div class="quiz-option" data-correct="false">
+                <span class="letter">C</span>
+                <span>计算 1+2+3+...+100</span>
+            </div>
+            <div class="quiz-option" data-correct="false">
+                <span class="letter">D</span>
+                <span>遍历一个有10个元素的列表</span>
+            </div>
+        </div>
+        <div class="mt-6 text-gray-500">点击选项查看答案</div>
+    </div>
+
+    <!-- 第10页：总结 -->
+    <div class="slide" data-slide="10">
+        <h2 class="text-3xl font-bold mb-6">📝 总结</h2>
+        <table class="info-table max-w-3xl animate-item">
+            <thead>
+                <tr>
+                    <th>概念</th>
+                    <th>写法</th>
+                    <th>作用</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>while循环</td>
+                    <td><code>while 条件:</code></td>
+                    <td>条件成立时重复执行</td>
+                </tr>
+                <tr>
+                    <td>break</td>
+                    <td><code>break</code></td>
+                    <td>跳出整个循环</td>
+                </tr>
+                <tr>
+                    <td>continue</td>
+                    <td><code>continue</code></td>
+                    <td>跳过这一次</td>
+                </tr>
+                <tr>
+                    <td>死循环</td>
+                    <td><code>while True:</code></td>
+                    <td>永远循环（需 break）</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="mt-8 text-center animate-item" style="transition-delay: 0.3s;">
+            <div class="text-xl">
+                <span class="text-green-400">知道次数 → for</span>
+                <span class="mx-4">|</span>
+                <span class="text-pink-400">不知道次数 → while</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 10;
+
+        function showSlide(n) {
+            if (n < 1 || n > totalSlides) return;
+            currentSlide = n;
+
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.querySelector(`[data-slide="${n}"]`).classList.add('active');
+
+            document.getElementById('progressBar').style.width = `${(n / totalSlides) * 100}%`;
+
+            document.querySelectorAll('.dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i + 1 === n);
+            });
+
+            setTimeout(() => {
+                document.querySelectorAll(`[data-slide="${n}"] .animate-item`).forEach((item, i) => {
+                    setTimeout(() => item.classList.add('visible'), i * 150);
+                });
+            }, 100);
+        }
+
+        function createDots() {
+            const container = document.getElementById('progressDots');
+            for (let i = 1; i <= totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot' + (i === 1 ? ' active' : '');
+                dot.addEventListener('click', () => showSlide(i));
+                container.appendChild(dot);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                showSlide(currentSlide + 1);
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                showSlide(currentSlide - 1);
+            }
+        });
+
+        document.querySelectorAll('.quiz-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const isCorrect = this.dataset.correct === 'true';
+                this.classList.add(isCorrect ? 'correct' : 'wrong');
+                if (isCorrect) {
+                    showParticles(this);
+                } else {
+                    this.style.animation = 'shake 0.3s ease';
+                    setTimeout(() => this.style.animation = '', 300);
+                }
+            });
+        });
+
+        function showParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const emojis = ['⭐', '✨', '🎉', '💯'];
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                particle.style.left = rect.left + rect.width / 2 + 'px';
+                particle.style.top = rect.top + 'px';
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 800);
+            }
+        }
+
+        createDots();
+        showSlide(1);
+    </script>
+</body>
+</html>

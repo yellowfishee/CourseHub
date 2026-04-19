@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模块与库</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif; background: #0a0a0a; overflow: hidden; }
+        .bg-blur { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); opacity: 0.25; animation: float 8s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(50px, 50px); } }
+        .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4rem; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        .slide.active { opacity: 1; pointer-events: auto; }
+        .animate-item { opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease; }
+        .animate-item.visible { opacity: 1; transform: translateY(0); }
+        .progress-bar { position: fixed; bottom: 0; left: 0; height: 4px; background: linear-gradient(90deg, #22c55e, #14b8a6); transition: width 0.3s ease; }
+        .progress-dots { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; cursor: pointer; transition: all 0.3s ease; }
+        .dot.active { background: #22c55e; transform: scale(1.3); }
+        .code-block { background: #1e1e2e; border: 1px solid #22c55e; border-radius: 12px; padding: 1.5rem 2rem; font-family: 'Monaco', 'Menlo', monospace; font-size: 1.1rem; color: #f0f0f0; }
+        .code-block .keyword { color: #f472b6; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .comment { color: #6b7280; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 1.5rem; text-align: center; }
+        .quiz-option { padding: 0.75rem 1rem; border: 2px solid rgba(255,255,255,0.15); border-radius: 0.5rem; cursor: pointer; transition: all 0.2s ease; margin: 0.5rem 0; }
+        .quiz-option:hover { border-color: #22c55e; background: rgba(34,197,94,0.1); }
+        .quiz-option.correct { border-color: #22c55e; background: rgba(34,197,94,0.2); }
+    </style>
+</head>
+<body>
+    <div class="bg-blur" style="top: -200px; left: -200px; background: #22c55e;"></div>
+    <div class="bg-blur" style="bottom: -200px; right: -200px; background: #14b8a6; animation-delay: -4s;"></div>
+
+    <div id="slides-container">
+        <div class="slide active" data-slide="1">
+            <h1 class="text-5xl font-bold text-gray-100 mb-8 animate-item">模块与库</h1>
+            <p class="text-2xl text-green-400 mb-8 animate-item">Python的工具箱</p>
+            <div class="grid grid-cols-3 gap-6 w-full max-w-4xl mb-6">
+                <div class="card animate-item"><div class="text-4xl mb-3">🔢</div><p class="text-lg text-gray-100 font-bold">math</p></div>
+                <div class="card animate-item"><div class="text-4xl mb-3">🎲</div><p class="text-lg text-gray-100 font-bold">random</p></div>
+                <div class="card animate-item"><div class="text-4xl mb-3">📅</div><p class="text-lg text-gray-100 font-bold">datetime</p></div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="2">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📦 导入模块</h2>
+            <div class="code-block animate-item">import math<br><br>print(math.sqrt(16)) <span class="comment"># 4.0</span><br>print(math.pi) <span class="comment"># 3.14159...</span></div>
+        </div>
+
+        <div class="slide" data-slide="3">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🎲 random模块</h2>
+            <div class="code-block animate-item">import random<br><br>print(random.randint(1, 100))<br>print(random.choice(["a", "b", "c"]))</div>
+        </div>
+
+        <div class="slide" data-slide="4">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🧪 小测验</h2>
+            <p class="text-gray-400 mb-4 animate-item">如何导入math模块？</p>
+            <div class="space-y-3 max-w-md">
+                <div class="quiz-option" data-correct="true" onclick="checkQuiz(this, true)">A. import math</div>
+                <div class="quiz-option" data-correct="false" onclick="checkQuiz(this, false)">B. include math</div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="5">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📋 总结</h2>
+            <p class="text-green-400 animate-item">用之前先 import！</p>
+        </div>
+    </div>
+
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="progress-dots" id="progressDots"></div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progressBar');
+        const progressDots = document.getElementById('progressDots');
+        let currentSlide = 0;
+
+        slides.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => goToSlide(i);
+            progressDots.appendChild(dot);
+        });
+
+        function updateSlide() {
+            slides.forEach((s, i) => s.classList.toggle('active', i === currentSlide));
+            document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+            progressBar.style.width = ((currentSlide + 1) / slides.length * 100) + '%';
+            const items = slides[currentSlide].querySelectorAll('.animate-item');
+            items.forEach((item, index) => {
+                item.classList.remove('visible');
+                setTimeout(() => item.classList.add('visible'), 100 + index * 150);
+            });
+        }
+
+        function goToSlide(n) { currentSlide = Math.max(0, Math.min(slides.length - 1, n)); updateSlide(); }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowRight' || e.key === ' ') goToSlide(currentSlide + 1);
+            if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+        });
+
+        function checkQuiz(el, correct) { el.classList.add(correct ? 'correct' : 'wrong'); }
+
+        updateSlide();
+    </script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>函数调用与参数传递</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=HarmonyOS+Sans+SC:wght@300;400;700&display=swap');
+        body { font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif; background: #0a0a0a; overflow: hidden; }
+        .bg-blur { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); opacity: 0.25; animation: float 8s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(50px, 50px); } }
+        .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4rem; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        .slide.active { opacity: 1; pointer-events: auto; }
+        .animate-item { opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease; }
+        .animate-item.visible { opacity: 1; transform: translateY(0); }
+        .progress-bar { position: fixed; bottom: 0; left: 0; height: 4px; background: linear-gradient(90deg, #8b5cf6, #ec4899); transition: width 0.3s ease; }
+        .progress-dots { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; cursor: pointer; transition: all 0.3s ease; }
+        .dot.active { background: #8b5cf6; transform: scale(1.3); }
+        .code-block { background: #1e1e2e; border: 1px solid #8b5cf6; border-radius: 12px; padding: 1.5rem 2rem; font-family: 'Monaco', 'Menlo', monospace; font-size: 1.1rem; color: #f0f0f0; }
+        .code-block .keyword { color: #f472b6; }
+        .code-block .function { color: #34d399; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .string { color: #a78bfa; }
+        .code-block .comment { color: #6b7280; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 1.5rem; text-align: center; }
+        .info-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        .info-table th, .info-table td { border: 1px solid rgba(255,255,255,0.2); padding: 0.75rem 1rem; text-align: center; }
+        .info-table th { background: rgba(139, 92, 246, 0.4); color: #ffffff; }
+        .info-table td { background: rgba(255,255,255,0.05); color: #f0f0f0; }
+        .quiz-option { padding: 0.75rem 1rem; border: 2px solid rgba(255,255,255,0.15); border-radius: 0.5rem; cursor: pointer; transition: all 0.2s ease; margin: 0.5rem 0; }
+        .quiz-option:hover { border-color: #8b5cf6; background: rgba(139,92,246,0.1); }
+        .quiz-option.correct { border-color: #22c55e; background: rgba(34,197,94,0.2); }
+        .quiz-option.wrong { border-color: #ef4444; background: rgba(239,68,68,0.2); }
+    </style>
+</head>
+<body>
+    <div class="bg-blur" style="top: -200px; left: -200px; background: #8b5cf6;"></div>
+    <div class="bg-blur" style="bottom: -200px; right: -200px; background: #ec4899; animation-delay: -4s;"></div>
+
+    <div id="slides-container">
+        <div class="slide active" data-slide="1">
+            <h1 class="text-5xl font-bold text-gray-100 mb-8 animate-item">函数调用与参数传递</h1>
+            <p class="text-2xl text-purple-400 mb-8 animate-item">理解Python的变量传递</p>
+            <div class="grid grid-cols-3 gap-6 w-full max-w-4xl mb-6">
+                <div class="card animate-item"><div class="text-4xl mb-3">🔒</div><p class="text-lg text-gray-100 font-bold">不可变对象</p><p class="text-gray-400 text-sm">int, str, tuple</p></div>
+                <div class="card animate-item"><div class="text-4xl mb-3">🔓</div><p class="text-lg text-gray-100 font-bold">可变对象</p><p class="text-gray-400 text-sm">list, dict</p></div>
+                <div class="card animate-item"><div class="text-4xl mb-3">⚠️</div><p class="text-lg text-gray-100 font-bold">注意陷阱</p></div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="2">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🤔 函数会改变参数吗？</h2>
+            <div class="grid grid-cols-2 gap-8 max-w-4xl">
+                <div class="card animate-item">
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">整数参数</h3>
+                    <div class="code-block text-sm">def add_one(n):<br>&nbsp;&nbsp;n = n + 1<br><br>x = 5<br>add_one(x)<br>print(x) <span class="comment"># 还是5!</span></div>
+                </div>
+                <div class="card animate-item">
+                    <h3 class="text-xl font-bold mb-4 text-green-400">列表参数</h3>
+                    <div class="code-block text-sm">def add_item(lst):<br>&nbsp;&nbsp;lst.append(100)<br><br>nums = [1,2,3]<br>add_item(nums)<br>print(nums) <span class="comment"># [1,2,3,100]</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="3">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🔒 不可变对象</h2>
+            <table class="info-table w-full max-w-3xl animate-item">
+                <thead><tr><th>类型</th><th>例子</th><th>特点</th></tr></thead>
+                <tbody>
+                    <tr><td class="text-purple-400">int</td><td>5, 100</td><td>整数不能改</td></tr>
+                    <tr><td class="text-purple-400">str</td><td>"hello"</td><td>字符串不能改</td></tr>
+                    <tr><td class="text-purple-400">tuple</td><td>(1, 2, 3)</td><td>元组不能改</td></tr>
+                </tbody>
+            </table>
+            <p class="text-yellow-400 mt-4 animate-item">类比：刻在石头上的字，想改只能重新刻</p>
+        </div>
+
+        <div class="slide" data-slide="4">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🔓 可变对象</h2>
+            <table class="info-table w-full max-w-3xl animate-item">
+                <thead><tr><th>类型</th><th>例子</th><th>特点</th></tr></thead>
+                <tbody>
+                    <tr><td class="text-green-400">list</td><td>[1, 2, 3]</td><td>列表可以改</td></tr>
+                    <tr><td class="text-green-400">dict</td><td>{"a": 1}</td><td>字典可以改</td></tr>
+                </tbody>
+            </table>
+            <p class="text-green-400 mt-4 animate-item">类比：写在白板上，可以随时擦掉重写</p>
+        </div>
+
+        <div class="slide" data-slide="5">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🧪 小测验</h2>
+            <p class="text-gray-400 mb-4 animate-item">哪些是不可变对象？</p>
+            <div class="space-y-3 max-w-md">
+                <div class="quiz-option" data-correct="true" onclick="checkQuiz(this, true)">A. 字符串 "hello"</div>
+                <div class="quiz-option" data-correct="false" onclick="checkQuiz(this, false)">B. 列表 [1, 2, 3]</div>
+                <div class="quiz-option" data-correct="true" onclick="checkQuiz(this, true)">C. 元组 (1, 2, 3)</div>
+                <div class="quiz-option" data-correct="false" onclick="checkQuiz(this, false)">D. 字典 {"a": 1}</div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="6">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📋 总结</h2>
+            <div class="card animate-item max-w-lg">
+                <p class="text-purple-400 font-bold mb-4">核心记住：</p>
+                <p class="text-gray-300">整数、字符串传入函数不会被修改</p>
+                <p class="text-gray-300 mt-2">列表、字典传入函数可能被修改</p>
+                <p class="text-green-400 mt-4">用 .copy() 可以避免意外修改</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="progress-dots" id="progressDots"></div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progressBar');
+        const progressDots = document.getElementById('progressDots');
+        let currentSlide = 0;
+
+        slides.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => goToSlide(i);
+            progressDots.appendChild(dot);
+        });
+
+        function updateSlide() {
+            slides.forEach((s, i) => s.classList.toggle('active', i === currentSlide));
+            document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+            progressBar.style.width = ((currentSlide + 1) / slides.length * 100) + '%';
+            const items = slides[currentSlide].querySelectorAll('.animate-item');
+            items.forEach((item, index) => {
+                item.classList.remove('visible');
+                setTimeout(() => item.classList.add('visible'), 100 + index * 150);
+            });
+        }
+
+        function goToSlide(n) {
+            currentSlide = Math.max(0, Math.min(slides.length - 1, n));
+            updateSlide();
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowRight' || e.key === ' ') goToSlide(currentSlide + 1);
+            if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+        });
+
+        function checkQuiz(el, correct) {
+            el.classList.add(correct ? 'correct' : 'wrong');
+        }
+
+        updateSlide();
+    </script>
+</body>
+</html>

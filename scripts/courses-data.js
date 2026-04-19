@@ -244,8 +244,141 @@ const COURSES_DATA = [
         "hasMeta": false
       },
       {
-        "slug": "05-最大公因数与最小公倍数",
-        "title": "05-最大公因数与最小公倍数",
+        "slug": "05-注解与习题",
+        "title": "05-注解与习题",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "06-for循环",
+        "title": "06-for循环",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "07-while循环",
+        "title": "07-while循环",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "08-循环的代价",
+        "title": "08-循环的代价",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "09-输入输出框架",
+        "title": "09-输入输出框架",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "10-注解与习题",
+        "title": "10-注解与习题",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "11-列表",
+        "title": "11-列表",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "12-字符串",
+        "title": "12-字符串",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "13-竞赛题目选讲",
+        "title": "13-竞赛题目选讲",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "14-注解与习题",
+        "title": "14-注解与习题",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "15-函数和类",
+        "title": "15-函数和类",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "16-函数调用与参数传递",
+        "title": "16-函数调用与参数传递",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "17-递归",
+        "title": "17-递归",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "18-竞赛题目选讲",
+        "title": "18-竞赛题目选讲",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "19-字典",
+        "title": "19-字典",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "20-集合与元组",
+        "title": "20-集合与元组",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "21-文件操作",
+        "title": "21-文件操作",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "22-模块与库",
+        "title": "22-模块与库",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "23-异常处理",
+        "title": "23-异常处理",
+        "description": "",
+        "hasOutline": false,
+        "hasMeta": false
+      },
+      {
+        "slug": "24-综合练习",
+        "title": "24-综合练习",
         "description": "",
         "hasOutline": false,
         "hasMeta": false

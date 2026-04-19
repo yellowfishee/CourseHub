@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字典 - 键值对的映射表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=HarmonyOS+Sans+SC:wght@300;400;700&display=swap');
+        body { font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif; background: #0a0a0a; overflow: hidden; }
+        .bg-blur { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); opacity: 0.25; animation: float 8s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(50px, 50px); } }
+        .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4rem; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        .slide.active { opacity: 1; pointer-events: auto; }
+        .animate-item { opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease; }
+        .animate-item.visible { opacity: 1; transform: translateY(0); }
+        .progress-bar { position: fixed; bottom: 0; left: 0; height: 4px; background: linear-gradient(90deg, #10b981, #06b6d4); transition: width 0.3s ease; }
+        .progress-dots { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; cursor: pointer; transition: all 0.3s ease; }
+        .dot.active { background: #10b981; transform: scale(1.3); }
+        .code-block { background: #1e1e2e; border: 1px solid #10b981; border-radius: 12px; padding: 1.5rem 2rem; font-family: 'Monaco', 'Menlo', monospace; font-size: 1.1rem; color: #f0f0f0; margin: 1rem 0; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2); }
+        .code-block .keyword { color: #f472b6; }
+        .code-block .function { color: #34d399; }
+        .code-block .number { color: #fbbf24; }
+        .code-block .string { color: #a78bfa; }
+        .code-block .comment { color: #6b7280; }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 1.5rem; text-align: center; }
+        .info-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        .info-table th, .info-table td { border: 1px solid rgba(255,255,255,0.2); padding: 0.75rem 1rem; text-align: center; }
+        .info-table th { background: rgba(16, 185, 129, 0.4); color: #ffffff; }
+        .info-table td { background: rgba(255,255,255,0.05); color: #f0f0f0; }
+        .quiz-option { padding: 0.75rem 1rem; border: 2px solid rgba(255,255,255,0.15); border-radius: 0.5rem; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 0.75rem; margin: 0.5rem 0; }
+        .quiz-option:hover { border-color: #10b981; background: rgba(16,185,129,0.1); }
+        .quiz-option.correct { border-color: #22c55e; background: rgba(34,197,94,0.2); }
+        .quiz-option.wrong { border-color: #ef4444; background: rgba(239,68,68,0.2); }
+    </style>
+</head>
+<body>
+    <div class="bg-blur" style="top: -200px; left: -200px; background: #10b981;"></div>
+    <div class="bg-blur" style="bottom: -200px; right: -200px; background: #06b6d4; animation-delay: -4s;"></div>
+
+    <div id="slides-container">
+        <!-- 第1页：封面 -->
+        <div class="slide active" data-slide="1">
+            <h1 class="text-5xl font-bold text-gray-100 mb-8 animate-item">字典</h1>
+            <p class="text-2xl text-emerald-400 mb-8 animate-item">键值对的映射表</p>
+            <div class="grid grid-cols-3 gap-6 w-full max-w-4xl mb-6">
+                <div class="card animate-item"><div class="text-4xl mb-3">🔑</div><p class="text-lg text-gray-100 font-bold">键 Key</p><p class="text-gray-400 text-sm">唯一标识符</p></div>
+                <div class="card animate-item"><div class="text-4xl mb-3">💎</div><p class="text-lg text-gray-100 font-bold">值 Value</p><p class="text-gray-400 text-sm">对应的数据</p></div>
+                <div class="card animate-item"><div class="text-4xl mb-3">🔍</div><p class="text-lg text-gray-100 font-bold">快速查找</p><p class="text-gray-400 text-sm">用键找值</p></div>
+            </div>
+            <p class="text-gray-500 animate-item">Python 语法篇 · 第 19 课</p>
+        </div>
+
+        <!-- 第2页：什么是字典 -->
+        <div class="slide" data-slide="2">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📖 什么是字典？</h2>
+            <div class="grid grid-cols-2 gap-8 max-w-4xl">
+                <div class="card animate-item">
+                    <h3 class="text-xl font-bold mb-4 text-yellow-400">❌ 用列表存储成绩</h3>
+                    <div class="code-block text-sm">
+                        names = [<span class="string">"小明"</span>, <span class="string">"小红"</span>]<br>
+                        scores = [<span class="number">90</span>, <span class="number">85</span>]<br><br>
+                        <span class="comment"># 要找小明的成绩</span><br>
+                        idx = names.index(<span class="string">"小明"</span>)<br>
+                        print(scores[idx])
+                    </div>
+                    <p class="text-red-400 text-sm mt-2">麻烦！要用两个列表</p>
+                </div>
+                <div class="card animate-item">
+                    <h3 class="text-xl font-bold mb-4 text-green-400">✓ 用字典存储成绩</h3>
+                    <div class="code-block text-sm">
+                        scores = {<br>
+                        &nbsp;&nbsp;<span class="string">"小明"</span>: <span class="number">90</span>,<br>
+                        &nbsp;&nbsp;<span class="string">"小红"</span>: <span class="number">85</span><br>
+                        }<br><br>
+                        print(scores[<span class="string">"小明"</span>])
+                    </div>
+                    <p class="text-green-400 text-sm mt-2">直接用名字找！</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第3页：字典操作 -->
+        <div class="slide" data-slide="3">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">⚙️ 字典操作</h2>
+            <div class="code-block animate-item">
+                scores = {<span class="string">"小明"</span>: <span class="number">90</span>}<br><br>
+                <span class="comment"># 添加</span><br>
+                scores[<span class="string">"小红"</span>] = <span class="number">85</span><br><br>
+                <span class="comment"># 修改</span><br>
+                scores[<span class="string">"小明"</span>] = <span class="number">95</span><br><br>
+                <span class="comment"># 删除</span><br>
+                <span class="keyword">del</span> scores[<span class="string">"小红"</span>]
+            </div>
+        </div>
+
+        <!-- 第4页：字典方法 -->
+        <div class="slide" data-slide="4">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🛠️ 常用方法</h2>
+            <table class="info-table w-full max-w-3xl animate-item">
+                <thead><tr><th>方法</th><th>作用</th><th>例子</th></tr></thead>
+                <tbody>
+                    <tr><td class="text-emerald-400">get(key)</td><td>获取值</td><td>scores.get("小明")</td></tr>
+                    <tr><td class="text-emerald-400">keys()</td><td>所有键</td><td>scores.keys()</td></tr>
+                    <tr><td class="text-emerald-400">values()</td><td>所有值</td><td>scores.values()</td></tr>
+                    <tr><td class="text-emerald-400">items()</td><td>所有键值对</td><td>scores.items()</td></tr>
+                    <tr><td class="text-emerald-400">pop(key)</td><td>删除并返回</td><td>scores.pop("小明")</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 第5页：遍历字典 -->
+        <div class="slide" data-slide="5">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🔄 遍历字典</h2>
+            <div class="code-block animate-item">
+                scores = {<span class="string">"小明"</span>: <span class="number">90</span>, <span class="string">"小红"</span>: <span class="number">85</span>}<br><br>
+                <span class="comment"># 遍历键值对</span><br>
+                <span class="keyword">for</span> name, score <span class="keyword">in</span> scores.items():<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">print</span>(f<span class="string">"{name}: {score}"</span>)
+            </div>
+            <div class="card animate-item mt-6">
+                <p class="text-green-400">输出：</p>
+                <p class="text-gray-100">小明: 90</p>
+                <p class="text-gray-100">小红: 85</p>
+            </div>
+        </div>
+
+        <!-- 第6页：例题 - 单词计数 -->
+        <div class="slide" data-slide="6">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📝 例题：单词计数</h2>
+            <div class="code-block animate-item">
+                text = <span class="string">"apple banana apple orange"</span><br>
+                words = text.split()<br><br>
+                count = {}<br>
+                <span class="keyword">for</span> word <span class="keyword">in</span> words:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;count[word] = count.get(word, <span class="number">0</span>) + <span class="number">1</span><br><br>
+                <span class="function">print</span>(count)<br>
+                <span class="comment"># {'apple': 2, 'banana': 1, 'orange': 1}</span>
+            </div>
+        </div>
+
+        <!-- 第7页：测验 -->
+        <div class="slide" data-slide="7">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🧪 小测验</h2>
+            <p class="text-gray-400 mb-4 animate-item">如何安全地获取字典中可能不存在的键？</p>
+            <div class="space-y-3 max-w-md">
+                <div class="quiz-option" data-correct="false" onclick="checkQuiz(this, false)"><span class="font-bold">A.</span> d[key]</div>
+                <div class="quiz-option" data-correct="true" onclick="checkQuiz(this, true)"><span class="font-bold">B.</span> d.get(key)</div>
+                <div class="quiz-option" data-correct="false" onclick="checkQuiz(this, false)"><span class="font-bold">C.</span> d.value(key)</div>
+                <div class="quiz-option" data-correct="false" onclick="checkQuiz(this, false)"><span class="font-bold">D.</span> d.find(key)</div>
+            </div>
+        </div>
+
+        <!-- 第8页：总结 -->
+        <div class="slide" data-slide="8">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📋 总结</h2>
+            <div class="grid grid-cols-2 gap-4 max-w-2xl">
+                <div class="card animate-item"><p class="text-emerald-400 font-bold">字典</p><p class="text-gray-300 text-sm">键值对的映射表</p></div>
+                <div class="card animate-item"><p class="text-emerald-400 font-bold">键</p><p class="text-gray-300 text-sm">唯一标识符，不可变</p></div>
+                <div class="card animate-item"><p class="text-emerald-400 font-bold">get()</p><p class="text-gray-300 text-sm">安全获取值</p></div>
+                <div class="card animate-item"><p class="text-emerald-400 font-bold">items()</p><p class="text-gray-300 text-sm">遍历键值对</p></div>
+            </div>
+            <p class="text-gray-500 mt-8 animate-item">用字典，查找更快！</p>
+        </div>
+    </div>
+
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="progress-dots" id="progressDots"></div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progressBar');
+        const progressDots = document.getElementById('progressDots');
+        let currentSlide = 0;
+
+        // 创建进度点
+        slides.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => goToSlide(i);
+            progressDots.appendChild(dot);
+        });
+
+        function updateSlide() {
+            slides.forEach((s, i) => s.classList.toggle('active', i === currentSlide));
+            document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+            progressBar.style.width = ((currentSlide + 1) / slides.length * 100) + '%';
+
+            // 触发动画
+            const items = slides[currentSlide].querySelectorAll('.animate-item');
+            items.forEach((item, index) => {
+                item.classList.remove('visible');
+                setTimeout(() => item.classList.add('visible'), 100 + index * 150);
+            });
+        }
+
+        function goToSlide(n) {
+            currentSlide = Math.max(0, Math.min(slides.length - 1, n));
+            updateSlide();
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowRight' || e.key === ' ') goToSlide(currentSlide + 1);
+            if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+        });
+
+        function checkQuiz(el, correct) {
+            el.classList.add(correct ? 'correct' : 'wrong');
+        }
+
+        updateSlide();
+    </script>
+</body>
+</html>

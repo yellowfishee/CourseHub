@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>综合练习</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', 'HarmonyOS Sans SC', sans-serif; background: #0a0a0a; overflow: hidden; }
+        .bg-blur { position: fixed; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); opacity: 0.25; animation: float 8s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(50px, 50px); } }
+        .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4rem; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+        .slide.active { opacity: 1; pointer-events: auto; }
+        .animate-item { opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease; }
+        .animate-item.visible { opacity: 1; transform: translateY(0); }
+        .progress-bar { position: fixed; bottom: 0; left: 0; height: 4px; background: linear-gradient(90deg, #6366f1, #a855f7); transition: width 0.3s ease; }
+        .progress-dots { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #334155; cursor: pointer; transition: all 0.3s ease; }
+        .dot.active { background: #6366f1; transform: scale(1.3); }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 1.5rem; text-align: center; }
+        .quiz-option { padding: 0.75rem 1rem; border: 2px solid rgba(255,255,255,0.15); border-radius: 0.5rem; cursor: pointer; transition: all 0.2s ease; margin: 0.5rem 0; }
+        .quiz-option:hover { border-color: #6366f1; background: rgba(99,102,241,0.1); }
+        .quiz-option.correct { border-color: #22c55e; background: rgba(34,197,94,0.2); }
+    </style>
+</head>
+<body>
+    <div class="bg-blur" style="top: -200px; left: -200px; background: #6366f1;"></div>
+    <div class="bg-blur" style="bottom: -200px; right: -200px; background: #a855f7; animation-delay: -4s;"></div>
+
+    <div id="slides-container">
+        <div class="slide active" data-slide="1">
+            <h1 class="text-5xl font-bold text-gray-100 mb-8 animate-item">综合练习</h1>
+            <p class="text-2xl text-indigo-400 mb-8 animate-item">Python全掌握</p>
+            <div class="grid grid-cols-3 gap-6 w-full max-w-4xl mb-6">
+                <div class="card animate-item"><div class="text-4xl mb-3">📚</div><p class="text-lg text-gray-100 font-bold">基础复习</p></div>
+                <div class="card animate-item"><div class="text-4xl mb-3">🎯</div><p class="text-lg text-gray-100 font-bold">挑战题</p></div>
+                <div class="card animate-item"><div class="text-4xl mb-3">🏆</div><p class="text-lg text-gray-100 font-bold">竞赛题</p></div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="2">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">📚 知识回顾</h2>
+            <div class="grid grid-cols-2 gap-4 max-w-2xl">
+                <div class="card animate-item"><p class="text-indigo-400 font-bold">变量与运算</p></div>
+                <div class="card animate-item"><p class="text-indigo-400 font-bold">分支与循环</p></div>
+                <div class="card animate-item"><p class="text-indigo-400 font-bold">列表与字典</p></div>
+                <div class="card animate-item"><p class="text-indigo-400 font-bold">函数与类</p></div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="3">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🎯 挑战题</h2>
+            <div class="card animate-item max-w-lg">
+                <p class="text-gray-300">1. 判断回文字符串</p>
+                <p class="text-gray-300">2. 判断素数</p>
+                <p class="text-gray-300">3. 冒泡排序</p>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="4">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🏆 竞赛题</h2>
+            <div class="card animate-item max-w-lg">
+                <p class="text-gray-300">水仙花数</p>
+                <p class="text-gray-300">完数</p>
+                <p class="text-gray-300">最大公约数</p>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="5">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🧪 小测验</h2>
+            <p class="text-gray-400 mb-4 animate-item">Python中用什么来定义函数？</p>
+            <div class="space-y-3 max-w-md">
+                <div class="quiz-option" data-correct="true" onclick="checkQuiz(this, true)">A. def</div>
+                <div class="quiz-option" data-correct="false" onclick="checkQuiz(this, false)">B. function</div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="6">
+            <h2 class="text-4xl font-bold text-gray-100 mb-8 animate-item">🎉 恭喜完成！</h2>
+            <p class="text-indigo-400 animate-item">你已经掌握了Python基础语法！</p>
+        </div>
+    </div>
+
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="progress-dots" id="progressDots"></div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progressBar');
+        const progressDots = document.getElementById('progressDots');
+        let currentSlide = 0;
+
+        slides.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => goToSlide(i);
+            progressDots.appendChild(dot);
+        });
+
+        function updateSlide() {
+            slides.forEach((s, i) => s.classList.toggle('active', i === currentSlide));
+            document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+            progressBar.style.width = ((currentSlide + 1) / slides.length * 100) + '%';
+            const items = slides[currentSlide].querySelectorAll('.animate-item');
+            items.forEach((item, index) => {
+                item.classList.remove('visible');
+                setTimeout(() => item.classList.add('visible'), 100 + index * 150);
+            });
+        }
+
+        function goToSlide(n) { currentSlide = Math.max(0, Math.min(slides.length - 1, n)); updateSlide(); }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowRight' || e.key === ' ') goToSlide(currentSlide + 1);
+            if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+        });
+
+        function checkQuiz(el, correct) { el.classList.add(correct ? 'correct' : 'wrong'); }
+
+        updateSlide();
+    </script>
+</body>
+</html>
